@@ -77,6 +77,13 @@ $configData = Helper::appClasses();
       </li>
       @endif
     @endforeach
+
+    {{-- auth()->user()->hasRole('doctor') --}}
+      @if(auth()->user()->hasRole('doctor'))
+      <li>
+dsadasdsa
+      </li>
+      @endif
   </ul>
 
 </aside>

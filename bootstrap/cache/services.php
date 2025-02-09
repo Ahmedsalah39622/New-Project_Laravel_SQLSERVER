@@ -35,10 +35,11 @@
     31 => 'Termwind\\Laravel\\TermwindServiceProvider',
     32 => 'Pixinvent\\Jetstrap\\JetstrapServiceProvider',
     33 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    34 => 'App\\Providers\\AppServiceProvider',
-    35 => 'App\\Providers\\FortifyServiceProvider',
-    36 => 'App\\Providers\\JetstreamServiceProvider',
-    37 => 'App\\Providers\\MenuServiceProvider',
+    34 => 'Spatie\\Permission\\PermissionServiceProvider',
+    35 => 'App\\Providers\\AppServiceProvider',
+    36 => 'App\\Providers\\FortifyServiceProvider',
+    37 => 'App\\Providers\\JetstreamServiceProvider',
+    38 => 'App\\Providers\\MenuServiceProvider',
   ),
   'eager' => 
   array (
@@ -61,10 +62,11 @@
     16 => 'Termwind\\Laravel\\TermwindServiceProvider',
     17 => 'Pixinvent\\Jetstrap\\JetstrapServiceProvider',
     18 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    19 => 'App\\Providers\\AppServiceProvider',
-    20 => 'App\\Providers\\FortifyServiceProvider',
-    21 => 'App\\Providers\\JetstreamServiceProvider',
-    22 => 'App\\Providers\\MenuServiceProvider',
+    19 => 'Spatie\\Permission\\PermissionServiceProvider',
+    20 => 'App\\Providers\\AppServiceProvider',
+    21 => 'App\\Providers\\FortifyServiceProvider',
+    22 => 'App\\Providers\\JetstreamServiceProvider',
+    23 => 'App\\Providers\\MenuServiceProvider',
   ),
   'deferred' => 
   array (
