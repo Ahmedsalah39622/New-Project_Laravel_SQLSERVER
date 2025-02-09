@@ -1,7 +1,7 @@
 <?php
 // Variables
 return [
-  "creatorName" => "Pixinvent",
+  "creatorName" => "Lifeline",
   "creatorUrl" => "https://pixinvent.com",
   "templateName" => "Vuexy",
   "templateSuffix" => "Bootstrap Admin Template",
