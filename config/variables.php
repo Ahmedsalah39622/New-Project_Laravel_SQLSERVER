@@ -2,8 +2,8 @@
 // Variables
 return [
   "creatorName" => "Lifeline",
-  "creatorUrl" => "https://pixinvent.com",
-  "templateName" => "Vuexy",
+  "creatorUrl" => "https://Lifeline.com",
+  "templateName" => "Lifeline",
   "templateSuffix" => "Bootstrap Admin Template",
   "templateVersion" => "2.0.0",
   "templateFree" => false,

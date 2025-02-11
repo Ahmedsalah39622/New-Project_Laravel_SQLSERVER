@@ -79,11 +79,11 @@ $configData = Helper::appClasses();
     @endforeach
 
     {{-- auth()->user()->hasRole('doctor') --}}
-      @if(auth()->user()->hasRole('doctor'))
+      {{--@if(auth()->user()->hasRole('doctor'))
       <li>
 dsadasdsa
       </li>
-      @endif
+      @endif--}}
   </ul>
 
 </aside>
