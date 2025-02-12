@@ -58,7 +58,7 @@
     }
 
     .card-gradient:hover {
-      background: linear-gradient(145deg, rgba(79, 70, 229, 1), rgba(99, 102, 241, 1));
+      background: linear-gradient(145deg, 0rgb(229, 70, 70), rgb(99, 241, 187));
     }
   </style>
 </head>

@@ -7,7 +7,6 @@ use App\Http\Controllers\pages\Page2;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
-use App\Http\Controllers\auth\login;
 use App\Http\Controllers\pages\Main;
 
 // Main Page Route

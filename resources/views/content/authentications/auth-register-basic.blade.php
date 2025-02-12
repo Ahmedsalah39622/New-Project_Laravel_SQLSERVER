@@ -17,7 +17,7 @@ $configData = Helper::appClasses();
 @section('content')
 <div class="authentication-wrapper authentication-cover">
   <!-- Logo -->
-  <a href="https://imageio.forbes.com/specials-images/imageserve/1172429075/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds" class="app-brand auth-cover-brand">
+  <a href="/" class="app-brand auth-cover-brand">
     <span class="app-brand-logo demo">@include('_partials.macros',['height'=>20,'withbg' => "fill: #fff;"])</span>
     <span class="app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
   </a>
@@ -62,6 +62,60 @@ $configData = Helper::appClasses();
               </span>
             @enderror
           </div>
+          <div class="mb-6">
+            <label for="age" class="form-label">Age</label>
+            <input type="number" class="form-control @error('age') is-invalid @enderror" id="age" name="age" placeholder="Enter your age" value="{{ old('age') }}" />
+            @error('age')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+          </div>
+          <div class="mb-6">
+            <label for="gender" class="form-label">Gender</label>
+            <select class="form-control @error('gender') is-invalid @enderror" id="gender" name="gender">
+              <option value="">Select Gender</option>
+              <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+              <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+              <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+            </select>
+            @error('gender')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+          </div>
+          <div class="mb-6">
+            <label for="blood_type" class="form-label">Blood Type</label>
+            <select class="form-control @error('blood_type') is-invalid @enderror" id="blood_type" name="blood_type">
+              <option value="">Select Blood Type</option>
+              <option value="A+" {{ old('blood_type') == 'A+' ? 'selected' : '' }}>A+</option>
+              <option value="A-" {{ old('blood_type') == 'A-' ? 'selected' : '' }}>A-</option>
+              <option value="B+" {{ old('blood_type') == 'B+' ? 'selected' : '' }}>B+</option>
+              <option value="B-" {{ old('blood_type') == 'B-' ? 'selected' : '' }}>B-</option>
+              <option value="AB+" {{ old('blood_type') == 'AB+' ? 'selected' : '' }}>AB+</option>
+              <option value="AB-" {{ old('blood_type') == 'AB-' ? 'selected' : '' }}>AB-</option>
+              <option value="O+" {{ old('blood_type') == 'O+' ? 'selected' : '' }}>O+</option>
+              <option value="O-" {{ old('blood_type') == 'O-' ? 'selected' : '' }}>O-</option>
+            </select>
+            @error('blood_type')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+          </div>
+          <div class="mb-6">
+            <label for="insurance_provider" class="form-label">Insurance Provider</label>
+            <input type="text" class="form-control @error('insurance_provider') is-invalid @enderror"
+                   id="insurance_provider" name="insurance_provider" placeholder="Medicare"
+                   value="{{ old('insurance_provider') }}" />
+            @error('insurance_provider')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+        </div>
+
           <div class="mb-6 form-password-toggle">
             <label class="form-label" for="password">Password</label>
             <div class="input-group input-group-merge @error('password') is-invalid @enderror">

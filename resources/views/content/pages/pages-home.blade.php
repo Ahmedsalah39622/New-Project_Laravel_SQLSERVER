@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Cards basic - UI elements')
+@section('title', 'Patient Dashboard')
 
 @section('vendor-script')
 @vite('resources/assets/vendor/libs/masonry/masonry.js')
@@ -11,13 +11,13 @@
 <div class="row mb-12 g-6">
   <div class="col-md-6 col-lg-4">
     <div class="card h-100">
-      <img class="card-img-top" src="{{asset('assets/img/elements/2.jpg')}}" alt="Card image cap" />
+      <img class="card-img-top" src="{{url('https://th.bing.com/th/id/OIP.B1TorMhyNFXBDUW-1A87qQHaE8?rs=1&pid=ImgDetMain')}}" alt="Card image" />
       <div class="card-body">
         <h5 class="card-title">Card title</h5>
         <p class="card-text">
           Some quick example text to build on the card title and make up the bulk of the card's content.
         </p>
-        <a href="javascript:void(0)" class="btn btn-outline-primary">Go somewhere</a>
+        <a href="javascript:void(0)" class="btn btn-outline-primary">Make Appoinment</a>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@
 </div>
 <!-- Examples -->
 
-<!-- Content types -->
+<!-- Content types
 <h5 class="pb-1 mb-6">Content types</h5>
 
 <div class="row mb-12 g-6">
@@ -171,7 +171,142 @@
     </div>
   </div>
 </div>
-<!--/ Content types -->
+/ Content types -->
+<div class="col-md">
+  <div class="card shadow-none bg-success-">
+    <div class="card-body text-success">
+
+      <h5 class="card-title text-success">Success card title</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Client</th>
+              <th>Users</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><i class="ti ti-brand-angular ti-md text-danger me-3"></i> <span class="fw-medium">Angular Project</span></td>
+              <td>Albert Cook</td>
+              <td>
+                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Lilian Fuller">
+                    <img src="assets/img/avatars/5.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Sophia Wilkerson">
+                    <img src="assets/img/avatars/6.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Christina Parker">
+                    <img src="assets/img/avatars/7.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                </ul>
+              </td>
+              <td><span class="badge bg-label-primary me-1">Active</span></td>
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-pencil me-1"></i>Edit</a>
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-trash me-1"></i>Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="ti ti-brand-react-native ti-md text-info me-3"></i> <span class="fw-medium">React Project</span></td>
+              <td>Barry Hunter</td>
+              <td>
+                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Lilian Fuller">
+                    <img src="assets/img/avatars/5.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Sophia Wilkerson">
+                    <img src="assets/img/avatars/6.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Christina Parker">
+                    <img src="assets/img/avatars/7.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                </ul>
+              </td>
+              <td><span class="badge bg-label-success me-1">Act</span></td>
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-pencil me-1"></i>Edit</a>
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-trash me-1"></i>Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="ti ti-brand-vue ti-md text-success me-3"></i> <span class="fw-medium">VueJs Project</span></td>
+              <td>Trevor Baker</td>
+              <td>
+                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Lilian Fuller">
+                    <img src="assets/img/avatars/5.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Sophia Wilkerson">
+                    <img src="assets/img/avatars/6.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Christina Parker">
+                    <img src="assets/img/avatars/7.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                </ul>
+              </td>
+              <td><span class="badge bg-label-info me-1">Scheduled</span></td>
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-pencil me-1"></i>Edit</a>
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-trash me-1"></i>Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="ti ti-brand-bootstrap ti-md text-primary me-3"></i> <span class="fw-medium">Bootstrap Project</span></td>
+              <td>Jerry Milton</td>
+              <td>
+                <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Lilian Fuller">
+                    <img src="assets/img/avatars/5.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Sophia Wilkerson">
+                    <img src="assets/img/avatars/6.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                  <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Christina Parker">
+                    <img src="assets/img/avatars/7.png" alt="Avatar" class="rounded-circle">
+                  </li>
+                </ul>
+              </td>
+              <td><span class="badge bg-label-warning me-1">Pending</span></td>
+              <td>
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-pencil me-1"></i>Edit</a>
+                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-trash me-1"></i>Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="card-text">
+        Some quick example text to build on the card title and make up the bulk of the card's content.
+      </p>
+    </div>
+  </div>
+</div>
+
 
 <!-- Text alignment -->
 <h5 class="pb-1 mb-6">Text alignment</h5>
