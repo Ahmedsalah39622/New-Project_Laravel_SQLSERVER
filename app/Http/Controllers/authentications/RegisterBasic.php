@@ -19,50 +19,35 @@ class RegisterBasic extends Controller
 
     // Handle registration form submission
     public function register(Request $request)
-    {
-        // Validate the request data
-        $validator = $this->validator($request->all());
+{
+    // Validate the request
+    $validator = $this->validator($request->all());
 
-        // If validation fails, redirect back with errors
-        if ($validator->fails()) {
-            return redirect()->back()
-                             ->withErrors($validator)
-                             ->withInput();
-        }
-
-        // Create the user
-        $user = $this->create($request->all());
-
-        // Check if patient exists for the user and update or insert accordingly
-        $patient = Patient::where('ID', $user->id)->first(); // Find existing patient by user ID
-
-        if ($patient) {
-            // If patient exists, update their information
-            $patient->update([
-                'Name' => $request->input('name'),
-                'Age' => $request->input('age'),
-                'Gender' => $request->input('gender'),
-                'Blood_Type' => $request->input('blood_type'),
-                'insurance_provider' => $request->input('insurance_provider'), // If provided
-            ]);
-        } else {
-            // If no patient record exists, create a new patient record
-            Patient::create([
-                'ID' => $user->id,
-                'Name' => $request->input('name'),
-                'Age' => $request->input('age'),
-                'Gender' => $request->input('gender'),
-                'Blood_Type' => $request->input('blood_type'),
-                'insurance_provider' => $request->input('insurance_provider'), // If provided
-            ]);
-        }
-
-        // Optionally, log the user in after registration
-        auth()->guard('web')->login($user);
-
-        // Redirect to a specific route after successful registration
-        return redirect()->route('/home')->with('success', 'Registration successful!');
+    if ($validator->fails()) {
+        return redirect()->back()
+                         ->withErrors($validator)
+                         ->withInput();
     }
+
+    // Create the user first
+    $user = $this->create($request->all());
+
+    // Insert patient data using Eloquent
+    Patient::create([
+        'user_id' => $user->id,  // Associate patient with the user ID
+        'name' => $request->input('name'),
+        'email' => $request->input('email'),
+        'age' => $request->input('age'),
+        'gender' => $request->input('gender'),
+        'blood_type' => $request->input('blood_type'),
+        'insurance_provider' => $request->input('insurance_provider'), // Optional
+    ]);
+
+    // Log the user in
+    auth()->guard('web')->login($user);
+
+    return redirect()->route('home')->with('success', 'Registration successful!');
+}
 
     // Validation rules
     protected function validator(array $data)

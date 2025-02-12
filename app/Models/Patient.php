@@ -9,17 +9,15 @@ class Patient extends Model
 {
     use HasFactory;
 
-    // Define the table associated with the model
-    protected $table = 'patients';
+    protected $table = 'patient'; // Ensure it matches your database table name
 
-    // Define which fields can be mass-assigned
     protected $fillable = [
-        'user_id', // Foreign key linking the user
+        'user_id',
         'name',
         'email',
         'age',
         'gender',
         'blood_type',
-        'insurance_provider',
+        'insurance_provider'
     ];
 }

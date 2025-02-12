@@ -92,8 +92,11 @@ $configData = Helper::appClasses();
         <p class="text-center">
           <span>New on our platform?</span>
 
-          <a href="{{ url('/auth/register-basic') }}" class="text-gray-300 hover:text-white">Create Your Account</a>
-
+          @if (Route::has('auth-register-basic'))
+            <a href="{{ route('auth-register-basic') }}">
+              <span>Create an account</span>
+            </a>
+          @endif
         </p>
 
         <div class="divider my-6">

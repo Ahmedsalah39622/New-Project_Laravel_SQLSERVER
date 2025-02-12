@@ -9,6 +9,8 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\pages\Main;
 
+// Authentication Routes
+
 // Main Page Route
 Route::get('/', [Main::class, 'index'])->name('pages-lifeline');
 
@@ -20,7 +22,7 @@ Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
 
 // authentication
-Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('login');
+Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
 
 Route::middleware([
@@ -29,6 +31,6 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('/');
+        return view('content.pages.pages-home');
     })->name('dashboard');
 });
