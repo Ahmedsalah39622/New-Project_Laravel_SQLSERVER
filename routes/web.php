@@ -8,11 +8,13 @@ use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\pages\Main;
+ use App\Http\Controllers\pages\Appointment;
+ use App\Http\Controllers\ChatbotController;
 
 // Authentication Routes
 
 // Main Page Route
-Route::get('/', [Main::class, 'index'])->name('pages-lifeline');
+Route::get('/', [Main::class, 'index'])->name('pages-home');
 
 Route::get('/home', [HomePage::class, 'index'])->name('pages-home');
 Route::get('/page-2', [Page2::class, 'index'])->name('pages-page-2');
@@ -29,6 +31,7 @@ Route::get('/account/settings', function () {
 })->name('pages.account.settings.account');
 //account
 //Route::get('/user/profile', [MiscError::class, 'index'])->name('pages-account-settings-account');
+//////////////////////////////patient
 
 Route::middleware([
     'auth:sanctum',
@@ -39,3 +42,12 @@ Route::middleware([
         return view('content.pages.pages-home');
     })->name('dashboard');
 });
+//appointment:
+use App\Http\Controllers\AppointmentController;
+
+Route::get('/appointments/create', [Appointment::class, 'create'])->name('appointments.create');
+Route::get('/appointment', [Appointment::class, 'index'])->name('Appointment');
+
+//chatbot
+Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
+

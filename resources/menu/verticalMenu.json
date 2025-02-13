@@ -1,17 +1,18 @@
 {
   "menu": [
     {
-      "url": "/",
+      "url": "/home",
       "name": "Home",
       "icon": "menu-icon tf-icons ti ti-smart-home",
       "slug": "pages-home"
     },
     {
-      "url": "page-2",
+      "url": "/appointment",
       "icon": "menu-icon tf-icons ti ti-file",
-      "name": "Page 2",
-      "slug": "pages-page-2"
+      "name": "Appointment",
+      "slug": "Appointment"
     },
+
     {
       "url": "pages/misc-error",
       "name": "Error",
