@@ -17,6 +17,7 @@ $configData = Helper::appClasses();
 @section('content')
 <div class="authentication-wrapper authentication-cover">
   <!-- Logo -->
+
   <a href="/" class="app-brand auth-cover-brand">
     <span class="app-brand-logo demo">@include('_partials.macros',['height'=>20,'withbg' => "fill: #fff;"])</span>
     <span class="app-brand-text demo text-heading fw-bold">{{ config('variables.templateName') }}</span>
@@ -72,6 +73,15 @@ $configData = Helper::appClasses();
             @enderror
           </div>
           <div class="mb-6">
+            <label for="birthdate" class="form-label">Birthdate</label>
+            <input type="text" class="form-control @error('birthdate') is-invalid @enderror" id="birthdate" name="birthdate" value="{{ old('birthdate') }}" />
+            @error('birthdate')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+          </div>
+          <div class="mb-6">
             <label for="gender" class="form-label">Gender</label>
             <select class="form-control @error('gender') is-invalid @enderror" id="gender" name="gender">
               <option value="">Select Gender</option>
@@ -80,6 +90,15 @@ $configData = Helper::appClasses();
               <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
             </select>
             @error('gender')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+          </div>
+          <div class="mb-6">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Enter your phone number" value="{{ old('phone') }}" />
+            @error('phone')
               <span class="invalid-feedback" role="alert">
                 <span class="fw-medium">{{ $message }}</span>
               </span>
@@ -104,6 +123,17 @@ $configData = Helper::appClasses();
               </span>
             @enderror
           </div>
+
+          <div class="mb-6">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Enter your phone number" value="{{ old('phone') }}" />
+            @error('phone')
+              <span class="invalid-feedback" role="alert">
+                <span class="fw-medium">{{ $message }}</span>
+              </span>
+            @enderror
+            </br>
+
           <div class="mb-6">
             <label for="insurance_provider" class="form-label">Insurance Provider</label>
             <input type="text" class="form-control @error('insurance_provider') is-invalid @enderror"
@@ -153,4 +183,18 @@ $configData = Helper::appClasses();
     <!-- /Register -->
   </div>
 </div>
+<!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Include Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  flatpickr("#birthdate", {
+    dateFormat: "Y-m-d",
+    theme: "material_blue"
+  });
+});
+</script>
 @endsection

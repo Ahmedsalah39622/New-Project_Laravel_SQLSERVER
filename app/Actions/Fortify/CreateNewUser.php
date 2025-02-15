@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
+use App\Models\Patient;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -19,13 +20,38 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
+        // Define the validation rules
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-        ])->validate();
+            'phone' => ['required', 'string', 'max:15'], // Changed 'int' to 'string' for phone numbers
+            'username' => ['required', 'string', 'max:150'], // Changed 'varchar' to 'string'
+        ];
 
+        // Validate the input
+        $validator = Validator::make($input, $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            // Throw a validation exception with the errors
+            throw new \Illuminate\Validation\ValidationException($validator);
+        }
+
+        // Create the Patient record
+        Patient::create([
+            'username' => $input['username'],
+            'email' => $input['email'],
+            'age' => $input['age'] ?? null,
+            'birthdate' => $input['birthdate'] ?? null,
+            'gender' => $input['gender'] ?? null,
+            'blood_type' => $input['blood_type'] ?? null,
+            'phone' => $input['phone'],
+            'insurance_provider' => $input['insurance_provider'] ?? null,
+        ]);
+
+        // Create and return the User record
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],

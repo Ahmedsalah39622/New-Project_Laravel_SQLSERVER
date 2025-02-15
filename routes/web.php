@@ -10,6 +10,7 @@ use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\pages\Main;
  use App\Http\Controllers\pages\Appointment;
  use App\Http\Controllers\ChatbotController;
+  USE app\Http\Controllers\PatientController;
 
 // Authentication Routes
 
@@ -50,4 +51,6 @@ Route::get('/appointment', [Appointment::class, 'index'])->name('Appointment');
 
 //chatbot
 Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
+//STORE DATA
+Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
 
