@@ -11,7 +11,6 @@ use App\Http\Controllers\pages\Main;
  use App\Http\Controllers\pages\Appointment;
  use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
-
 // Authentication Routes
 
 // Main Page Route

@@ -7,6 +7,7 @@
 @endsection
 
 @section('content')
+<div></div>
 <div class="row mb-12 g-6">
   <div class="col-md-6 col-lg-4">
     <div class="card h-100">
