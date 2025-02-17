@@ -26,8 +26,6 @@ class CreateNewUser implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            'phone' => ['required', 'string', 'max:15'], // Changed 'int' to 'string' for phone numbers
-            'username' => ['required', 'string', 'max:150'], // Changed 'varchar' to 'string'
         ];
 
         // Validate the input
@@ -41,7 +39,7 @@ class CreateNewUser implements CreatesNewUsers
 
         // Create the Patient record
         Patient::create([
-            'username' => $input['username'],
+            'name' => $input['name'],
             'email' => $input['email'],
             'age' => $input['age'] ?? null,
             'birthdate' => $input['birthdate'] ?? null,

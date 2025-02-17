@@ -10,7 +10,7 @@ use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\pages\Main;
  use App\Http\Controllers\pages\Appointment;
  use App\Http\Controllers\ChatbotController;
-  USE app\Http\Controllers\PatientController;
+use app\Http\Controllers\PatientController;
 
 // Authentication Routes
 
@@ -44,8 +44,6 @@ Route::middleware([
     })->name('dashboard');
 });
 //appointment:
-use App\Http\Controllers\AppointmentController;
-
 Route::get('/appointments/create', [Appointment::class, 'create'])->name('appointments.create');
 Route::get('/appointment', [Appointment::class, 'index'])->name('Appointment');
 
