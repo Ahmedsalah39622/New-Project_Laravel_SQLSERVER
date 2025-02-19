@@ -10,12 +10,17 @@
 <div class="row mb-12 g-4">
     @php
         $clinics = [
-            ['name' => 'Cardiology', 'image' => 'https://via.placeholder.com/150', 'description' => 'Expert heart care and cardiovascular treatments.'],
-            ['name' => 'Dentistry', 'image' => 'https://via.placeholder.com/150', 'description' => 'Comprehensive dental services for all ages.'],
-            ['name' => 'Neurology', 'image' => 'https://via.placeholder.com/150', 'description' => 'Advanced brain and nervous system care.'],
-            ['name' => 'Orthopedics', 'image' => 'https://via.placeholder.com/150', 'description' => 'Bone and joint health specialists.'],
-            ['name' => 'Pediatrics', 'image' => 'https://via.placeholder.com/150', 'description' => 'Healthcare tailored for children and infants.'],
-            ['name' => 'Dermatology', 'image' => 'https://via.placeholder.com/150', 'description' => 'Skin, hair, and nail treatment solutions.'],
+            ['name' => 'Cardiology', 'image' => 'https://www.hawaiipacifichealth.org/media/3922/what-is-a-cardiologist-web.jpg', 'description' => 'Expert heart care and cardiovascular treatments.'],
+            ['name' => 'Dentistry', 'image' => 'https://th.bing.com/th/id/OIP.FDv4CjYHYwDIfKollMEGwwHaE8?rs=1&pid=ImgDetMain', 'description' => 'Comprehensive dental services for all ages.'],
+            ['name' => 'Neurology', 'image' => 'https://th.bing.com/th/id/OIP.G8GkePvKtmQ87SY1dmisIQHaE7?w=626&h=417&rs=1&pid=ImgDetMain', 'description' => 'Advanced brain and nervous system care.'],
+            ['name' => 'Orthopedics', 'image' => 'https://res.cloudinary.com/lowellgeneral/image/upload/c_fill,w_auto,g_faces,q_auto,dpr_auto,f_auto/orthopedic-center1_BFAFBDC0-FC11-11E9-92C400218628D024.jpg', 'description' => 'Bone and joint health specialists.'],
+            ['name' => 'Pediatrics', 'image' => 'https://th.bing.com/th/id/R.3ad22fe95e70c998264acaf1d471d668?rik=DohY9CkyOVlH2w&pid=ImgRaw&r=0', 'description' => 'Healthcare tailored for children and infants.'],
+            ['name' => 'Dermatology', 'image' => 'https://www.nccpa.net/wp-content/uploads/2022/03/shutterstock_625301408.jpg', 'description' => 'Skin, hair, and nail treatment solutions.'],
+            ['name' => 'Oncology ', 'image' => 'https://th.bing.com/th/id/OIP.ltfNltFBGV21XxzgZuDbsgHaE8?w=1000&h=667&rs=1&pid=ImgDetMain', 'description' => 'Focuses on the diagnosis and treatment of cancer.'],
+            ['name' => 'Ophthalmology ', 'image' => 'https://th.bing.com/th/id/R.3cb7a106f02a04e3dff40f61ee317329?rik=3HaGAdZB%2bEYJzw&pid=ImgRaw&r=0', 'description' => 'Deals with eye and vision care.'],
+            ['name' => 'Endocrinology ', 'image' => 'https://eunamed.com/wp-content/uploads/2021/02/portada-endocrino-scaled.jpg', 'description' => 'Focuses on hormonal and metabolic disorders'],
+            ['name' => 'Gastroenterology ', 'image' => 'https://gastroliversc.com.sg/wp-content/uploads/2022/09/gastro-home-page-image-2-3.jpg', 'description' => 'Specializes in digestive system disorders'],
+            ['name' => 'Urology ', 'image' => 'https://amarhospital.com/wp-content/uploads/2020/06/urology.jpg', 'description' => 'Deals with the urinary tract and male reproductive system.'],
         ];
     @endphp
 
