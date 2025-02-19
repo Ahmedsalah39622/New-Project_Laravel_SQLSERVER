@@ -11,6 +11,9 @@ use App\Http\Controllers\pages\Main;
  use App\Http\Controllers\pages\Appointment;
  use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
+use App\Http\Controllers\pages\Appointmenttime;
+
+
 // Authentication Routes
 
 // Main Page Route
@@ -49,5 +52,7 @@ Route::get('/appointment', [Appointment::class, 'index'])->name('Appointment');
 //chatbot
 Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
 //STORE DATA
-Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
+//Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
+Route::get('/Appointmenttime', [Appointmenttime::class, 'index'])->name('Appointmenttime');
+
 
