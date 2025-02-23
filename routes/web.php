@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Appointment as ControllersAppointment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
@@ -11,8 +12,8 @@ use App\Http\Controllers\pages\Main;
  use App\Http\Controllers\pages\Appointment;
  use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
-use App\Http\Controllers\Appointmenttime;
-
+//use App\Http\Controllers\Appointmenttime;
+use App\Http\Controllers\Doctorcon;
 
 // Authentication Routes
 
@@ -46,13 +47,16 @@ Route::middleware([
     })->name('dashboard');
 });
 //appointment:
-Route::get('/appointments/create', [Appointment::class, 'create'])->name('appointments.create');
-Route::get('/appointment', [Appointment::class, 'index'])->name('Appointment');
-
+Route::get('/appointment', [\App\Http\Controllers\AppointmentController::class, 'index']);
+Route::post('/appointment', [\App\Http\Controllers\AppointmentController::class, 'store']);
+Route::get('/doctors/{specialty}', [\App\Http\Controllers\AppointmentController::class, 'getDoctorsBySpecialty']);
+Route::get('/appointment/doctors/{specialty}', [\App\Http\Controllers\AppointmentController::class, 'getDoctorsBySpecialty']);
 //chatbot
 Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
 //STORE DATA
 //Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
-Route::get('/Appointmenttime', [Appointmenttime::class, 'index'])->name('Appointmenttime');
+//Route::get('/appointmenttime', [Appointmenttime::class, 'index'])->name('appointmenttime');
+
+
 
 
