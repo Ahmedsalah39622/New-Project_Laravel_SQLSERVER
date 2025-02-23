@@ -7,6 +7,7 @@
 @endsection
 
 @section('content')
+
 <!-- Clinic Cards Section -->
 <div class="row mb-12 g-6" id="clinic-cards">
   @foreach ([
@@ -44,17 +45,25 @@
   </div>
 </div>
 
-<!-- Calendar Section (Hidden by Default) -->
-<div class="row mb-12 g-6 d-none" id="calendar-section">
+<!-- Available Time Slots Section (Hidden by Default) -->
+<div class="row mb-12 g-6 d-none" id="time-slots-section">
   <div class="col-12">
-    <h3>Select a Date and Time</h3>
-    <div id="calendar"></div>
+    <h3>Available Time Slots</h3>
+    <table class="table table-bordered table-lg">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="time-slots-list">
+        <!-- Time slots will be dynamically inserted here -->
+      </tbody>
+    </table>
     <button class="btn btn-secondary mt-3" id="back-to-doctors">Back to Doctors</button>
   </div>
 </div>
-
-<!-- Appointment Booking Section -->
-
 @endsection
 
 @section('page-script')
@@ -62,10 +71,13 @@
   document.addEventListener('DOMContentLoaded', function () {
     const clinicCards = document.getElementById('clinic-cards');
     const doctorsSection = document.getElementById('doctors-section');
-    const calendarSection = document.getElementById('calendar-section');
+    const timeSlotsSection = document.getElementById('time-slots-section');
     const doctorsList = document.getElementById('doctors-list');
+    const timeSlotsList = document.getElementById('time-slots-list');
     const backToClinicsBtn = document.getElementById('back-to-clinics');
     const backToDoctorsBtn = document.getElementById('back-to-doctors');
+
+    let selectedDoctorId;
 
     // Handle clinic card click
     clinicCards.addEventListener('click', async (e) => {
@@ -104,24 +116,168 @@
     });
 
     // Handle doctor card click
-    doctorsList.addEventListener('click', (e) => {
+    doctorsList.addEventListener('click', async (e) => {
       if (e.target.classList.contains('choose-doctor')) {
-        const doctorId = e.target.closest('.doctor-card').dataset.doctorId;
+        selectedDoctorId = e.target.closest('.doctor-card').dataset.doctorId;
 
-        // Hide doctors section and show calendar section
+        // Fetch available time slots for the selected doctor
+        const response = await fetch(`/appointment/doctors/${selectedDoctorId}/time-slots`);
+        const timeSlots = await response.json();
+
+        // Hide doctors section and show time slots section
         doctorsSection.classList.add('d-none');
-        calendarSection.classList.remove('d-none');
+        timeSlotsSection.classList.remove('d-none');
 
-        // Initialize calendar (you can use a library like FullCalendar)
-        // Example: Initialize FullCalendar here
+        // Render time slots
+        timeSlotsList.innerHTML = timeSlots.map(slot => `
+          <tr>
+            <td>${slot.date}</td>
+            <td>${slot.start_time} - ${slot.end_time}</td>
+            <td>
+              <button class="btn btn-outline-primary book-slot" data-slot-id="${slot.id}">Book</button>
+            </td>
+          </tr>
+        `).join('');
       }
     });
 
     // Handle back to doctors button
     backToDoctorsBtn.addEventListener('click', () => {
-      calendarSection.classList.add('d-none');
+      timeSlotsSection.classList.add('d-none');
       doctorsSection.classList.remove('d-none');
+    });
+
+    // Handle booking a time slot
+    timeSlotsList.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('book-slot')) {
+        const slotId = e.target.dataset.slotId;
+        const slotRow = e.target.closest('tr');
+        const slotDate = slotRow.querySelector('td:nth-child(1)').textContent;
+        const slotTime = slotRow.querySelector('td:nth-child(2)').textContent;
+        const [startTime, endTime] = slotTime.split(' - ');
+
+        // Collect patient details using prompts
+        const patientName = prompt('Enter your name:');
+        const patientEmail = prompt('Enter your email:');
+        const patientPhone = prompt('Enter your phone number (optional):');
+
+        // Validate patient details
+        if (patientName && patientEmail) {
+          // Prepare the appointment data
+          const appointmentData = {
+            doctor_id: selectedDoctorId,
+            patient_name: patientName,
+            patient_email: patientEmail,
+            patient_phone: patientPhone || null,
+            appointment_date: slotDate,
+            start_time: startTime,
+            end_time: endTime,
+          };
+
+          try {
+            // Send the appointment data to the backend
+            const response = await fetch('/appointment/book', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+              },
+              body: JSON.stringify(appointmentData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Show success message
+              alert('Appointment booked successfully!');
+
+              // Mark the time slot as booked in the UI
+              slotRow.classList.add('booked');
+              e.target.disabled = true;
+              e.target.textContent = 'Booked';
+            } else {
+              // Show error message
+              alert('Failed to book appointment. Please try again.');
+            }
+          } catch (error) {
+            console.error('Error booking appointment:', error);
+            alert('An error occurred. Please try again.');
+          }
+        } else {
+          // Show validation error
+          alert('Name and email are required to book an appointment.');
+        }
+      }
     });
   });
 </script>
+
+
+@endsection
+
+@section('styles')
+<style>
+  /* Make the table larger and more accessible */
+  .table-lg {
+    font-size: 18px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-lg th,
+  .table-lg td {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .table-lg th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #495057;
+  }
+
+  .table-lg td {
+    background-color: #ffffff;
+    color: #495057;
+  }
+
+  .table-lg tbody tr:hover {
+    background-color: #e9ecef;
+  }
+
+  /* Button styling inside the table */
+  .table-lg .btn-outline-primary {
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .table-lg .btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  /* Make the table more visually appealing */
+  .table-lg td,
+  .table-lg th {
+    vertical-align: middle;
+  }
+
+  /* Responsive design to adjust the table size on smaller screens */
+  @media (max-width: 768px) {
+    .table-lg {
+      font-size: 16px;
+    }
+
+    .table-lg th,
+    .table-lg td {
+      padding: 12px;
+    }
+
+    .table-lg .btn-outline-primary {
+      font-size: 14px;
+      padding: 8px 15px;
+    }
+  }
+</style>
 @endsection
