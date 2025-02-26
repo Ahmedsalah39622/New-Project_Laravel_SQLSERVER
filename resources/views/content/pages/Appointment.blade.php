@@ -4,6 +4,8 @@
 
 @section('vendor-script')
 @vite('resources/assets/vendor/libs/masonry/masonry.js')
+@vite('resources/assets/vendor/libs/fullcalendar/fullcalendar.js')
+@vite('resources/assets/vendor/libs/fullcalendar/fullcalendar.css')
 @endsection
 
 @section('content')

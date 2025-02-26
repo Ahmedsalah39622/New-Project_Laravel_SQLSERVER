@@ -53,10 +53,9 @@ Route::get('/doctors/{specialty}', [\App\Http\Controllers\AppointmentController:
 Route::get('/appointment/doctors/{specialty}', [\App\Http\Controllers\AppointmentController::class, 'getDoctorsBySpecialty']);
 Route::get('/appointment/doctors/{doctorId}/time-slots', [\App\Http\Controllers\AppointmentController::class, 'getTimeSlots']);
 Route::post('/appointment/book', [\App\Http\Controllers\AppointmentController::class, 'store']);
-// In routes/web.php or routes/api.php
-Route::post('/appointment/store', [\App\Http\Controllers\AppointmentController::class, 'storeAppointment']);
-
+Route::get('/appointment/doctors/{doctorId}/time-slots', [\App\Http\Controllers\AppointmentController::class, 'getTimeSlots']);
 //chatbot
+Route::get('/home', [\App\Http\Controllers\AppointmentController::class, 'home'])->middleware('auth');
 //Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
 //STORE DATA
 //Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');

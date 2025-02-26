@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -15,9 +16,8 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        // Example of the specialties to be displayed on the page
+        // Example specialties to be displayed on the page
         $specialties = [
-            // Add your specialties array here
             'Cardiology',
             'Dermatology',
             'Neurology',
@@ -31,7 +31,7 @@ class AppointmentController extends Controller
      * Store the appointment details in the database.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -88,8 +88,10 @@ class AppointmentController extends Controller
      */
     public function getTimeSlots($doctorId)
     {
-        // Fetch available time slots for the selected doctor
-        // Replace this with actual logic to fetch time slots from your database
+        // Fetch the doctor
+        $doctor = Doctor::findOrFail($doctorId);
+
+        // Fetch available time slots (example logic)
         $timeSlots = [
             ['id' => 1, 'date' => '2023-10-25', 'start_time' => '09:00', 'end_time' => '10:00'],
             ['id' => 2, 'date' => '2023-10-25', 'start_time' => '10:00', 'end_time' => '11:00'],
@@ -97,5 +99,25 @@ class AppointmentController extends Controller
         ];
 
         return response()->json($timeSlots);
+    }
+
+    /**
+     * Show the patient's home page with their appointments.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function home()
+    {
+        // Fetch the authenticated patient's email
+        $patientEmail = Auth::user()->email;
+
+        // Fetch the patient's appointments with the associated doctor
+        $appointments = Appointment::where('patient_email', $patientEmail)
+                                   ->with('doctor') // Eager load the doctor relationship
+                                   ->orderBy('appointment_date', 'desc')
+                                   ->get();
+
+        // Pass the appointments to the view
+        return view('content.pages.pages-home', compact('appointments'));
     }
 }
