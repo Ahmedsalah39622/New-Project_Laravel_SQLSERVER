@@ -9,6 +9,9 @@ use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\pages\Main;
+use App\Http\Controllers\CalendarController;
+
+
  use App\Http\Controllers\pages\Appointment;
  use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
@@ -60,6 +63,9 @@ Route::get('/home', [\App\Http\Controllers\AppointmentController::class, 'home']
 //STORE DATA
 //Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
 //Route::get('/appointmenttime', [Appointmenttime::class, 'index'])->name('appointmenttime');
+// calender
+Route::get('/calender', [CalendarController::class, 'index'])->name('app-calendar');
+Route::post('/check-availability', [\App\Http\Controllers\AppointmentController::class, 'checkAvailability']);
 
 
 

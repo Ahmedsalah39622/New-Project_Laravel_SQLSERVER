@@ -37,9 +37,10 @@
     33 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     34 => 'Spatie\\Permission\\PermissionServiceProvider',
     35 => 'App\\Providers\\AppServiceProvider',
-    36 => 'App\\Providers\\FortifyServiceProvider',
-    37 => 'App\\Providers\\JetstreamServiceProvider',
-    38 => 'App\\Providers\\MenuServiceProvider',
+    36 => 'App\\Providers\\RouteServiceProvider',
+    37 => 'App\\Providers\\FortifyServiceProvider',
+    38 => 'App\\Providers\\JetstreamServiceProvider',
+    39 => 'App\\Providers\\MenuServiceProvider',
   ),
   'eager' => 
   array (
@@ -64,9 +65,10 @@
     18 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     19 => 'Spatie\\Permission\\PermissionServiceProvider',
     20 => 'App\\Providers\\AppServiceProvider',
-    21 => 'App\\Providers\\FortifyServiceProvider',
-    22 => 'App\\Providers\\JetstreamServiceProvider',
-    23 => 'App\\Providers\\MenuServiceProvider',
+    21 => 'App\\Providers\\RouteServiceProvider',
+    22 => 'App\\Providers\\FortifyServiceProvider',
+    23 => 'App\\Providers\\JetstreamServiceProvider',
+    24 => 'App\\Providers\\MenuServiceProvider',
   ),
   'deferred' => 
   array (

@@ -55,6 +55,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Init event Offcanvas
     const bsAddEventSidebar = new bootstrap.Offcanvas(addEventSidebar);
+    $(document).ready(function () {
+      $('#appointmentDoctor, #appointmentDate, #appointmentTime').on('change', function () {
+          checkDoctorAvailability();
+      });
+
+      function checkDoctorAvailability() {
+          let doctor = $('#appointmentDoctor').val();
+          let date = $('#appointmentDate').val();
+          let time = $('#appointmentTime').val();
+
+          if (doctor && date && time) {
+              $.ajax({
+                  url: '/check-availability',
+                  method: 'POST',
+                  data: {
+                      doctor: doctor,
+                      date: date,
+                      time: time,
+                      _token: $('meta[name="csrf-token"]').attr('content')
+                  },
+                  success: function (response) {
+                      if (!response.available) {
+                          alert('عذرًا، الطبيب غير متاح في هذا الوقت. يرجى اختيار وقت آخر.');
+                          $('#appointmentTime').val('');
+                      }
+                  }
+              });
+          }
+      }
+  });
 
     //! TODO: Update Event label and guest code to JS once select removes jQuery dependency
     // Event Label (select2)
@@ -282,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // For new event set offcanvas title text: Add Event
         if (offcanvasTitle) {
-          offcanvasTitle.innerHTML = 'Add Event';
+          offcanvasTitle.innerHTML = 'Book Appointment';
         }
         btnSubmit.innerHTML = 'Add';
         btnSubmit.classList.remove('btn-update-event');

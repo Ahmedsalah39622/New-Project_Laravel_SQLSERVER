@@ -6,6 +6,8 @@
 @vite('resources/assets/vendor/libs/masonry/masonry.js')
 @vite('resources/assets/vendor/libs/fullcalendar/fullcalendar.js')
 @vite('resources/assets/vendor/libs/fullcalendar/fullcalendar.css')
+@vite('resources/assets/vendor/libs/flatpickr/flatpickr.js')
+@vite('resources/assets/vendor/libs/flatpickr/flatpickr.css')
 @endsection
 
 @section('content')
@@ -47,25 +49,48 @@
   </div>
 </div>
 
-<!-- Available Time Slots Section (Hidden by Default) -->
-<div class="row mb-12 g-6 d-none" id="time-slots-section">
-  <div class="col-12">
-    <h3>Available Time Slots</h3>
-    <table class="table table-bordered table-lg">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Time Slot</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="time-slots-list">
-        <!-- Time slots will be dynamically inserted here -->
-      </tbody>
-    </table>
-    <button class="btn btn-secondary mt-3" id="back-to-doctors">Back to Doctors</button>
+<!-- Popup Modal for Appointment Scheduling -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="appointmentModalLabel">Schedule Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="appointmentForm">
+          <div class="mb-3">
+            <label for="patientName" class="form-label">Patient Name</label>
+            <input type="text" class="form-control" id="patientName" required>
+          </div>
+          <div class="mb-3">
+            <label for="patientEmail" class="form-label">Patient Email</label>
+            <input type="email" class="form-control" id="patientEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="patientPhone" class="form-label">Patient Phone (Optional)</label>
+            <input type="tel" class="form-control" id="patientPhone">
+          </div>
+          <div class="mb-3">
+            <label for="appointmentDate" class="form-label">Appointment Date</label>
+            <input type="date" class="form-control" id="appointmentDate" min="{{ date('Y-m-d') }}" required>
+          </div>
+          <div class="mb-3 d-none" id="timeSelection">
+            <label class="form-label">Select Time Slot</label>
+            <div class="row" id="timeSlots">
+              <!-- Time slots will be dynamically inserted here -->
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="confirmAppointment">Confirm Appointment</button>
+      </div>
+    </div>
   </div>
 </div>
+
 @endsection
 
 @section('page-script')
@@ -73,13 +98,66 @@
   document.addEventListener('DOMContentLoaded', function () {
     const clinicCards = document.getElementById('clinic-cards');
     const doctorsSection = document.getElementById('doctors-section');
-    const timeSlotsSection = document.getElementById('time-slots-section');
     const doctorsList = document.getElementById('doctors-list');
-    const timeSlotsList = document.getElementById('time-slots-list');
     const backToClinicsBtn = document.getElementById('back-to-clinics');
-    const backToDoctorsBtn = document.getElementById('back-to-doctors');
+    const appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'), {
+      backdrop: true,
+      keyboard: true,
+      focus: true
+    });
+    const appointmentDateInput = document.getElementById('appointmentDate');
+    const timeSelection = document.getElementById('timeSelection');
+    const timeSlots = document.getElementById('timeSlots');
+    const confirmAppointmentBtn = document.getElementById('confirmAppointment');
 
     let selectedDoctorId;
+    let selectedDate;
+    let selectedTime;
+
+    // Handle date input change
+    appointmentDateInput.addEventListener('change', function () {
+      selectedDate = this.value;
+      if (selectedDate) {
+        generateTimeSlots();
+        timeSelection.classList.remove('d-none');
+      } else {
+        timeSelection.classList.add('d-none');
+      }
+    });
+
+    // Generate time slots from 9 AM to 5 PM in 30-minute intervals
+    function generateTimeSlots() {
+      const startTime = 9; // 9 AM
+      const endTime = 17; // 5 PM
+      const interval = 30; // 30 minutes
+      timeSlots.innerHTML = ''; // Clear previous slots
+
+      for (let hour = startTime; hour < endTime; hour++) {
+        for (let minute = 0; minute < 60; minute += interval) {
+          const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+          const timeSlot = document.createElement('div');
+          timeSlot.className = 'col-md-3 mb-3';
+          timeSlot.innerHTML = `
+            <button class="btn btn-outline-primary w-100 time-slot" data-time="${time}">${time}</button>
+          `;
+          timeSlots.appendChild(timeSlot);
+        }
+      }
+
+      // Handle time slot selection
+      timeSlots.querySelectorAll('.time-slot').forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault(); // Prevent form submission
+          // Remove selected class from all time slots
+          document.querySelectorAll('.time-slot').forEach(btn => {
+            btn.classList.remove('selected');
+          });
+          // Add selected class to this time slot
+          this.classList.add('selected');
+          selectedTime = this.dataset.time;
+        });
+      });
+    }
 
     // Handle clinic card click
     clinicCards.addEventListener('click', async (e) => {
@@ -122,164 +200,111 @@
       if (e.target.classList.contains('choose-doctor')) {
         selectedDoctorId = e.target.closest('.doctor-card').dataset.doctorId;
 
-        // Fetch available time slots for the selected doctor
-        const response = await fetch(`/appointment/doctors/${selectedDoctorId}/time-slots`);
-        const timeSlots = await response.json();
+        // Reset the modal state
+        timeSelection.classList.add('d-none');
+        appointmentDateInput.value = '';
+        selectedDate = null;
+        selectedTime = null;
 
-        // Hide doctors section and show time slots section
-        doctorsSection.classList.add('d-none');
-        timeSlotsSection.classList.remove('d-none');
-
-        // Render time slots
-        timeSlotsList.innerHTML = timeSlots.map(slot => `
-          <tr>
-            <td>${slot.date}</td>
-            <td>${slot.start_time} - ${slot.end_time}</td>
-            <td>
-              <button class="btn btn-outline-primary book-slot" data-slot-id="${slot.id}">Book</button>
-            </td>
-          </tr>
-        `).join('');
+        // Show the appointment modal
+        appointmentModal.show();
       }
     });
 
-    // Handle back to doctors button
-    backToDoctorsBtn.addEventListener('click', () => {
-      timeSlotsSection.classList.add('d-none');
-      doctorsSection.classList.remove('d-none');
-    });
+    // Handle confirm appointment button
+    confirmAppointmentBtn.addEventListener('click', async () => {
+      const patientName = document.getElementById('patientName').value;
+      const patientEmail = document.getElementById('patientEmail').value;
+      const patientPhone = document.getElementById('patientPhone').value;
 
-    // Handle booking a time slot
-    timeSlotsList.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('book-slot')) {
-        const slotId = e.target.dataset.slotId;
-        const slotRow = e.target.closest('tr');
-        const slotDate = slotRow.querySelector('td:nth-child(1)').textContent;
-        const slotTime = slotRow.querySelector('td:nth-child(2)').textContent;
-        const [startTime, endTime] = slotTime.split(' - ');
+      // Validate required fields
+      if (!patientName || !patientEmail || !selectedDate || !selectedTime) {
+        alert('Please fill in all required fields and select a valid date and time.');
+        return;
+      }
 
-        // Collect patient details using prompts
-        const patientName = prompt('Enter your name:');
-        const patientEmail = prompt('Enter your email:');
-        const patientPhone = prompt('Enter your phone number (optional):');
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(patientEmail)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
 
-        // Validate patient details
-        if (patientName && patientEmail) {
-          // Prepare the appointment data
-          const appointmentData = {
-            doctor_id: selectedDoctorId,
-            patient_name: patientName,
-            patient_email: patientEmail,
-            patient_phone: patientPhone || null,
-            appointment_date: slotDate,
-            start_time: startTime,
-            end_time: endTime,
-          };
+      // Prepare the appointment data
+      const appointmentData = {
+        doctor_id: selectedDoctorId,
+        patient_name: patientName,
+        patient_email: patientEmail,
+        patient_phone: patientPhone || null,
+        appointment_date: selectedDate,
+        start_time: selectedTime,
+        end_time: '', // You can calculate this based on your requirements
+      };
 
-          try {
-            // Send the appointment data to the backend
-            const response = await fetch('/appointment/book', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-              },
-              body: JSON.stringify(appointmentData),
-            });
+      try {
+        // Send the appointment data to the backend
+        const response = await fetch('/appointment/book', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          },
+          body: JSON.stringify(appointmentData),
+        });
 
-            const result = await response.json();
+        const result = await response.json();
 
-            if (response.ok) {
-              // Show success message
-              alert('Appointment booked successfully!');
-
-              // Mark the time slot as booked in the UI
-              slotRow.classList.add('booked');
-              e.target.disabled = true;
-              e.target.textContent = 'Booked';
-            } else {
-              // Show error message
-              alert('Failed to book appointment. Please try again.');
-            }
-          } catch (error) {
-            console.error('Error booking appointment:', error);
-            alert('An error occurred. Please try again.');
-          }
+        if (response.ok) {
+          // Show success message
+          alert('Appointment booked successfully!');
+          appointmentModal.hide();
         } else {
-          // Show validation error
-          alert('Name and email are required to book an appointment.');
+          // Show error message
+          alert('Failed to book appointment. Please try again.');
         }
+      } catch (error) {
+        console.error('Error booking appointment:', error);
+        alert('An error occurred. Please try again.');
       }
     });
   });
 </script>
-
-
 @endsection
 
 @section('styles')
 <style>
-  /* Make the table larger and more accessible */
-  .table-lg {
-    font-size: 18px;
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .table-lg th,
-  .table-lg td {
-    padding: 15px;
+  /* Custom styles for time slots */
+  #timeSlots .time-slot {
+    padding: 10px;
+    font-size: 14px;
     text-align: center;
   }
 
-  .table-lg th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    color: #495057;
-  }
-
-  .table-lg td {
-    background-color: #ffffff;
-    color: #495057;
-  }
-
-  .table-lg tbody tr:hover {
-    background-color: #e9ecef;
-  }
-
-  /* Button styling inside the table */
-  .table-lg .btn-outline-primary {
-    padding: 10px 20px;
-    font-size: 16px;
-    width: 100%;
-  }
-
-  .table-lg .btn-outline-primary:hover {
+  #timeSlots .time-slot:hover {
     background-color: #007bff;
     color: #fff;
   }
 
-  /* Make the table more visually appealing */
-  .table-lg td,
-  .table-lg th {
-    vertical-align: middle;
+  #timeSlots .time-slot.selected {
+    background-color: #007bff;
+    color: #fff;
   }
 
-  /* Responsive design to adjust the table size on smaller screens */
-  @media (max-width: 768px) {
-    .table-lg {
-      font-size: 16px;
-    }
+  /* Modal centering styles */
+  .modal-dialog {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+  }
 
-    .table-lg th,
-    .table-lg td {
-      padding: 12px;
-    }
+  .modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .table-lg .btn-outline-primary {
-      font-size: 14px;
-      padding: 8px 15px;
-    }
+  .modal-content {
+    margin: 0 auto;
   }
 </style>
 @endsection

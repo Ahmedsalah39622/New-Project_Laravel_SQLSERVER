@@ -3,11 +3,32 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\AppointmentController;
 
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+Route::get('/test', function () {
+  return response()->json(['message' => 'API is working!']);
+});
 
+Route::get('/appointments', [AppointmentController::class, 'index']);
 Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
+//Route::get('/appointments', [AppointmentController::class, 'getAppointments']);
+
+
+
+
+Route::get('/appointments', [AppointmentController::class, 'getAppointments']);
+
+// حجز موعد جديد
+Route::post('/appointments', [AppointmentController::class, 'store']);
+
+// جلب المواعيد المتاحة لطبيب معين
+Route::get('/appointments/doctors/{doctorId}/time-slots', [AppointmentController::class, 'getTimeSlots']);
+
+// جلب الأطباء حسب التخصص
+Route::get('/appointments/doctors/{specialty}', [AppointmentController::class, 'getDoctorsBySpecialty']);
+
 
