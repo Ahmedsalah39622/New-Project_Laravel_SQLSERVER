@@ -8,6 +8,8 @@ class Appointment extends Model
 {
     use HasFactory;
 
+    protected $table = 'appointments'; // Ensure it matches your table name
+
     protected $fillable = [
         'doctor_id',
         'patient_name',

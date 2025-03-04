@@ -10,21 +10,22 @@ return new class extends Migration
      * Run the migrations.
      */
    // CreateAppointmentsTable.php migration example
-public function up()
-{
-    Schema::create('appointments', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
-        $table->string('patient_name');
-        $table->string('patient_email');
-        $table->string('patient_phone')->nullable();
-        $table->date('appointment_date');
-        $table->time('start_time');
-        $table->time('end_time');
-        $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
-        $table->timestamps();
-    });
-}
+   public function up()
+   {
+       Schema::create('appointments', function (Blueprint $table) {
+           $table->id();
+           $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
+           $table->string('patient_name');
+           $table->string('patient_email');
+           $table->string('patient_phone')->nullable();
+           $table->date('appointment_date');
+           $table->time('start_time');
+           $table->time('end_time');
+           $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+           $table->timestamps();
+       });
+   }
+
 
 
     /**

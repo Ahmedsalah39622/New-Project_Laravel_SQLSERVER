@@ -38,10 +38,10 @@ class AppointmentController extends Controller
             'doctor_id' => 'required|integer|exists:doctors,id',
             'patient_name' => 'required|string|max:255',
             'patient_email' => 'required|email|max:255',
+          //  'user_id' => 'required|exists:users,id',
             'patient_phone' => 'nullable|string|max:20',
             'appointment_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
         $appointment = Appointment::create([
@@ -51,7 +51,6 @@ class AppointmentController extends Controller
             'patient_phone' => $validated['patient_phone'],
             'appointment_date' => $validated['appointment_date'],
             'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
             'status' => 'pending',
         ]);
 

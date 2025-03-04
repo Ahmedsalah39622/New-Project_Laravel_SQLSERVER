@@ -61,15 +61,15 @@
         <form id="appointmentForm">
           <div class="mb-3">
             <label for="patientName" class="form-label">Patient Name</label>
-            <input type="text" class="form-control" id="patientName" required>
+            <input type="text" class="form-control" id="patientName" value="{{ auth()->user()->name }}" readonly>
           </div>
           <div class="mb-3">
             <label for="patientEmail" class="form-label">Patient Email</label>
-            <input type="email" class="form-control" id="patientEmail" required>
+            <input type="email" class="form-control" id="patientEmail" value="{{ auth()->user()->email }}" readonly>
           </div>
           <div class="mb-3">
             <label for="patientPhone" class="form-label">Patient Phone (Optional)</label>
-            <input type="tel" class="form-control" id="patientPhone">
+            <input type="tel" class="form-control" id="patientPhone" value="{{ auth()->user()->phone }}" >
           </div>
           <div class="mb-3">
             <label for="appointmentDate" class="form-label">Appointment Date</label>
@@ -238,7 +238,7 @@
         patient_phone: patientPhone || null,
         appointment_date: selectedDate,
         start_time: selectedTime,
-        end_time: '', // You can calculate this based on your requirements
+       // end_time: selectedTime ? calculateEndTime(selectedTime) : "", // You can calculate this based on your requirements
       };
 
       try {
@@ -273,6 +273,32 @@
 
 @section('styles')
 <style>
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust spacing between cards */
+    justify-content: space-between;
+  }
+
+  .card {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: white;
+    flex: 1 1 calc(33% - 20px); /* Adjust width based on layout */
+    margin-bottom: 20px; /* Add margin to the bottom of each card */
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px; /* Negative margin to counteract the padding */
+  }
+
+  .col-md-6, .col-lg-4 {
+    padding: 10px; /* Add padding to each column */
+  }
+
   /* Custom styles for time slots */
   #timeSlots .time-slot {
     padding: 10px;

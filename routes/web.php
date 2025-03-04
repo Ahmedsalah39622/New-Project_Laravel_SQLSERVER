@@ -66,6 +66,9 @@ Route::get('/home', [\App\Http\Controllers\AppointmentController::class, 'home']
 // calender
 Route::get('/calender', [CalendarController::class, 'index'])->name('app-calendar');
 Route::post('/check-availability', [\App\Http\Controllers\AppointmentController::class, 'checkAvailability']);
+use App\Http\Controllers\AppointmentController;
+
+Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])->name('appointments.store');
 
 
 
