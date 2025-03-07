@@ -7,7 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Auth;
 class RouteServiceProvider extends ServiceProvider
 {
     public function boot(): void
@@ -27,4 +27,12 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
     }
+    public function redirectTo($request)
+    {
+        if (Auth::check()) {
+            return optional(Auth::user())->hasRole('doctor') ? route('doctor.dashboard') : route('patient.dashboard');
+        }
+        return route('login');
+    }
+
 }

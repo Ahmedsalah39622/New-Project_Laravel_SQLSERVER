@@ -19,6 +19,7 @@ class Appointment extends Model
         'start_time',
         'end_time',
         'status',
+        'paid_status',
     ];
 
     // Define the relationship with the Doctor model
@@ -26,4 +27,5 @@ class Appointment extends Model
     {
         return $this->belongsTo(Doctor::class);
     }
+
 }

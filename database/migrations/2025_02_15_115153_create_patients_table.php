@@ -18,7 +18,6 @@ class CreatePatientsTable extends Migration
       $table->string('blood_type')->nullable();
       $table->string('phone')->nullable();
       $table->string('insurance_provider')->nullable();
-      $table->string('password'); // Add password field
       $table->timestamps();
   });
   }

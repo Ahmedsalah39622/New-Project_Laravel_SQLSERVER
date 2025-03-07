@@ -4,6 +4,7 @@
 @php
 $configData = Helper::appClasses();
 @endphp
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @isset($configData["layout"])
 @include((( $configData["layout"] === 'horizontal') ? 'layouts.horizontalLayout' :

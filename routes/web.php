@@ -10,9 +10,16 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\pages\Main;
 use App\Http\Controllers\CalendarController;
-
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\pages\payment;
+use App\Http\Controllers\DoctorDashboardController;
+use App\Http\Controllers\PatientDashboardController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
 
  use App\Http\Controllers\pages\Appointment;
+ use Spatie\Permission\Middleware\RoleMiddleware;
+
  use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
 //use App\Http\Controllers\Appointmenttime;
@@ -25,6 +32,7 @@ Route::get('/', [Main::class, 'index'])->name('pages-home');
 
 Route::get('/home', [HomePage::class, 'index'])->name('pages-home');
 Route::get('/page-2', [Page2::class, 'index'])->name('pages-page-2');
+Route::get('/payment', [payment::class, 'index'])->name('payment-page');
 
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
@@ -39,7 +47,20 @@ Route::get('/account/settings', function () {
 //account
 //Route::get('/user/profile', [MiscError::class, 'index'])->name('pages-account-settings-account');
 //////////////////////////////patient
+Route::post('/confirm-appointment/{id}', [AppointmentController::class, 'confirmAppointment']);
+Route::post('/confirm-appointment/{id}', [AppointmentController::class, 'confirmAppointment']);
+Route::post('/confirm-appointment/{id}', [AppointmentController::class, 'confirmAppointment']);
+Route::get('/payment/{appointment_id}', [payment::class, 'showPaymentPage']);
 
+Route::post('/process-payment', [payment::class, 'processPayment'])->name('process.payment');
+use App\Http\Controllers\pages\PaymentController;
+Route::post('/process-payment', [Payment::class, 'processPayment'])->middleware('web')->name('process.payment');
+Route::get('/payment/{appointmentId}', [Payment::class, 'showPaymentPage'])->name('payment.page');
+
+Route::get('/payment/{appointmentId}', [Payment::class, 'showPaymentPage']);
+Route::post('/process-payment', [Payment::class, 'processPayment']);
+Route::get('/appointments/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
+Route::get('/payment/{appointmentId}', [Payment::class, 'showPaymentPage']);
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -50,26 +71,45 @@ Route::middleware([
     })->name('dashboard');
 });
 //appointment:
-Route::get('/appointment', [\App\Http\Controllers\AppointmentController::class, 'index']);
-Route::post('/appointment', [\App\Http\Controllers\AppointmentController::class, 'store']);
-Route::get('/doctors/{specialty}', [\App\Http\Controllers\AppointmentController::class, 'getDoctorsBySpecialty']);
-Route::get('/appointment/doctors/{specialty}', [\App\Http\Controllers\AppointmentController::class, 'getDoctorsBySpecialty']);
-Route::get('/appointment/doctors/{doctorId}/time-slots', [\App\Http\Controllers\AppointmentController::class, 'getTimeSlots']);
-Route::post('/appointment/book', [\App\Http\Controllers\AppointmentController::class, 'store']);
-Route::get('/appointment/doctors/{doctorId}/time-slots', [\App\Http\Controllers\AppointmentController::class, 'getTimeSlots']);
+Route::get('/appointment', [AppointmentController::class, 'index']);
+Route::post('/appointment', [AppointmentController::class, 'store']);
+Route::get('/doctors/{specialty}', [AppointmentController::class, 'getDoctorsBySpecialty']);
+Route::get('/appointment/doctors/{specialty}', [AppointmentController::class, 'getDoctorsBySpecialty']);
+Route::get('/appointment/doctors/{doctorId}/time-slots', [AppointmentController::class, 'getTimeSlots']);
+Route::post('/appointment/book', [AppointmentController::class, 'store']);
+Route::get('/appointment/doctors/{doctorId}/time-slots', [AppointmentController::class, 'getTimeSlots']);
 //chatbot
-Route::get('/home', [\App\Http\Controllers\AppointmentController::class, 'home'])->middleware('auth');
+Route::get('/home', [AppointmentController::class, 'home'])->middleware('auth');
 //Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
 //STORE DATA
 //Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
 //Route::get('/appointmenttime', [Appointmenttime::class, 'index'])->name('appointmenttime');
 // calender
 Route::get('/calender', [CalendarController::class, 'index'])->name('app-calendar');
-Route::post('/check-availability', [\App\Http\Controllers\AppointmentController::class, 'checkAvailability']);
-use App\Http\Controllers\AppointmentController;
+Route::post('/check-availability', [AppointmentController::class, 'checkAvailability']);
 
-Route::post('/appointments', [\App\Http\Controllers\AppointmentController::class, 'store'])->name('appointments.store');
+Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 
+Route::get('/appointment/{id}', [AppointmentController::class, 'show'])->name('appointment.details');
+Route::get('/appointment/{id}/cancel', [AppointmentController::class, 'show'])->name('appointment.cancel');
+Route::get('/appointment/{id}', [AppointmentController::class, 'show'])->name('appointment.details');
+//ROLES AND PERMISSIONS
+Route::middleware(['auth', 'role:patient'])->group(function () {
+  Route::get('/dashboard/patient', [PatientDashboardController::class, 'index'])->name('patient.dashboard');
+});
 
+// Doctor Dashboard
+Route::middleware(['auth', 'role:doctor'])->group(function () {
+  Route::get('/dashboard/doctor', [DoctorDashboardController::class, 'index'])->name('doctor.dashboard');
+});
 
-
+//permission middleware
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+  Route::get('/permissions', [PermissionController::class, 'index'])->name('admin.permissions');
+  Route::post('/permissions', [PermissionController::class, 'store']);
+  Route::put('/permissions/{id}', [PermissionController::class, 'update']);
+  Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
+});
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+  Route::get('/permissions', [PermissionController::class, 'index'])->name('admin.permissions');
+});

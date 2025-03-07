@@ -46,6 +46,7 @@
     <h3>Select a Doctor</h3>
     <div id="doctors-list" class="row"></div>
     <button class="btn btn-secondary mt-3" id="back-to-clinics">Back to Clinics</button>
+
   </div>
 </div>
 
@@ -213,93 +214,66 @@
 
     // Handle confirm appointment button
     confirmAppointmentBtn.addEventListener('click', async () => {
-      const patientName = document.getElementById('patientName').value;
-      const patientEmail = document.getElementById('patientEmail').value;
-      const patientPhone = document.getElementById('patientPhone').value;
+  const patientName = document.getElementById('patientName').value;
+  const patientEmail = document.getElementById('patientEmail').value;
+  const patientPhone = document.getElementById('patientPhone').value;
 
-      // Validate required fields
-      if (!patientName || !patientEmail || !selectedDate || !selectedTime) {
-        alert('Please fill in all required fields and select a valid date and time.');
-        return;
-      }
+  if (!patientName || !patientEmail || !selectedDate || !selectedTime) {
+    alert('Please fill in all required fields and select a valid date and time.');
+    return;
+  }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(patientEmail)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
+  const appointmentData = {
+    doctor_id: selectedDoctorId,
+    patient_name: patientName,
+    patient_email: patientEmail,
+    patient_phone: patientPhone || null,
+    appointment_date: selectedDate,
+    start_time: selectedTime,
+  };
 
-      // Prepare the appointment data
-      const appointmentData = {
-        doctor_id: selectedDoctorId,
-        patient_name: patientName,
-        patient_email: patientEmail,
-        patient_phone: patientPhone || null,
-        appointment_date: selectedDate,
-        start_time: selectedTime,
-       // end_time: selectedTime ? calculateEndTime(selectedTime) : "", // You can calculate this based on your requirements
-      };
-
-      try {
-        // Send the appointment data to the backend
-        const response = await fetch('/appointment/book', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-          },
-          body: JSON.stringify(appointmentData),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          // Show success message
-          alert('Appointment booked successfully!');
-          appointmentModal.hide();
-        } else {
-          // Show error message
-          alert('Failed to book appointment. Please try again.');
-        }
-      } catch (error) {
-        console.error('Error booking appointment:', error);
-        alert('An error occurred. Please try again.');
-      }
+  try {
+    const response = await fetch('/appointment/book', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+      },
+      body: JSON.stringify(appointmentData),
     });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // Hide the modal and show a pending payment message
+      appointmentModal.hide();
+
+      const paymentMessage = document.createElement('div');
+      paymentMessage.classList.add('alert', 'alert-warning', 'mt-3');
+      paymentMessage.innerHTML = `
+        <strong>Appointment Pending!</strong> Please complete your payment to confirm your appointment.
+        <br>
+        <a href="/payment?appointment_id=${result.appointment.id}" class="btn btn-primary mt-2">Proceed to Payment</a>
+      `;
+
+      // Insert message into the page (adjust according to your layout)
+      document.getElementById('clinic-cards').insertAdjacentElement('beforebegin', paymentMessage);
+    } else {
+      alert('Failed to book appointment. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error booking appointment:', error);
+    alert('An error occurred. Please try again.');
+  }
+});
+
   });
 </script>
 @endsection
 
 @section('styles')
 <style>
-  .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* Adjust spacing between cards */
-    justify-content: space-between;
-  }
-
-  .card {
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background: white;
-    flex: 1 1 calc(33% - 20px); /* Adjust width based on layout */
-    margin-bottom: 20px; /* Add margin to the bottom of each card */
-  }
-
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: -10px; /* Negative margin to counteract the padding */
-  }
-
-  .col-md-6, .col-lg-4 {
-    padding: 10px; /* Add padding to each column */
-  }
-
-  /* Custom styles for time slots */
+  /* Existing styles */
   #timeSlots .time-slot {
     padding: 10px;
     font-size: 14px;
@@ -332,5 +306,27 @@
   .modal-content {
     margin: 0 auto;
   }
+
+  /* New styles for doctors list */
+  #doctors-list .col-md-6.col-lg-4 {
+    margin-bottom: 1rem; /* Adds vertical space between rows of cards */
+  }
+
+  #doctors-list .doctor-card {
+    margin-bottom: 1rem; /* Adds additional space if needed */
+  }
+  <style>
+  /* Previous existing styles */
+
+  /* Add vertical gap above the doctors list */
+  #doctors-section {
+    padding-top: 2rem; /* Adds space above the entire doctors section */
+  }
+
+  #doctors-list {
+    row-gap: 1.5rem; /* Creates vertical gaps between rows of cards */
+    column-gap: 1rem; /* Optional: adds horizontal spacing between columns */
+  }
+</style>
 </style>
 @endsection

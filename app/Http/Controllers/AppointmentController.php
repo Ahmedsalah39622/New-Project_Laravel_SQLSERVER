@@ -24,6 +24,7 @@ class AppointmentController extends Controller
         ];
 
         return view('content.pages.Appointment', compact('specialties'));
+
     }
 
     /**
@@ -32,6 +33,7 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -109,6 +111,16 @@ class AppointmentController extends Controller
 
         return view('content.pages.pages-home', compact('appointments'));
     }
+    public function show($id)
+    {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return redirect()->back()->with('error', 'Appointment not found.');
+        }
+
+        return view('appointments.show', compact('appointment'));
+    }
 
     /**
      * Get all appointments.
@@ -153,4 +165,44 @@ class AppointmentController extends Controller
 
         return response()->json(['available' => !$isBooked]);
     }
+    public function cancel($id)
+{
+    $appointment = Appointment::find($id);
+
+    if (!$appointment) {
+        return redirect()->back()->with('error', 'Appointment not found.');
+    }
+
+    // Mark appointment as canceled (or delete if needed)
+    $appointment->status = 'canceled';
+    $appointment->save();
+
+    return redirect()->back()->with('success', 'Appointment canceled successfully.');
 }
+    public function confirmAppointment($id)
+    {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return response()->json(['success' => false, 'message' => 'Appointment not found'], 404);
+        }
+
+        $appointment->status = 'confirmed';
+        $appointment->save();
+
+        return response()->json(['success' => true, 'message' => 'Appointment confirmed']);
+    }
+
+    public function paymentPage($id)
+    {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return redirect()->back()->with('error', 'Appointment not found.');
+        }
+
+        return view('your-payment-view', compact('appointment'));
+    }
+
+
+  }

@@ -66,14 +66,21 @@ class RegisterBasic extends Controller
     // Create a new user
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'age' => $data['age'],
             'gender' => $data['gender'],
             'blood_type' => $data['blood_type'],
-            'insurance' => $data['insurance_provider'], // Updated from 'insurance' to 'insurance_provider'
+            'insurance' => $data['insurance_provider'],
         ]);
+
+        // Assign role after user creation
+        if (!empty($data['role'])) {
+          $user->assignRole($data['role']);
+      }
+        return $user;
+
     }
 }
