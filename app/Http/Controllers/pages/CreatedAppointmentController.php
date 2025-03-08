@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\pages;
 
 use App\Models\CreatedAppointment;
 use Illuminate\Http\Request;
