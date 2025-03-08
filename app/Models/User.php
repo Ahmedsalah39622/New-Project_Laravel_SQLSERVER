@@ -10,13 +10,11 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-/**
- * @mixin \Spatie\Permission\Traits\HasRoles
- */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, HasProfilePhoto, HasRoles; // ✅ Cleaned up trait usage
-
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, HasProfilePhoto;
+    use HasRoles;
+    protected $guard_name = 'web'; // or whatever guard you want to use
     /**
      * The attributes that are mass assignable.
      *

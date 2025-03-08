@@ -75,6 +75,40 @@
 @include('_partials._modals.modal-edit-permission')
 <!-- /Modals -->
 
+<div class="container">
+    <h1>Access Permissions</h1>
+
+    @can('view dashboard')
+        <div class="alert alert-success">
+            You have permission to view the dashboard.
+        </div>
+    @else
+        <div class="alert alert-danger">
+            You do not have permission to view the dashboard.
+        </div>
+    @endcan
+
+    @can('edit articles')
+        <div class="alert alert-success">
+            You have permission to edit articles.
+        </div>
+    @else
+        <div class="alert alert-danger">
+            You do not have permission to edit articles.
+        </div>
+    @endcan
+
+    @can('delete users')
+        <div class="alert alert-success">
+            You have permission to delete users.
+        </div>
+    @else
+        <div class="alert alert-danger">
+            You do not have permission to delete users.
+        </div>
+    @endcan
+</div>
+
 @endsection
 
 @section('scripts')

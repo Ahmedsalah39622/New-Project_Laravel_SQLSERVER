@@ -17,10 +17,10 @@ use App\Http\Controllers\PatientDashboardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\PermissionController;
 
- use App\Http\Controllers\pages\Appointment;
- use Spatie\Permission\Middleware\RoleMiddleware;
+use App\Http\Controllers\pages\Appointment;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
- use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
 //use App\Http\Controllers\Appointmenttime;
 use App\Http\Controllers\Doctorcon;
@@ -112,4 +112,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 });
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
   Route::get('/permissions', [PermissionController::class, 'index'])->name('admin.permissions');
+});
+
+Route::group(['middleware' => ['role:admin']], function () {
+    Route::get('/admin/permissions', [PermissionController::class, 'index']);
 });

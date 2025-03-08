@@ -13,6 +13,17 @@
       0 => 'Laravel\\Jetstream\\JetstreamServiceProvider',
     ),
   ),
+  'laravel/octane' => 
+  array (
+    'aliases' => 
+    array (
+      'Octane' => 'Laravel\\Octane\\Facades\\Octane',
+    ),
+    'providers' => 
+    array (
+      0 => 'Laravel\\Octane\\OctaneServiceProvider',
+    ),
+  ),
   'laravel/sail' => 
   array (
     'providers' => 

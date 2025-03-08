@@ -1,32 +1,44 @@
 <?php
 
-namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class RolesAndPermissionsSeeder extends Seeder
+class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
+        // Clear cache
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Define permissions
+        $permissions = [
+            'manage users',
+            'manage doctors',
+            'manage appointments',
+            'view dashboard',
+        ];
+
+        // Create and assign permissions
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
+
         // Create roles
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $doctorRole = Role::firstOrCreate(['name' => 'doctor']);
         $patientRole = Role::firstOrCreate(['name' => 'patient']);
 
-        // Define permissions
-        $permissions = [
-            'manage users',
-            'manage appointments',
-            'view reports',
-            'edit settings'
-        ];
+        // Assign permissions to roles
+        $adminRole->givePermissionTo($permissions);
+        $doctorRole->givePermissionTo(['manage appointments', 'view dashboard']);
+        $patientRole->givePermissionTo(['view dashboard']);
 
-        // Create and assign permissions to admin
-        foreach ($permissions as $perm) {
-            $permission = Permission::firstOrCreate(['name' => $perm]);
-            $adminRole->givePermissionTo($permission);
+        // Assign roles to users
+        $admin = \App\Models\User::where('email', 'admin@example.com')->first();
+        if ($admin) {
+            $admin->assignRole('admin');
         }
     }
 }
+
