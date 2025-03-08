@@ -37,10 +37,14 @@ return [
   | stack traces will be shown on every error that occurs within your
   | application. If disabled, a simple generic error page is shown.
   |
+<<<<<<< HEAD
 
   'providers' => [
     Spatie\Permission\PermissionServiceProvider::class,
   ],*/
+=======
+  */
+>>>>>>> 50bf46bfed428f70d54b0c60f709540dbe879e06
 
   'debug' => (bool) env('APP_DEBUG', false),
   /*
@@ -130,6 +134,7 @@ return [
   'aliases' => [
     // Other aliases...
     'Helper' => App\Helpers\Helpers::class,
+    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
   ],
 
 ];
