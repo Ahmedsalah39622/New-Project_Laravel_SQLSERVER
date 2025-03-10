@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\pages;
 
 use Illuminate\Http\Request;
 use App\Models\Patient; // تأكد من استيراد موديل Patient
+use App\Http\Controllers\Controller;
 
 class PatientController extends Controller
 {

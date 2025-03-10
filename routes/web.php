@@ -23,7 +23,7 @@ use App\Http\Controllers\pages\AdminDashboardController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ChatbotController;
-use app\Http\Controllers\PatientController;
+use app\Http\Controllers\pages\PatientController;
 //use App\Http\Controllers\Appointmenttime;
 use App\Http\Controllers\Doctorcon;
 use App\Http\Controllers\DoctorController;
