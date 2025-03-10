@@ -22,25 +22,7 @@ $navbarDetached = ($navbarDetached ?? '');
         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
           <!-- Role-Based Navigation -->
-          @if (Auth::check())
-            @role('admin')
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
-              </li>
-            @endrole
 
-            @role('doctor')
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('doctor.dashboard') }}">Doctor Dashboard</a>
-              </li>
-            @endrole
-
-            @role('patient')
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('patient.dashboard') }}">Patient Dashboard</a>
-              </li>
-            @endrole
-          @endif
 
           <!-- User Profile -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -67,8 +49,8 @@ $navbarDetached = ($navbarDetached ?? '');
                         @endif
                       </h6>
                       <small class="text-muted">
-                        @if(Auth::user() && Auth::user()->roles->isNotEmpty())
-                          {{ Auth::user()->roles->pluck('name')->first() }}
+                        @if(Auth::check() && Auth::user()->getRoleNames()->isNotEmpty())
+                        {{ Auth::user()->getRoleNames()->first() }}
                         @else
                           Guest
                         @endif

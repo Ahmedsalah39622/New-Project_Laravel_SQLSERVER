@@ -1,4 +1,4 @@
-@extends('layouts.layoutMaster')
+@extends('layouts.app')
 
 @section('title', 'Permission - Apps')
 
@@ -29,6 +29,8 @@
 @endsection
 
 @section('content')
+    <h1>Admin Access Permission</h1>
+    <p>Welcome to the admin access permission page!</p>
 
 <!-- Permission Table -->
 <div class="card">
@@ -48,22 +50,7 @@
         </tr>
       </thead>
       <tbody>
-        @foreach($permissions as $permission)
         <tr>
-          <td>{{ $permission->id }}</td>
-          <td>{{ $permission->name }}</td>
-          <td>
-            @foreach($permission->roles as $role)
-              <span class="badge bg-primary">{{ $role->name }}</span>
-            @endforeach
-          </td>
-          <td>{{ $permission->created_at->format('Y-m-d') }}</td>
-          <td>
-            <button class="btn btn-sm btn-warning edit-permission" data-id="{{ $permission->id }}" data-name="{{ $permission->name }}">Edit</button>
-            <button class="btn btn-sm btn-danger delete-permission" data-id="{{ $permission->id }}">Delete</button>
-          </td>
-        </tr>
-        @endforeach
       </tbody>
     </table>
   </div>
@@ -75,7 +62,7 @@
 @include('_partials._modals.modal-edit-permission')
 <!-- /Modals -->
 
-<div class="container">
+<!--<div class="container">
     <h1>Access Permissions</h1>
 
     @can('view dashboard')
@@ -107,7 +94,7 @@
             You do not have permission to delete users.
         </div>
     @endcan
-</div>
+</div>-->
 
 @endsection
 

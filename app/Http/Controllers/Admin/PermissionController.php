@@ -12,7 +12,7 @@ class PermissionController extends Controller
     public function index()
     {
         $permissions = Permission::with('roles')->get();
-        return view('admin.app-access-permission', compact('permissions'));
+        return view('admin.dashboards-analytics.blade', compact('permissions'));
     }
 
     public function store(Request $request)

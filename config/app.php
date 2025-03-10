@@ -42,9 +42,6 @@ return [
   'providers' => [
     Spatie\Permission\PermissionServiceProvider::class,
   ],*/
-=======
-  */
->>>>>>> 50bf46bfed428f70d54b0c60f709540dbe879e06
 
   'debug' => (bool) env('APP_DEBUG', false),
   /*
@@ -134,7 +131,7 @@ return [
   'aliases' => [
     // Other aliases...
     'Helper' => App\Helpers\Helpers::class,
-    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+    /*'Excel' => Maatwebsite\Excel\Facades\Excel::class,*/
   ],
 
 ];

@@ -103,11 +103,22 @@ class AppointmentController extends Controller
     public function home()
     {
         $patientEmail = Auth::user()->email;
+        if (Auth::user()->hasRole('admin'))
+        {
+          return view('admin.dashboard');
 
+        }
+        else if (Auth::user()->hasRole('doctor'))
+        {
+          return view('doctor.dashboard');
+
+        }
         $appointments = Appointment::where('patient_email', $patientEmail)
                                    ->with('doctor')
                                    ->orderBy('appointment_date', 'desc')
                                    ->get();
+
+
 
         return view('content.pages.pages-home', compact('appointments'));
     }

@@ -7,6 +7,10 @@ use App\Models\Patient; // تأكد من استيراد موديل Patient
 
 class PatientController extends Controller
 {
+  public function index()
+    {
+        return view('content.pages.pages-home');
+    }
   public function store(Request $request)
   {
       // Validate the input data
@@ -37,5 +41,7 @@ class PatientController extends Controller
 
       // Redirect with a success message
       return redirect()->back()->with('success', 'Patient registered successfully!');
+
   }
+
 }

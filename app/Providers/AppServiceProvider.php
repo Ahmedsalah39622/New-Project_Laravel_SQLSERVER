@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
    */
   public function register(): void
   {
-    
+
   }
 
   /**
@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
    */
   public function boot(): void
   {
+    
     Vite::useStyleTagAttributes(function (?string $src, string $url, ?array $chunk, ?array $manifest) {
       if ($src !== null) {
         return [
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
         ];
       }
       return [];
+
     });
+
   }
 }

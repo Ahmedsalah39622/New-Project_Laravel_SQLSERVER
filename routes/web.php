@@ -16,14 +16,17 @@ use App\Http\Controllers\DoctorDashboardController;
 use App\Http\Controllers\PatientDashboardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\PermissionController;
-
 use App\Http\Controllers\pages\Appointment;
 use Spatie\Permission\Middleware\RoleMiddleware;
-
+use App\Http\Controllers\pages\AdminPermissionsController;
+use App\Http\Controllers\pages\AdminDashboardController;
+use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ChatbotController;
 use app\Http\Controllers\PatientController;
 //use App\Http\Controllers\Appointmenttime;
 use App\Http\Controllers\Doctorcon;
+use App\Http\Controllers\DoctorController;
 
 // Authentication Routes
 
@@ -66,7 +69,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', function (
+      
+    ) {
         return view('content.pages.pages-home');
     })->name('dashboard');
 });
@@ -100,7 +105,7 @@ Route::middleware(['auth', 'role:patient'])->group(function () {
 
 // Doctor Dashboard
 Route::middleware(['auth', 'role:doctor'])->group(function () {
-  Route::get('/dashboard/doctor', [DoctorDashboardController::class, 'index'])->name('doctor.dashboard');
+  Route::get('/doctor/dashboard', [DoctorController::class, 'index'])->name('doctor.dashboard');
 });
 
 //permission middleware
@@ -116,4 +121,34 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/admin/permissions', [PermissionController::class, 'index']);
+});
+Route::middleware(['role:admin'])->group(function () {
+  Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+});
+Route::middleware(['role:admin'])->group(function () {
+  Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+});
+
+Route::middleware(['role:patient'])->group(function () {
+  Route::get('/patient', [PatientController::class, 'index'])->name('patient.dashboard');
+  // Add other patient routes here
+});
+
+Route::middleware(['role:admin'])->group(function () {
+    Route::get('/admin/permissions', [AdminPermissionsController::class, 'index'])->name('admin.app-access-permission.blade');
+});
+Route::middleware(['role:admin'])->group(function () {
+  Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+});
+
+Route::middleware(['role:patient'])->group(function () {
+  Route::get('/patient', [PatientController::class, 'index'])->name('patient.dashboard');
+  // Add other patient routes here
+});
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+  Route::get('/export/users', [ExportController::class, 'exportUsers'])->name('admin.export.users');
+  Route::get('/export/appointments', [ExportController::class, 'exportAppointments'])->name('admin.export.appointments');
+});
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+  Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
 });
