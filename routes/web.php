@@ -27,6 +27,7 @@ use app\Http\Controllers\PatientController;
 //use App\Http\Controllers\Appointmenttime;
 use App\Http\Controllers\Doctorcon;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\pages\ReceptionistController ;
 
 // Authentication Routes
 
@@ -70,7 +71,7 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function (
-      
+
     ) {
         return view('content.pages.pages-home');
     })->name('dashboard');
@@ -151,4 +152,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 });
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
   Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+});
+Route::middleware(['auth', 'role:receptionist'])->group(function () {
+  Route::get('/receptionist/dashboard', [ReceptionistController::class, 'index'])->name('receptionist.dashboard');
 });

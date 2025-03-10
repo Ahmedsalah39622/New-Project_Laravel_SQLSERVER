@@ -32,6 +32,11 @@ class HomePage extends Controller
 
         }
 
+        if ( $user->hasRole('receptionist'))
+        {
+          return view('receptionist.dashboard');
+
+        }
 
     return view('content.pages.pages-home', compact('appointments'));
   }

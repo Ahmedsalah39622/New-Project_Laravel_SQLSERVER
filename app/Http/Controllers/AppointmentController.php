@@ -113,6 +113,11 @@ class AppointmentController extends Controller
           return view('doctor.dashboard');
 
         }
+        else if (Auth::user()->hasRole('receptionist'))
+        {
+          return view('receptionist.dashboard');
+
+        }
         $appointments = Appointment::where('patient_email', $patientEmail)
                                    ->with('doctor')
                                    ->orderBy('appointment_date', 'desc')
