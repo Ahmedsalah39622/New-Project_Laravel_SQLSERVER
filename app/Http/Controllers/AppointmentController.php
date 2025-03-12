@@ -205,17 +205,9 @@ class AppointmentController extends Controller
 
     public function cancel($id)
     {
-        $appointment = Appointment::find($id);
-
-        if (!$appointment) {
-            return redirect()->back()->with('error', 'Appointment not found.');
-        }
-
-        // Mark appointment as canceled (or delete if needed)
-        $appointment->status = 'canceled';
-        $appointment->save();
-
-        return redirect()->back()->with('success', 'Appointment canceled successfully.');
+        $appointment = Appointment::findOrFail($id);
+        $appointment->delete();
+        return response()->json(['message' => 'Appointment cancelled successfully.']);
     }
 
     public function confirmAppointment($id)
@@ -241,5 +233,11 @@ class AppointmentController extends Controller
         }
 
         return view('your-payment-view', compact('appointment'));
+    }
+
+    public function details($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        return response()->json($appointment);
     }
 }

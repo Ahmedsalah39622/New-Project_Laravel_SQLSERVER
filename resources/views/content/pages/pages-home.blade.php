@@ -53,7 +53,7 @@
 
       <h5 class="card-title text-primary">Appointment History</h5>
       <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="appointmentsTable">
           <thead>
             <tr>
               <th>Doctor</th>
@@ -66,7 +66,7 @@
           <tbody>
             @if(isset($appointments) && count($appointments) > 0)
               @foreach ($appointments as $appointment)
-                <tr>
+                <tr data-appointment-id="{{ $appointment->id }}">
                   <td>
                     <i class="ti ti-user ti-md text-primary me-3"></i>
                     <span class="fw-medium">{{ $appointment->doctor->name ?? 'N/A' }}</span>
@@ -88,9 +88,8 @@
                         <i class="ti ti-dots-vertical"></i>
                       </button>
                       <div class="dropdown-menu">
-                        <a href="{{ route('appointments.show', $appointment->id) }}">View Details</a>
-
-                        <a class="dropdown-item" href="{{ route('appointment.cancel', $appointment->id) }}">
+                        <a href="javascript:void(0)" class="dropdown-item view-details">View Details</a>
+                        <a href="javascript:void(0)" class="dropdown-item cancel-appointment">
                           <i class="ti ti-trash me-1"></i> Cancel
                         </a>
                       </div>
@@ -114,4 +113,38 @@
   </div>
 </div>
 
+@endsection
+
+@section('page-script')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Handle "View Details" and "Cancel" actions
+    document.getElementById('appointmentsTable').addEventListener('click', async (e) => {
+        if (e.target.classList.contains('view-details')) {
+            const appointmentId = e.target.closest('tr').dataset.appointmentId;
+            // Fetch and display appointment details
+            const response = await fetch(`/appointment/details/${appointmentId}`);
+            const appointment = await response.json();
+            alert(`Appointment Details:\n\nPatient: ${appointment.patient_name}\nDate: ${appointment.appointment_date}\nTime: ${appointment.start_time}\nStatus: ${appointment.status}`);
+        } else if (e.target.classList.contains('cancel-appointment')) {
+            const appointmentId = e.target.closest('tr').dataset.appointmentId;
+            // Cancel the appointment
+            const response = await fetch(`/appointment/cancel/${appointmentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+            });
+            if (response.ok) {
+                alert('Appointment cancelled successfully.');
+                // Remove the appointment row from the table
+                e.target.closest('tr').remove();
+            } else {
+                alert('Failed to cancel appointment. Please try again.');
+            }
+        }
+    });
+  });
+</script>
 @endsection

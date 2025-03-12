@@ -159,3 +159,5 @@ Route::middleware(['auth', 'role:receptionist'])->group(function () {
 Route::get('/appointment/timeslots/{doctorId}/{appointmentDate}', [AppointmentController::class, 'getTimeSlots']);
 Route::post('/appointment/book', [AppointmentController::class, 'store']);
 Route::post('/appointment/check-availability', [AppointmentController::class, 'checkAvailability']);
+Route::get('/appointment/details/{id}', [AppointmentController::class, 'details']);
+Route::post('/appointment/cancel/{id}', [AppointmentController::class, 'cancel']);
