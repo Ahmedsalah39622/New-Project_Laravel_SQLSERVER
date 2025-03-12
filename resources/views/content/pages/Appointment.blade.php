@@ -29,7 +29,7 @@
   ] as $card)
     <div class="col-md-6 col-lg-4">
       <div class="card h-100 clinic-card" data-specialty="{{ $card['name'] }}">
-        <img class="card-img-top" src="{{ $card['image'] }}" alt="{{ $card['name'] }}">
+        <img class="document.addEventListener-img-top" src="{{ $card['image'] }}" alt="{{ $card['name'] }}">
         <div class="card-body">
           <h5 class="card-title">{{ $card['name'] }}</h5>
           <p class="card-text">{{ $card['description'] }}</p>
@@ -102,9 +102,9 @@
     const doctorsList = document.getElementById('doctors-list');
     const backToClinicsBtn = document.getElementById('back-to-clinics');
     const appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'), {
-      backdrop: true,
-      keyboard: true,
-      focus: true
+        backdrop: true,
+        keyboard: true,
+        focus: true
     });
     const appointmentDateInput = document.getElementById('appointmentDate');
     const timeSelection = document.getElementById('timeSelection');
@@ -116,158 +116,193 @@
     let selectedTime;
 
     // Handle date input change
-    appointmentDateInput.addEventListener('change', function () {
-      selectedDate = this.value;
-      if (selectedDate) {
-        generateTimeSlots();
-        timeSelection.classList.remove('d-none');
-      } else {
-        timeSelection.classList.add('d-none');
-      }
+    appointmentDateInput.addEventListener('change', async function () {
+        selectedDate = this.value;
+        if (selectedDate) {
+            await generateTimeSlots();
+            timeSelection.classList.remove('d-none');
+        } else {
+            timeSelection.classList.add('d-none');
+        }
     });
 
-    // Generate time slots from 9 AM to 5 PM in 30-minute intervals
-    function generateTimeSlots() {
-      const startTime = 9; // 9 AM
-      const endTime = 17; // 5 PM
-      const interval = 30; // 30 minutes
-      timeSlots.innerHTML = ''; // Clear previous slots
+    // Generate time slots from 9 AM to 5 PM in 15-minute intervals
+    async function generateTimeSlots() {
+        const response = await fetch(`/appointment/timeslots/${selectedDoctorId}/${selectedDate}`);
+        const slots = await response.json();
+        timeSlots.innerHTML = ''; // Clear previous slots
 
-      for (let hour = startTime; hour < endTime; hour++) {
-        for (let minute = 0; minute < 60; minute += interval) {
-          const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-          const timeSlot = document.createElement('div');
-          timeSlot.className = 'col-md-3 mb-3';
-          timeSlot.innerHTML = `
-            <button class="btn btn-outline-primary w-100 time-slot" data-time="${time}">${time}</button>
-          `;
-          timeSlots.appendChild(timeSlot);
-        }
-      }
-
-      // Handle time slot selection
-      timeSlots.querySelectorAll('.time-slot').forEach(button => {
-        button.addEventListener('click', function (e) {
-          e.preventDefault(); // Prevent form submission
-          // Remove selected class from all time slots
-          document.querySelectorAll('.time-slot').forEach(btn => {
-            btn.classList.remove('selected');
-          });
-          // Add selected class to this time slot
-          this.classList.add('selected');
-          selectedTime = this.dataset.time;
+        slots.forEach(slot => {
+            const timeSlot = document.createElement('div');
+            timeSlot.className = 'col-md-3 mb-3';
+            timeSlot.innerHTML = `
+                <button class="btn w-100 time-slot ${slot.isOccupied ? 'btn-danger' : 'btn-light'}" data-time="${slot.time}" ${slot.isOccupied ? 'disabled' : ''}>
+                    ${slot.time}
+                </button>
+            `;
+            timeSlots.appendChild(timeSlot);
         });
-      });
+
+        // Handle time slot selection
+        timeSlots.querySelectorAll('.time-slot').forEach(button => {
+            button.addEventListener('click', async function (e) {
+                e.preventDefault(); // Prevent form submission
+                // Remove selected class from all time slots
+                document.querySelectorAll('.time-slot').forEach(btn => {
+                    btn.classList.remove('selected', 'btn-success');
+                    btn.classList.add('btn-light');
+                });
+                // Add selected class to this time slot
+                this.classList.add('selected');
+                selectedTime = this.dataset.time;
+
+                // Check if the selected time slot is still available
+                const availabilityResponse = await fetch(`/appointment/check-availability`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({
+                        doctor_id: selectedDoctorId,
+                        appointment_date: selectedDate,
+                        start_time: selectedTime,
+                    }),
+                });
+
+                const availabilityResult = await availabilityResponse.json();
+
+                if (availabilityResult.available) {
+                    this.classList.remove('btn-light');
+                    this.classList.add('btn-success');
+                } else {
+                    this.classList.remove('btn-light');
+                    this.classList.add('btn-danger');
+                  //  alert('The selected time slot is already occupied. Please choose another time slot.');
+                }
+            });
+        });
     }
 
     // Handle clinic card click
     clinicCards.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('choose-clinic')) {
-        const specialty = e.target.closest('.clinic-card').dataset.specialty;
+        if (e.target.classList.contains('choose-clinic')) {
+            const specialty = e.target.closest('.clinic-card').dataset.specialty;
 
-        // Fetch doctors for the selected specialty
-        const response = await fetch(`/appointment/doctors/${specialty}`);
-        const doctors = await response.json();
+            // Fetch doctors for the selected specialty
+            const response = await fetch(`/appointment/doctors/${specialty}`);
+            const doctors = await response.json();
 
-        // Hide clinic cards and show doctors section
-        clinicCards.classList.add('d-none');
-        doctorsSection.classList.remove('d-none');
+            // Hide clinic cards and show doctors section
+            clinicCards.classList.add('d-none');
+            doctorsSection.classList.remove('d-none');
 
-        // Render doctors
-        doctorsList.innerHTML = doctors.map(doctor => `
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100 doctor-card" data-doctor-id="${doctor.id}">
-              <div class="card-body">
-                <h5 class="card-title">${doctor.name}</h5>
-                <p class="card-text"><strong>Specialization:</strong> ${doctor.specialization}</p>
-                <p class="card-text"><strong>Email:</strong> ${doctor.email}</p>
-                <p class="card-text"><strong>Phone:</strong> ${doctor.phone}</p>
-                <button class="btn btn-outline-primary choose-doctor">Choose Doctor</button>
-              </div>
-            </div>
-          </div>
-        `).join('');
-      }
+            // Render doctors
+            doctorsList.innerHTML = doctors.map(doctor => `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 doctor-card" data-doctor-id="${doctor.id}">
+                        <div class="card-body">
+                            <h5 class="card-title">${doctor.name}</h5>
+                            <p class="card-text"><strong>Specialization:</strong> ${doctor.specialization}</p>
+                            <p class="card-text"><strong>Email:</strong> ${doctor.email}</p>
+                            <p class="card-text"><strong>Phone:</strong> ${doctor.phone}</p>
+                            <button class="btn btn-outline-primary choose-doctor">Choose Doctor</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
     });
 
     // Handle back to clinics button
     backToClinicsBtn.addEventListener('click', () => {
-      doctorsSection.classList.add('d-none');
-      clinicCards.classList.remove('d-none');
+        doctorsSection.classList.add('d-none');
+        clinicCards.classList.remove('d-none');
     });
 
     // Handle doctor card click
     doctorsList.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('choose-doctor')) {
-        selectedDoctorId = e.target.closest('.doctor-card').dataset.doctorId;
+        if (e.target.classList.contains('choose-doctor')) {
+            selectedDoctorId = e.target.closest('.doctor-card').dataset.doctorId;
 
-        // Reset the modal state
-        timeSelection.classList.add('d-none');
-        appointmentDateInput.value = '';
-        selectedDate = null;
-        selectedTime = null;
+            // Reset the modal state
+            timeSelection.classList.add('d-none');
+            appointmentDateInput.value = '';
+            selectedDate = null;
+            selectedTime = null;
 
-        // Show the appointment modal
-        appointmentModal.show();
-      }
+            // Show the appointment modal
+            appointmentModal.show();
+        }
     });
 
     // Handle confirm appointment button
     confirmAppointmentBtn.addEventListener('click', async () => {
-  const patientName = document.getElementById('patientName').value;
-  const patientEmail = document.getElementById('patientEmail').value;
-  const patientPhone = document.getElementById('patientPhone').value;
+        const patientName = document.getElementById('patientName').value;
+        const patientEmail = document.getElementById('patientEmail').value;
+        const patientPhone = document.getElementById('patientPhone').value;
 
-  if (!patientName || !patientEmail || !selectedDate || !selectedTime) {
-    alert('Please fill in all required fields and select a valid date and time.');
-    return;
-  }
+        if (!patientName || !patientEmail || !selectedDate || !selectedTime) {
+            alert('Please fill in all required fields and select a valid date and time.');
+            return;
+        }
 
-  const appointmentData = {
-    doctor_id: selectedDoctorId,
-    patient_name: patientName,
-    patient_email: patientEmail,
-    patient_phone: patientPhone || null,
-    appointment_date: selectedDate,
-    start_time: selectedTime,
-  };
+        const appointmentData = {
+            doctor_id: selectedDoctorId,
+            patient_name: patientName,
+            patient_email: patientEmail,
+            patient_phone: patientPhone || null,
+            appointment_date: selectedDate,
+            start_time: selectedTime,
+        };
 
-  try {
-    const response = await fetch('/appointment/book', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-      },
-      body: JSON.stringify(appointmentData),
+        try {
+            const response = await fetch('/appointment/book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify(appointmentData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Hide the modal and show a pending payment message
+                appointmentModal.hide();
+
+                const paymentMessage = document.createElement('div');
+                paymentMessage.classList.add('alert', 'alert-warning', 'mt-3');
+                paymentMessage.innerHTML = `
+                    <strong>Appointment Pending!</strong> Please complete your payment to confirm your appointment.
+                    <br>
+                    <a href="/payment?appointment_id=${result.appointment.id}" class="btn btn-primary mt-2">Proceed to Payment</a>
+                `;
+
+                // Insert message into the page (adjust according to your layout)
+                document.getElementById('clinic-cards').insertAdjacentElement('beforebegin', paymentMessage);
+            } else {
+                // Find the selected time slot button and update its class to btn-danger
+                const selectedButton = document.querySelector(`.time-slot[data-time="${selectedTime}"]`);
+                if (selectedButton) {
+                    selectedButton.classList.remove('btn-success');
+                    selectedButton.classList.add('btn-danger');
+                }
+                alert('Failed to book appointment. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error booking appointment:', error);
+            // Find the selected time slot button and update its class to btn-danger
+            const selectedButton = document.querySelector(`.time-slot[data-time="${selectedTime}"]`);
+            if (selectedButton) {
+                selectedButton.classList.remove('btn-success');
+                selectedButton.classList.add('btn-danger');
+            }
+            alert('An error occurred. Please try again.');
+        }
     });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      // Hide the modal and show a pending payment message
-      appointmentModal.hide();
-
-      const paymentMessage = document.createElement('div');
-      paymentMessage.classList.add('alert', 'alert-warning', 'mt-3');
-      paymentMessage.innerHTML = `
-        <strong>Appointment Pending!</strong> Please complete your payment to confirm your appointment.
-        <br>
-        <a href="/payment?appointment_id=${result.appointment.id}" class="btn btn-primary mt-2">Proceed to Payment</a>
-      `;
-
-      // Insert message into the page (adjust according to your layout)
-      document.getElementById('clinic-cards').insertAdjacentElement('beforebegin', paymentMessage);
-    } else {
-      alert('Failed to book appointment. Please try again.');
-    }
-  } catch (error) {
-    console.error('Error booking appointment:', error);
-    alert('An error occurred. Please try again.');
-  }
 });
-
-  });
 </script>
 @endsection
 

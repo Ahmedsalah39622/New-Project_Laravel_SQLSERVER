@@ -52,7 +52,7 @@ $navbarDetached = ($navbarDetached ?? '');
                         @if(Auth::check() && Auth::user()->getRoleNames()->isNotEmpty())
                         {{ Auth::user()->getRoleNames()->first() }}
                         @else
-                          Guest
+                        Patient
                         @endif
                       </small>
                     </div>

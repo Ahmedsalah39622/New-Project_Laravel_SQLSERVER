@@ -156,3 +156,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:receptionist'])->group(function () {
   Route::get('/receptionist/dashboard', [ReceptionistController::class, 'index'])->name('receptionist.dashboard');
 });
+Route::get('/appointment/timeslots/{doctorId}/{appointmentDate}', [AppointmentController::class, 'getTimeSlots']);
+Route::post('/appointment/book', [AppointmentController::class, 'store']);
+Route::post('/appointment/check-availability', [AppointmentController::class, 'checkAvailability']);

@@ -40,12 +40,24 @@ class AppointmentController extends Controller
             'doctor_id' => 'required|integer|exists:doctors,id',
             'patient_name' => 'required|string|max:255',
             'patient_email' => 'required|email|max:255',
-          //  'user_id' => 'required|exists:users,id',
             'patient_phone' => 'nullable|string|max:20',
             'appointment_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
         ]);
 
+        // Check if the time slot is available
+        $isBooked = Appointment::where('doctor_id', $validated['doctor_id'])
+            ->where('appointment_date', $validated['appointment_date'])
+            ->where('start_time', $validated['start_time'])
+            ->exists();
+
+        if ($isBooked) {
+            return response()->json([
+                'message' => 'The selected time slot is already occupied.',
+            ], 400);
+        }
+
+        // Create the appointment
         $appointment = Appointment::create([
             'doctor_id' => $validated['doctor_id'],
             'patient_name' => $validated['patient_name'],
@@ -80,17 +92,34 @@ class AppointmentController extends Controller
      * Get available time slots for the selected doctor.
      *
      * @param  int  $doctorId
+     * @param  string  $appointmentDate
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getTimeSlots($doctorId)
+    public function getTimeSlots($doctorId, $appointmentDate)
     {
         $doctor = Doctor::findOrFail($doctorId);
 
-        $timeSlots = [
-            ['id' => 1, 'date' => '2023-10-25', 'start_time' => '09:00', 'end_time' => '10:00'],
-            ['id' => 2, 'date' => '2023-10-25', 'start_time' => '10:00', 'end_time' => '11:00'],
-            ['id' => 3, 'date' => '2023-10-26', 'start_time' => '14:00', 'end_time' => '15:00'],
-        ];
+        // Fetch all appointments for the doctor on the given date
+        $appointments = Appointment::where('doctor_id', $doctorId)
+            ->where('appointment_date', $appointmentDate)
+            ->get(['start_time']);
+
+        // Define available time slots
+        $timeSlots = [];
+        $startTime = 9; // 9 AM
+        $endTime = 17; // 5 PM
+        $interval = 15; // 15 minutes
+
+        for ($hour = $startTime; $hour < $endTime; $hour++) {
+            for ($minute = 0; $minute < 60; $minute += $interval) {
+                $time = sprintf('%02d:%02d', $hour, $minute);
+                $isOccupied = $appointments->contains('start_time', $time);
+                $timeSlots[] = [
+                    'time' => $time,
+                    'isOccupied' => $isOccupied,
+                ];
+            }
+        }
 
         return response()->json($timeSlots);
     }
@@ -160,41 +189,35 @@ class AppointmentController extends Controller
      */
     public function checkAvailability(Request $request)
     {
-        $doctorId = $request->doctor;
-        $date = $request->date;
-        $time = $request->time;
+        $validated = $request->validate([
+            'doctor_id' => 'required|integer|exists:doctors,id',
+            'appointment_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+        ]);
 
-        $scheduleExists = DoctorSchedule::where('doctor_id', $doctorId)
-            ->where('date', $date)
-            ->whereTime('start_time', '<=', $time)
-            ->whereTime('end_time', '>=', $time)
-            ->exists();
-
-        if (!$scheduleExists) {
-            return response()->json(['available' => false, 'message' => 'الطبيب غير متاح في هذا الوقت.']);
-        }
-
-        $isBooked = Appointment::where('doctor_id', $doctorId)
-            ->where('appointment_date', $date)
-            ->where('start_time', $time)
+        $isBooked = Appointment::where('doctor_id', $validated['doctor_id'])
+            ->where('appointment_date', $validated['appointment_date'])
+            ->where('start_time', $validated['start_time'])
             ->exists();
 
         return response()->json(['available' => !$isBooked]);
     }
-    public function cancel($id)
-{
-    $appointment = Appointment::find($id);
 
-    if (!$appointment) {
-        return redirect()->back()->with('error', 'Appointment not found.');
+    public function cancel($id)
+    {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return redirect()->back()->with('error', 'Appointment not found.');
+        }
+
+        // Mark appointment as canceled (or delete if needed)
+        $appointment->status = 'canceled';
+        $appointment->save();
+
+        return redirect()->back()->with('success', 'Appointment canceled successfully.');
     }
 
-    // Mark appointment as canceled (or delete if needed)
-    $appointment->status = 'canceled';
-    $appointment->save();
-
-    return redirect()->back()->with('success', 'Appointment canceled successfully.');
-}
     public function confirmAppointment($id)
     {
         $appointment = Appointment::find($id);
@@ -219,6 +242,4 @@ class AppointmentController extends Controller
 
         return view('your-payment-view', compact('appointment'));
     }
-
-
-  }
+}
