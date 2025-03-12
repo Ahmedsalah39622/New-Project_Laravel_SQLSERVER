@@ -206,6 +206,11 @@ class AppointmentController extends Controller
     public function cancel($id)
     {
         $appointment = Appointment::findOrFail($id);
+
+        if ($appointment->status == 'confirmed') {
+            return response()->json(['message' => 'Confirmed appointments cannot be cancelled.'], 400);
+        }
+
         $appointment->delete();
         return response()->json(['message' => 'Appointment cancelled successfully.']);
     }
@@ -239,5 +244,27 @@ class AppointmentController extends Controller
     {
         $appointment = Appointment::findOrFail($id);
         return response()->json($appointment);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        if ($appointment->status == 'confirmed') {
+            return response()->json(['message' => 'Confirmed appointments cannot be updated.'], 400);
+        }
+
+        $validated = $request->validate([
+            'doctor_id' => 'required|integer|exists:doctors,id',
+            'patient_name' => 'required|string|max:255',
+            'patient_email' => 'required|email|max:255',
+            'patient_phone' => 'nullable|string|max:20',
+            'appointment_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+        ]);
+
+        $appointment->update($validated);
+
+        return response()->json(['message' => 'Appointment updated successfully!', 'appointment' => $appointment]);
     }
 }

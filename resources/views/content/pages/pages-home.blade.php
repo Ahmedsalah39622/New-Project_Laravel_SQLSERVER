@@ -89,7 +89,7 @@
                       </button>
                       <div class="dropdown-menu">
                         <a href="javascript:void(0)" class="dropdown-item view-details">View Details</a>
-                        <a href="javascript:void(0)" class="dropdown-item cancel-appointment">
+                        <a href="javascript:void(0)" class="dropdown-item cancel-appointment @if($appointment->status == 'confirmed') disabled @endif">
                           <i class="ti ti-trash me-1"></i> Cancel
                         </a>
                       </div>
@@ -126,7 +126,7 @@
             const response = await fetch(`/appointment/details/${appointmentId}`);
             const appointment = await response.json();
             alert(`Appointment Details:\n\nPatient: ${appointment.patient_name}\nDate: ${appointment.appointment_date}\nTime: ${appointment.start_time}\nStatus: ${appointment.status}`);
-        } else if (e.target.classList.contains('cancel-appointment')) {
+        } else if (e.target.classList.contains('cancel-appointment') && !e.target.classList.contains('disabled')) {
             const appointmentId = e.target.closest('tr').dataset.appointmentId;
             // Cancel the appointment
             const response = await fetch(`/appointment/cancel/${appointmentId}`, {
