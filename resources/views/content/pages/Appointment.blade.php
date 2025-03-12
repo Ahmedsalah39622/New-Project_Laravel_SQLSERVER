@@ -82,14 +82,31 @@
               <!-- Time slots will be dynamically inserted here -->
             </div>
           </div>
+          <div class="mb-3">
+            <span class="badge bg-success">Available</span>
+            <span class="badge bg-danger">Unavailable</span>
+        </div>
+
         </form>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="confirmAppointment">Confirm Appointment</button>
       </div>
     </div>
   </div>
+</div>
+<!-- Color Legend -->
+<div class="mb-3">
+    <span class="badge bg-success">Available</span>
+    <span class="badge bg-danger">Unavailable</span>
+</div>
+
+<!-- Time Slots (Initially Hidden) -->
+<div id="timeSelection" class="d-none">
+    <h4>Select a Time Slot:</h4>
+    <div id="timeSlots" class="row"></div>
 </div>
 
 @endsection
