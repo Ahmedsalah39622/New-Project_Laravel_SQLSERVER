@@ -84,6 +84,7 @@ Route::get('/appointment/doctors/{specialty}', [AppointmentController::class, 'g
 Route::get('/appointment/doctors/{doctorId}/time-slots', [AppointmentController::class, 'getTimeSlots']);
 Route::post('/appointment/book', [AppointmentController::class, 'store']);
 Route::get('/appointment/doctors/{doctorId}/time-slots', [AppointmentController::class, 'getTimeSlots']);
+Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
 //chatbot
 Route::get('/home', [AppointmentController::class, 'home'])->middleware('auth');
 //Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
@@ -107,6 +108,10 @@ Route::middleware(['auth', 'role:patient'])->group(function () {
 // Doctor Dashboard
 Route::middleware(['auth', 'role:doctor'])->group(function () {
   Route::get('/doctor/dashboard', [DoctorController::class, 'index'])->name('doctor.dashboard');
+});
+
+Route::middleware(['auth', 'role:doctor'])->group(function () {
+    Route::get('/doctor/dashboard', [DoctorDashboardController::class, 'index'])->name('doctor.dashboard');
 });
 
 //permission middleware
@@ -155,6 +160,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 });
 Route::middleware(['auth', 'role:receptionist'])->group(function () {
   Route::get('/receptionist/dashboard', [ReceptionistController::class, 'index'])->name('receptionist.dashboard');
+  Route::delete('/api/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 });
 Route::get('/appointment/timeslots/{doctorId}/{appointmentDate}', [AppointmentController::class, 'getTimeSlots']);
 Route::post('/appointment/book', [AppointmentController::class, 'store']);
@@ -162,3 +168,6 @@ Route::post('/appointment/check-availability', [AppointmentController::class, 'c
 Route::get('/appointment/details/{id}', [AppointmentController::class, 'details']);
 Route::post('/appointment/cancel/{id}', [AppointmentController::class, 'cancel']);
 Route::post('/appointment/update/{id}', [AppointmentController::class, 'update']);
+Route::get('/doctor/dashboard', [DoctorController::class, 'dashboard'])->name('doctor.dashboard');
+Route::delete('/api/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
+Route::post('/api/appointments/{id}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');

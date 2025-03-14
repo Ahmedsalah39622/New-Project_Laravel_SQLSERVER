@@ -62,11 +62,12 @@
         <form id="appointmentForm">
           <div class="mb-3">
             <label for="patientName" class="form-label">Patient Name</label>
-            <input type="text" class="form-control" id="patientName" value="{{ auth()->user()->name }}" readonly>
+            <input type="text" class="form-control" id="patientName" value="{{ auth()->user()->name }}" >
           </div>
           <div class="mb-3">
-            <label for="patientEmail" class="form-label">Patient Email</label>
-            <input type="email" class="form-control" id="patientEmail" value="{{ auth()->user()->email }}" readonly>
+            <label for="patientEmail" class="form-label">Patient Email
+              </label>
+            <input type="email" class="form-control" id="patientEmail" value="{{ auth()->user()->email }}" >
           </div>
           <div class="mb-3">
             <label for="patientPhone" class="form-label">Patient Phone (Optional)</label>
@@ -98,15 +99,36 @@
   </div>
 </div>
 <!-- Color Legend -->
-<div class="mb-3">
-    <span class="badge bg-success">Available</span>
-    <span class="badge bg-danger">Unavailable</span>
-</div>
+
 
 <!-- Time Slots (Initially Hidden) -->
 <div id="timeSelection" class="d-none">
     <h4>Select a Time Slot:</h4>
     <div id="timeSlots" class="row"></div>
+</div>
+
+<!-- Symptoms Modal -->
+<div class="modal fade" id="symptomsModal" tabindex="-1" aria-labelledby="symptomsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="symptomsModalLabel">Fill in Your Symptoms</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="symptomsForm">
+          <div class="mb-3">
+            <label for="symptoms" class="form-label">Symptoms</label>
+            <textarea class="form-control" id="symptoms" rows="4" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="submitSymptoms">Submit Symptoms</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 @endsection
@@ -118,6 +140,11 @@
     const doctorsSection = document.getElementById('doctors-section');
     const doctorsList = document.getElementById('doctors-list');
     const backToClinicsBtn = document.getElementById('back-to-clinics');
+    const symptomsModal = new bootstrap.Modal(document.getElementById('symptomsModal'), {
+        backdrop: true,
+        keyboard: true,
+        focus: true
+    });
     const appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'), {
         backdrop: true,
         keyboard: true,
@@ -127,10 +154,13 @@
     const timeSelection = document.getElementById('timeSelection');
     const timeSlots = document.getElementById('timeSlots');
     const confirmAppointmentBtn = document.getElementById('confirmAppointment');
+    const submitSymptomsBtn = document.getElementById('submitSymptoms');
+    const symptomsTextarea = document.getElementById('symptoms');
 
     let selectedDoctorId;
     let selectedDate;
     let selectedTime;
+    let symptoms;
 
     // Handle date input change
     appointmentDateInput.addEventListener('change', async function () {
@@ -248,9 +278,22 @@
             selectedDate = null;
             selectedTime = null;
 
-            // Show the appointment modal
-            appointmentModal.show();
+            // Show the symptoms modal
+            symptomsModal.show();
         }
+    });
+
+    // Handle submit symptoms button
+    submitSymptomsBtn.addEventListener('click', () => {
+        symptoms = symptomsTextarea.value.trim();
+        if (!symptoms) {
+            alert('Please fill in your symptoms.');
+            return;
+        }
+
+        // Hide the symptoms modal and show the appointment modal
+        symptomsModal.hide();
+        appointmentModal.show();
     });
 
     // Handle confirm appointment button
@@ -259,7 +302,7 @@
         const patientEmail = document.getElementById('patientEmail').value;
         const patientPhone = document.getElementById('patientPhone').value;
 
-        if (!patientName || !patientEmail || !selectedDate || !selectedTime) {
+        if (!patientName || !patientEmail || !selectedDate || !selectedTime || !symptoms) {
             alert('Please fill in all required fields and select a valid date and time.');
             return;
         }
@@ -271,6 +314,7 @@
             patient_phone: patientPhone || null,
             appointment_date: selectedDate,
             start_time: selectedTime,
+            symptoms: symptoms,
         };
 
         try {

@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DoctorSchedule;
+use Illuminate\Http\JsonResponse;
 
 class AppointmentController extends Controller
 {
@@ -266,5 +267,44 @@ class AppointmentController extends Controller
         $appointment->update($validated);
 
         return response()->json(['message' => 'Appointment updated successfully!', 'appointment' => $appointment]);
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        try {
+            $appointment = Appointment::findOrFail($id);
+            $appointment->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete appointment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function confirm($id)
+    {
+        try {
+            $appointment = Appointment::findOrFail($id);
+            $appointment->status = 'confirmed';
+            $appointment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment confirmed successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to confirm appointment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

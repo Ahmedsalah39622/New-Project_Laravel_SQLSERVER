@@ -23,4 +23,8 @@ class Patient extends Model
       'insurance_provider'
   ];
 
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'patient_email', 'email');
+    }
 }

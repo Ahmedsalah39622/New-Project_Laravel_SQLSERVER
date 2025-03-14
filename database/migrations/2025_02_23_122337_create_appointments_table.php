@@ -22,6 +22,8 @@ return new class extends Migration
            $table->time('start_time');
            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
            $table->timestamps();
+           $table->json('selected_symptoms')->nullable();
+
        });
    }
 

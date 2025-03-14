@@ -20,12 +20,14 @@ class Appointment extends Model
         'end_time',
         'status',
         'paid_status',
+        'symptoms',
+
     ];
 
     // Define the relationship with the Doctor model
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
 }

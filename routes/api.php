@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PatientController;
 
 
 Route::get('/user', function (Request $request) {
@@ -30,5 +31,8 @@ Route::get('/appointments/doctors/{doctorId}/time-slots', [AppointmentController
 
 // جلب الأطباء حسب التخصص
 Route::get('/appointments/doctors/{specialty}', [AppointmentController::class, 'getDoctorsBySpecialty']);
+
+// البحث عن مريض
+Route::get('/patient/search', [PatientController::class, 'search']);
 
 
