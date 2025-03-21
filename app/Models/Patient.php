@@ -12,19 +12,15 @@ class Patient extends Model
     protected $table = 'patients'; // Ensure it matches your database table name
 
     protected $fillable = [
-      'name',
-      'email',
-      'password',
-      'age',
-      'birthdate',
-      'gender',
-      'blood_type',
-      'phone',
-      'insurance_provider'
-  ];
+        'name',
+        'email',
+        'phone',
+        'address', // Add relevant fields
+    ];
 
+    // Define relationships if necessary
     public function appointments()
     {
-        return $this->hasMany(Appointment::class, 'patient_email', 'email');
+        return $this->hasMany(Appointment::class);
     }
 }

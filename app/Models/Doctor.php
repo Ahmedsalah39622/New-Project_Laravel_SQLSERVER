@@ -1,17 +1,23 @@
 <?php
-
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
-    // Specify the table if different from the model name
-    // protected $table = 'doctors';
+    use HasFactory;
 
-    // Define fillable properties for mass assignment
     protected $fillable = [
-        'name', 'specialty', 'email', // add other fields as necessary
+        'name',
+        'email',
+        'password',
+        'specialization'
     ];
-}
 
+    // Define the relationship with appointments
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+}

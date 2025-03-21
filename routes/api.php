@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PatientController;
-
+use App\Http\Controllers\Doctor\DashboardController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -17,9 +17,6 @@ Route::get('/test', function () {
 Route::get('/appointments', [AppointmentController::class, 'index']);
 Route::post('/chatbot', [ChatbotController::class, 'getResponse']);
 //Route::get('/appointments', [AppointmentController::class, 'getAppointments']);
-
-
-
 
 Route::get('/appointments', [AppointmentController::class, 'getAppointments']);
 
@@ -35,4 +32,6 @@ Route::get('/appointments/doctors/{specialty}', [AppointmentController::class, '
 // البحث عن مريض
 Route::get('/patient/search', [PatientController::class, 'search']);
 
+// جلب بيانات لوحة القيادة للطبيب
+Route::middleware('auth:api')->get('/doctor/dashboard', [DashboardController::class, 'getDashboardData']);
 

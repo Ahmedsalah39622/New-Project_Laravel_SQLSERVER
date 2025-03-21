@@ -26,6 +26,7 @@ class AppointmentController extends Controller
 
         return view('content.pages.Appointment', compact('specialties'));
 
+
     }
 
     /**
@@ -66,7 +67,7 @@ class AppointmentController extends Controller
             'patient_phone' => $validated['patient_phone'],
             'appointment_date' => $validated['appointment_date'],
             'start_time' => $validated['start_time'],
-            'status' => 'pending',
+            'status' => 'Pending',
         ]);
 
         return response()->json([
@@ -140,7 +141,13 @@ class AppointmentController extends Controller
         }
         else if (Auth::user()->hasRole('doctor'))
         {
-          return view('doctor.dashboard');
+          $appointments = Appointment::where('doctor_id', Auth::user()->id)
+          ->with('patient')
+          ->orderBy('appointment_date', 'desc')
+          ->orderBy('start_time', 'desc')
+          ->get();
+
+      return view('doctor.dashboard', compact('appointments'));
 
         }
         else if (Auth::user()->hasRole('receptionist'))
@@ -148,6 +155,7 @@ class AppointmentController extends Controller
           return view('receptionist.dashboard');
 
         }
+
         $appointments = Appointment::where('patient_email', $patientEmail)
                                    ->with('doctor')
                                    ->orderBy('appointment_date', 'desc')

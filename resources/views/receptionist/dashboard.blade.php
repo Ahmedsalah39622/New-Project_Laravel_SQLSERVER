@@ -116,7 +116,7 @@
             const response = await fetch(`/api/patient/search?general=${encodeURIComponent(generalQuery)}&id=${encodeURIComponent(idQuery)}`);
             const data = await response.json();
 
-            if (data.patient) {
+            if (data.patient) { 
                 document.getElementById('searchResults').classList.remove('d-none');
 
                 // Display patient information including ID
@@ -146,11 +146,11 @@
                             <td>
                                 ${apt.status !== 'confirmed' ? `
                                     <button class="btn btn-success btn-sm me-2" onclick="confirmAppointment(${apt.id})">
-                                        <i class="fas fa-check"></i> Confirm
+                                        <i class="fas fa-check me-1"></i> Confirm
                                     </button>
                                 ` : ''}
                                 <button class="btn btn-danger btn-sm" onclick="deleteAppointment(${apt.id})">
-                                    <i class="fas fa-trash"></i> Delete
+                                    <i class="fas fa-trash me-1"></i> Delete
                                 </button>
                             </td>
                         </tr>
@@ -187,7 +187,10 @@
 
             if (response.ok && data.success) {
                 // Refresh the search results
-                searchPatient(document.getElementById('search').value);
+                searchPatient(
+                    document.getElementById('searchGeneral').value,
+                    document.getElementById('searchId').value
+                );
                 alert('Appointment deleted successfully');
             } else {
                 alert(data.message || 'Failed to delete appointment');
