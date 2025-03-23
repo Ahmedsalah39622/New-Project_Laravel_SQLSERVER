@@ -149,4 +149,4 @@ class DashboardController extends Controller
             ->where('status', $status)
         ->count();
     }
-}
+  }

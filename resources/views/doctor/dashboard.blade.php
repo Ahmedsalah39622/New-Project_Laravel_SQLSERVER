@@ -28,7 +28,7 @@
                         <thead>
                             <tr>
                                 <th>Patient Name</th>
-                                <th>Doctor (Specialization)</th>
+                                <th>Doctor (ID)</th>
                                 <th>Appointment Date</th>
                                 <th>Time</th>
                                 <th>Status</th>
@@ -122,8 +122,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    const doctorId = 1; // Replace with the actual logged-in doctor's ID
-
     async function fetchAllAppointments() {
         try {
             console.log('Fetching all appointments...');
@@ -132,15 +130,12 @@
 
             console.log('Appointments data:', data);
 
-            // Filter appointments by the logged-in doctor's ID
-            const filteredAppointments = data.filter(apt => apt.doctor_id === doctorId);
-
-            if (filteredAppointments.length > 0) {
+            if (data.length > 0) {
                 document.getElementById('allAppointments').classList.remove('d-none');
 
                 // Display all appointments
                 const allAppointmentHistory = document.getElementById('allAppointmentHistory');
-                const appointments = filteredAppointments.map(apt => {
+                const appointments = data.map(apt => {
                     const statusColor = apt.status === 'confirmed' ? 'success' :
                                       apt.status === 'completed' ? 'success' :
                                       apt.status === 'cancelled' ? 'danger' : 'warning';
@@ -148,8 +143,8 @@
                     return `
                         <tr>
                             <td>${apt.patient_name}</td>
-                            <td>${apt.doctor_name}<br>
-                                <small class="text-muted">${apt.doctor_specialization}</small>
+                            <td>${apt.doctor_id}<br>
+                                <small class="text-muted">${apt.doctor ? apt.doctor.specialization : 'N/A'}</small>
                             </td>
                             <td>${apt.appointment_date}</td>
                             <td>${apt.start_time}</td>
@@ -172,16 +167,16 @@
                 allAppointmentHistory.innerHTML = appointments;
 
                 // Calculate and display the counts of appointments
-                const confirmedCount = filteredAppointments.filter(apt => apt.status === 'confirmed' || apt.status === 'completed').length;
-                const pendingCount = filteredAppointments.filter(apt => apt.status === 'pending').length;
-                const cancelledCount = filteredAppointments.filter(apt => apt.status === 'cancelled').length;
+                const confirmedCount = data.filter(apt => apt.status === 'confirmed' || apt.status === 'completed').length;
+                const pendingCount = data.filter(apt => apt.status === 'pending').length;
+                const cancelledCount = data.filter(apt => apt.status === 'cancelled').length;
 
                 document.getElementById('confirmedCount').innerText = confirmedCount;
                 document.getElementById('pendingCount').innerText = pendingCount;
                 document.getElementById('cancelledCount').innerText = cancelledCount;
 
                 // Display the count of all appointments
-                document.getElementById('allAppointmentCount').innerText = `Total Appointments: ${filteredAppointments.length}`;
+                document.getElementById('allAppointmentCount').innerText = `Total Appointments: ${data.length}`;
             } else {
                 document.getElementById('allAppointments').classList.remove('d-none');
                 document.getElementById('allAppointmentHistory').innerHTML = '<tr><td colspan="7">No appointments found.</td></tr>';
