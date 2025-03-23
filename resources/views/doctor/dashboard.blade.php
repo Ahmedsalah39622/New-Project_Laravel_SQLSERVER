@@ -14,30 +14,15 @@
             <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewPatientRecordsModal">View Patient Records</button>
         </div>
         <div class="d-flex gap-2">
-            <input
-                type="text"
-                class="form-control"
-                id="searchGeneral"
-                placeholder="Search by name, email or phone"
-            >
-            <input
-                type="number"
-                class="form-control"
-                id="searchId"
-                placeholder="Search by Patient ID"
-                min="1"
-            >
-            <button class="btn btn-outline-primary" id="searchBtn">Search</button>
-            <button class="btn btn-outline-secondary" id="clearBtn">Clear</button>
+            <button class="btn btn-outline-info" id="showAllBtn">Show All Appointments</button>
         </div>
     </div>
 
-    <!-- Search Results Section -->
-    <div id="searchResults" class="mt-4 d-none">
-        <h3>Search Results</h3>
+    <!-- All Appointments Section -->
+    <div id="allAppointments" class="mt-4">
+        <h3>All Appointments</h3>
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Appointments</h4>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -51,11 +36,39 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="appointmentHistory">
+                        <tbody id="allAppointmentHistory">
                         </tbody>
                     </table>
                 </div>
-                <p id="appointmentCount" class="mt-3"></p>
+                <p id="allAppointmentCount" class="mt-3"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Counts Section -->
+    <div id="appointmentCounts" class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Confirmed Appointments</div>
+                <div class="card-body">
+                    <h5 class="card-title" id="confirmedCount">0</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Pending Appointments</div>
+                <div class="card-body">
+                    <h5 class="card-title" id="pendingCount">0</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Cancelled Appointments</div>
+                <div class="card-body">
+                    <h5 class="card-title" id="cancelledCount">0</h5>
+                </div>
             </div>
         </div>
     </div>
@@ -107,29 +120,34 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    async function searchPatient(generalQuery, idQuery) {
-        if (!generalQuery.trim() && !idQuery.trim()) return;
+    const doctorId = 1; // Replace with the actual logged-in doctor's ID
 
+    async function fetchAllAppointments() {
         try {
-            const response = await fetch(`/api/patient/search?general=${encodeURIComponent(generalQuery)}&id=${encodeURIComponent(idQuery)}`);
-            const data = await response.json();
+            console.log('Fetching all appointments...');
+            const response = await axios.get('/api/appointments');
+            const data = response.data;
 
-            console.log(data); // Log the data for debugging
+            console.log('Appointments data:', data);
 
-            if (data.patient) {
-                document.getElementById('searchResults').classList.remove('d-none');
+            // Filter appointments by the logged-in doctor's ID
+            const filteredAppointments = data.filter(apt => apt.doctor_id === doctorId);
 
-                // Display appointment history with color-coded status
-                const appointmentHistory = document.getElementById('appointmentHistory');
-                const appointments = data.appointments.map(apt => {
+            if (filteredAppointments.length > 0) {
+                document.getElementById('allAppointments').classList.remove('d-none');
+
+                // Display all appointments
+                const allAppointmentHistory = document.getElementById('allAppointmentHistory');
+                const appointments = filteredAppointments.map(apt => {
                     const statusColor = apt.status === 'confirmed' ? 'success' :
                                       apt.status === 'completed' ? 'success' :
                                       apt.status === 'cancelled' ? 'danger' : 'warning';
 
                     return `
                         <tr>
-                            <td>${data.patient.name}</td>
+                            <td>${apt.patient_name}</td>
                             <td>${apt.doctor_name}<br>
                                 <small class="text-muted">${apt.doctor_specialization}</small>
                             </td>
@@ -151,18 +169,28 @@
                     `;
                 }).join('');
 
-                appointmentHistory.innerHTML = appointments;
+                allAppointmentHistory.innerHTML = appointments;
 
-                // Display the count of appointments
-                document.getElementById('appointmentCount').innerText = `Total Appointments: ${data.appointments.length}`;
+                // Calculate and display the counts of appointments
+                const confirmedCount = filteredAppointments.filter(apt => apt.status === 'confirmed' || apt.status === 'completed').length;
+                const pendingCount = filteredAppointments.filter(apt => apt.status === 'pending').length;
+                const cancelledCount = filteredAppointments.filter(apt => apt.status === 'cancelled').length;
+
+                document.getElementById('confirmedCount').innerText = confirmedCount;
+                document.getElementById('pendingCount').innerText = pendingCount;
+                document.getElementById('cancelledCount').innerText = cancelledCount;
+
+                // Display the count of all appointments
+                document.getElementById('allAppointmentCount').innerText = `Total Appointments: ${filteredAppointments.length}`;
             } else {
-                document.getElementById('searchResults').classList.remove('d-none');
-                document.getElementById('appointmentHistory').innerHTML = '<tr><td colspan="7">No appointments found with the given search criteria.</td></tr>';
-                document.getElementById('appointmentCount').innerText = 'Total Appointments: 0';
+                document.getElementById('allAppointments').classList.remove('d-none');
+                document.getElementById('allAppointmentHistory').innerHTML = '<tr><td colspan="7">No appointments found.</td></tr>';
+                document.getElementById('allAppointmentCount').innerText = 'Total Appointments: 0';
             }
         } catch (error) {
-            console.error('Error searching patient:', error);
-            alert('Error searching patient. Please try again.');
+            console.error('Error fetching all appointments:', error);
+            console.error('Error details:', error.response ? error.response.data : error.message);
+            alert('Error fetching all appointments. Please try again.');
         }
     }
 
@@ -173,8 +201,8 @@
         }
 
         try {
-            const response = await fetch(`/api/appointments/${appointmentId}`, {
-                method: 'DELETE',
+            console.log(`Deleting appointment with ID: ${appointmentId}`);
+            const response = await axios.delete(`/api/appointments/${appointmentId}`, {
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
@@ -182,20 +210,20 @@
                 }
             });
 
-            const data = await response.json();
+            const data = response.data;
 
-            if (response.ok && data.success) {
-                // Refresh the search results
-                searchPatient(
-                    document.getElementById('searchGeneral').value,
-                    document.getElementById('searchId').value
-                );
+            console.log('Delete response data:', data);
+
+            if (response.status === 200 && data.success) {
+                // Refresh the appointments
+                fetchAllAppointments();
                 alert('Appointment deleted successfully');
             } else {
                 alert(data.message || 'Failed to delete appointment');
             }
         } catch (error) {
             console.error('Error deleting appointment:', error);
+            console.error('Error details:', error.response ? error.response.data : error.message);
             alert('Error deleting appointment. Please try again.');
         }
     }
@@ -207,8 +235,8 @@
         }
 
         try {
-            const response = await fetch(`/api/appointments/${appointmentId}/confirm`, {
-                method: 'POST',
+            console.log(`Confirming appointment with ID: ${appointmentId}`);
+            const response = await axios.post(`/api/appointments/${appointmentId}/confirm`, {}, {
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
@@ -216,51 +244,26 @@
                 }
             });
 
-            const data = await response.json();
+            const data = response.data;
 
-            if (response.ok && data.success) {
-                // Refresh the search results
-                searchPatient(
-                    document.getElementById('searchGeneral').value,
-                    document.getElementById('searchId').value
-                );
+            console.log('Confirm response data:', data);
+
+            if (response.status === 200 && data.success) {
+                // Refresh the appointments
+                fetchAllAppointments();
                 alert('Appointment confirmed successfully');
             } else {
                 alert(data.message || 'Failed to confirm appointment');
             }
         } catch (error) {
             console.error('Error confirming appointment:', error);
+            console.error('Error details:', error.response ? error.response.data : error.message);
             alert('Error confirming appointment. Please try again.');
         }
     }
 
-    // Add event listener for Enter key press on both inputs
-    document.getElementById('searchGeneral').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            searchPatient(
-                document.getElementById('searchGeneral').value,
-                document.getElementById('searchId').value
-            );
-        }
-    });
-
-    document.getElementById('searchId').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            searchPatient(
-                document.getElementById('searchGeneral').value,
-                document.getElementById('searchId').value
-            );
-        }
-    });
-
-    // Update the click handler for the search button
-    document.getElementById('searchBtn').addEventListener('click', function() {
-        searchPatient(
-            document.getElementById('searchGeneral').value,
-            document.getElementById('searchId').value
-        );
+    document.getElementById('showAllBtn').addEventListener('click', function() {
+        fetchAllAppointments();
     });
 
     // Add clear functionality
@@ -275,6 +278,7 @@
         // Clear results content
         document.getElementById('appointmentHistory').innerHTML = '';
         document.getElementById('appointmentCount').innerText = '';
+        document.getElementById('appointmentCounts').classList.add('d-none');
     });
 </script>
 @endsection
