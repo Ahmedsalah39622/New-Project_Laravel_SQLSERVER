@@ -116,7 +116,7 @@
             const response = await fetch(`/api/patient/search?general=${encodeURIComponent(generalQuery)}&id=${encodeURIComponent(idQuery)}`);
             const data = await response.json();
 
-            if (data.patient) { 
+            if (data.patient) {
                 document.getElementById('searchResults').classList.remove('d-none');
 
                 // Display patient information including ID

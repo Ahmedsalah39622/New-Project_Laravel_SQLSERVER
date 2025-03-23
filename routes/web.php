@@ -23,7 +23,7 @@ use App\Http\Controllers\pages\AdminDashboardController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\UserController;
 use app\Http\Controllers\pages\PatientController;
-use App\Http\Controllers\DoctorController;
+
 use App\Http\Controllers\pages\ReceptionistController ;
 use App\Http\Controllers\Doctor\DashboardController;
 
@@ -175,42 +175,9 @@ Route::get('/doctor/dashboard', [App\Http\Controllers\Doctor\DashboardController
     ->name('doctor.dashboard')
     ->middleware(['auth', 'role:doctor']);
 
-Route::middleware(['auth', 'doctor'])->group(function () {
-    Route::prefix('doctor')->group(function () {
-        Route::get('/dashboard', [DoctorDashboardController::class, 'index'])->name('doctor.dashboard'); // Updated namespace
-        Route::post('/schedule', [DoctorDashboardController::class, 'updateAvailability']);
-        Route::post('/consultation/{appointment}', [DoctorDashboardController::class, 'startConsultation']);
-        Route::get('/appointment/{appointment}/details', [DoctorDashboardController::class, 'viewPatientDetails']);
-        Route::post('/appointment/{appointment}/reschedule', [DoctorDashboardController::class, 'rescheduleAppointment']);
-    });
-});
-
-Route::middleware(['auth', 'doctor'])->group(function () {
-    Route::prefix('doctor')->group(function () {
-        Route::get('/dashboard', [DoctorDashboardController::class, 'index'])->name('doctor.dashboard');
-        Route::post('/consultation/{appointment}', [DoctorDashboardController::class, 'startConsultation']);
-        Route::get('/appointment/{appointment}/details', [DoctorDashboardController::class, 'viewPatientDetails']);
-        Route::post('/appointment/{appointment}/reschedule', [DoctorDashboardController::class, 'rescheduleAppointment']);
-    });
-});
 
 // Route for the doctor's dashboard
-Route::get('/doctor/dashboard', [DashboardController::class, 'index'])->name('doctor.dashboard');
 
-// Route to update the status of an appointment
-Route::post('/doctor/appointments/{id}/status/{status}', [DashboardController::class, 'updateStatus'])->name('doctor.appointments.updateStatus');
-
-Route::middleware(['auth'])->group(function () {
-    // Doctor Dashboard
-    Route::get('/doctor/dashboard', [DashboardController::class, 'index'])->name('doctor.dashboard');
-
-    // Update Appointment Status
-    Route::post('/doctor/appointments/{id}/status/{status}', [DashboardController::class, 'updateStatus'])->name('doctor.appointments.updateStatus');
-});
-
-
-Route::get('/doctor/dashboard', [DashboardController::class, 'index'])->name('doctor.dashboard');
-Route::get('/doctor/dashboard', [DashboardController::class, 'index'])->name('doctor.dashboard');
 
 
 

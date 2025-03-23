@@ -2,183 +2,279 @@
 
 @section('title', 'Doctor Dashboard')
 
-@php
-use App\Http\Controllers\Doctor\DashboardController;
-use Illuminate\Support\Facades\Auth;
-@endphp
-
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
-    <!-- Welcome Card -->
-    <div class="col-lg-12 mb-4 order-0">
+<div class="container">
+    <h2 class="text-primary">Doctor Dashboard</h2>
+    <p>Manage appointments and patients efficiently.</p>
+
+    <div class="d-flex justify-content-between mb-4">
+        <div>
+            <a href="{{ url('/appointment') }}" class="btn btn-primary">Schedule Appointment</a>
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#managePatientModal">Manage Patient Data</button>
+            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewPatientRecordsModal">View Patient Records</button>
+        </div>
+        <div class="d-flex gap-2">
+            <input
+                type="text"
+                class="form-control"
+                id="searchGeneral"
+                placeholder="Search by name, email or phone"
+            >
+            <input
+                type="number"
+                class="form-control"
+                id="searchId"
+                placeholder="Search by Patient ID"
+                min="1"
+            >
+            <button class="btn btn-outline-primary" id="searchBtn">Search</button>
+            <button class="btn btn-outline-secondary" id="clearBtn">Clear</button>
+        </div>
+    </div>
+
+    <!-- Search Results Section -->
+    <div id="searchResults" class="mt-4 d-none">
+        <h3>Search Results</h3>
         <div class="card">
-            <div class="d-flex align-items-end row">
-                <div class="col-sm-7">
-                    <div class="card-body">
-                        <h5 class="card-title text-primary">Welcome Dr. {{ Auth::user()->name }}! 🎉</h5>
-                    </div>
+            <div class="card-body">
+                <h4 class="card-title">Appointments</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Doctor (Specialization)</th>
+                                <th>Appointment Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentHistory">
+                        </tbody>
+                    </table>
+                </div>
+                <p id="appointmentCount" class="mt-3"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Patient Data Modal -->
+    <div class="modal fade" id="managePatientModal" tabindex="-1" aria-labelledby="managePatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="managePatientModalLabel">Manage Patient Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form content for managing patient data -->
+                    <form>
+                        <div class="mb-3">
+                            <label for="patientName" class="form-label">Patient Name</label>
+                            <input type="text" class="form-control" id="patientName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientEmail" class="form-label">Patient Email</label>
+                            <input type="email" class="form-control" id="patientEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientPhone" class="form-label">Patient Phone</label>
+                            <input type="tel" class="form-control" id="patientPhone" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row">
-        <!-- Today's Appointments Card -->
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar">
-                                <span class="avatar-initial rounded-circle bg-label-primary">
-                                    <i class="bx bx-calendar fs-4"></i>
-                                </span>
-                            </div>
-                            <div class="card-info">
-                                <small>Today's Appointments</small>
-                                <h3 id="todayAppointments">Loading...</h3>
-                            </div>
-                        </div>
-                    </div>
+    <!-- View Patient Records Modal -->
+    <div class="modal fade" id="viewPatientRecordsModal" tabindex="-1" aria-labelledby="viewPatientRecordsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewPatientRecordsModalLabel">View Patient Records</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content for viewing patient records -->
+                    <p>Patient records will be displayed here.</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Total Appointments Card -->
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar">
-                                <span class="avatar-initial rounded-circle bg-label-success">
-                                    <i class="bx bx-user fs-4"></i>
-                                </span>
-                            </div>
-                            <div class="card-info">
-                                <small>Total Appointments</small>
-                                <h3 id="totalAppointments">Loading...</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Appointments -->
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar">
-                                <span class="avatar-initial rounded-circle bg-label-warning">
-                                    <i class="bx bx-time fs-4"></i>
-                                </span>
-                            </div>
-                            <div class="card-info">
-                                <small>Pending Appointments</small>
-                                <h3>Loading...</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Completed Appointments -->
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar">
-                                <span class="avatar-initial rounded-circle bg-label-info">
-                                    <i class="bx bx-check fs-4"></i>
-                                </span>
-                            </div>
-                            <div class="card-info">
-                                <small>Completed Appointments</small>
-                                <h3>Loading...</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cancelled Appointments -->
-        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar">
-                                <span class="avatar-initial rounded-circle bg-label-danger">
-                                    <i class="bx bx-x fs-4"></i>
-                                </span>
-                            </div>
-                            <div class="card-info">
-                                <small>Cancelled Appointments</small>
-                                <h3>Loading...</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirmed Appointments Table -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title">Confirmed Appointments</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Patient Name</th>
-                        <th>Appointment Date</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                    </tr>
-                </thead>
-                <tbody id="confirmedAppointmentsTable">
-                    <!-- Data will be populated by JavaScript -->
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('/doctor/dashboard/data')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('todayAppointments').innerText = data.todayAppointments;
-                document.getElementById('totalAppointments').innerText = data.totalAppointments;
-                document.getElementById('pendingAppointments').innerText = data.pendingAppointments;
-                document.getElementById('completedAppointments').innerText = data.completedAppointments;
-                document.getElementById('cancelledAppointments').innerText = data.cancelledAppointments;
+    async function searchPatient(generalQuery, idQuery) {
+        if (!generalQuery.trim() && !idQuery.trim()) return;
 
-                const confirmedAppointmentsTable = document.getElementById('confirmedAppointmentsTable');
-                confirmedAppointmentsTable.innerHTML = '';
-                data.confirmedAppointments.forEach(appointment => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${appointment.patient_name}</td>
-                        <td>${appointment.appointment_date}</td>
-                        <td>${appointment.start_time}</td>
-                        <td>${appointment.end_time}</td>
+        try {
+            const response = await fetch(`/api/patient/search?general=${encodeURIComponent(generalQuery)}&id=${encodeURIComponent(idQuery)}`);
+            const data = await response.json();
+
+            console.log(data); // Log the data for debugging
+
+            if (data.patient) {
+                document.getElementById('searchResults').classList.remove('d-none');
+
+                // Display appointment history with color-coded status
+                const appointmentHistory = document.getElementById('appointmentHistory');
+                const appointments = data.appointments.map(apt => {
+                    const statusColor = apt.status === 'confirmed' ? 'success' :
+                                      apt.status === 'completed' ? 'success' :
+                                      apt.status === 'cancelled' ? 'danger' : 'warning';
+
+                    return `
+                        <tr>
+                            <td>${data.patient.name}</td>
+                            <td>${apt.doctor_name}<br>
+                                <small class="text-muted">${apt.doctor_specialization}</small>
+                            </td>
+                            <td>${apt.appointment_date}</td>
+                            <td>${apt.start_time}</td>
+                            <td><span class="badge bg-${statusColor}">${apt.status}</span></td>
+                            <td>${apt.notes || 'N/A'}</td>
+                            <td>
+                                ${apt.status !== 'confirmed' ? `
+                                    <button class="btn btn-success btn-sm me-2" onclick="confirmAppointment(${apt.id})">
+                                        <i class="fas fa-check me-1"></i> Confirm
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-danger btn-sm" onclick="deleteAppointment(${apt.id})">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
                     `;
-                    confirmedAppointmentsTable.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error fetching dashboard data:', error));
+                }).join('');
+
+                appointmentHistory.innerHTML = appointments;
+
+                // Display the count of appointments
+                document.getElementById('appointmentCount').innerText = `Total Appointments: ${data.appointments.length}`;
+            } else {
+                document.getElementById('searchResults').classList.remove('d-none');
+                document.getElementById('appointmentHistory').innerHTML = '<tr><td colspan="7">No appointments found with the given search criteria.</td></tr>';
+                document.getElementById('appointmentCount').innerText = 'Total Appointments: 0';
+            }
+        } catch (error) {
+            console.error('Error searching patient:', error);
+            alert('Error searching patient. Please try again.');
+        }
+    }
+
+    // Add delete appointment function
+    async function deleteAppointment(appointmentId) {
+        if (!confirm('Are you sure you want to delete this appointment?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/appointments/${appointmentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Refresh the search results
+                searchPatient(
+                    document.getElementById('searchGeneral').value,
+                    document.getElementById('searchId').value
+                );
+                alert('Appointment deleted successfully');
+            } else {
+                alert(data.message || 'Failed to delete appointment');
+            }
+        } catch (error) {
+            console.error('Error deleting appointment:', error);
+            alert('Error deleting appointment. Please try again.');
+        }
+    }
+
+    // Add the confirmAppointment function
+    async function confirmAppointment(appointmentId) {
+        if (!confirm('Are you sure you want to confirm this appointment?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/appointments/${appointmentId}/confirm`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Refresh the search results
+                searchPatient(
+                    document.getElementById('searchGeneral').value,
+                    document.getElementById('searchId').value
+                );
+                alert('Appointment confirmed successfully');
+            } else {
+                alert(data.message || 'Failed to confirm appointment');
+            }
+        } catch (error) {
+            console.error('Error confirming appointment:', error);
+            alert('Error confirming appointment. Please try again.');
+        }
+    }
+
+    // Add event listener for Enter key press on both inputs
+    document.getElementById('searchGeneral').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchPatient(
+                document.getElementById('searchGeneral').value,
+                document.getElementById('searchId').value
+            );
+        }
+    });
+
+    document.getElementById('searchId').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchPatient(
+                document.getElementById('searchGeneral').value,
+                document.getElementById('searchId').value
+            );
+        }
+    });
+
+    // Update the click handler for the search button
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        searchPatient(
+            document.getElementById('searchGeneral').value,
+            document.getElementById('searchId').value
+        );
+    });
+
+    // Add clear functionality
+    document.getElementById('clearBtn').addEventListener('click', function() {
+        // Clear input fields
+        document.getElementById('searchGeneral').value = '';
+        document.getElementById('searchId').value = '';
+
+        // Hide search results
+        document.getElementById('searchResults').classList.add('d-none');
+
+        // Clear results content
+        document.getElementById('appointmentHistory').innerHTML = '';
+        document.getElementById('appointmentCount').innerText = '';
     });
 </script>
 @endsection
-

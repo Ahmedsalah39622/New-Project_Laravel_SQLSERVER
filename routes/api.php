@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\PatientController;
 use App\Http\Controllers\Doctor\DashboardController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\DoctorDashboardController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,5 +34,8 @@ Route::get('/appointments/doctors/{specialty}', [AppointmentController::class, '
 Route::get('/patient/search', [PatientController::class, 'search']);
 
 // جلب بيانات لوحة القيادة للطبيب
-Route::middleware('auth:api')->get('/doctor/dashboard', [DashboardController::class, 'getDashboardData']);
+Route::middleware('auth:api')->get('/api/doctor/dashboard', [DoctorDashboardController::class, 'getDashboardData']);
+
+Route::get('/doctor/dashboard/patient/{patientId}', [DashboardController::class, 'getPatientData']);
+Route::get('/doctor/dashboard/data', [DashboardController::class, 'getDashboardData']);
 

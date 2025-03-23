@@ -72,12 +72,12 @@
         enabled: false
       },
       stroke: {
-        width: 2,
+        width: 5,
         curve: 'smooth'
       },
       series: [
         {
-          data: [400, 200, 650, 500]
+          data: [100,10,1,40,,50,11,34,21,554,6,64]
         }
       ],
       xaxis: {
