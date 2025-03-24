@@ -17,6 +17,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+
         try {
             $doctorId = Auth::id();
             Log::info('Doctor ID: ' . $doctorId);
@@ -140,6 +141,12 @@ class DashboardController extends Controller
             Log::error('Error in getDoctorSchedule method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }   public function dashboard()
+    {
+        $doctor = Auth::user()->doctor;
+        $doctorName = $doctor ? $doctor->name : 'Doctor';
+
+        return view('doctor.dashboard', compact('doctorName'));
     }
 
     private function countAppointmentsByStatus($doctorId, $status)
@@ -149,4 +156,5 @@ class DashboardController extends Controller
             ->where('status', $status)
         ->count();
     }
-  }
+}
+
