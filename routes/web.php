@@ -26,6 +26,8 @@ use app\Http\Controllers\pages\PatientController;
 
 use App\Http\Controllers\pages\ReceptionistController ;
 use App\Http\Controllers\Doctor\DashboardController;
+use App\Http\Controllers\Doctor\addprescription;
+use App\Http\Controllers\Doctor\AddPrescriptionController;
 
 // Main Page Route
 Route::get('/', [Main::class, 'index'])->name('pages-home');
@@ -178,8 +180,13 @@ Route::get('/doctor/dashboard', [App\Http\Controllers\Doctor\DashboardController
 
 // Route for the doctor's dashboard
 
-
-
-
 Route::get('/doctor/dashboard', [DashboardController::class, 'index'])->name('doctor.dashboard');
 Route::get('/doctor/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('doctor.dashboard.data');
+
+Route::get('/addprescription', [AddPrescriptionController::class, 'index'])->name('doctor.addprescription');
+
+// Route for adding prescription
+Route::middleware(['auth', 'role:doctor'])->group(function () {
+    Route::get('/addprescription/{appointmentId?}', [AddPrescriptionController::class, 'index'])->name('doctor.addprescription');
+    Route::post('/addprescription', [AddPrescriptionController::class, 'store'])->name('doctor.addprescription.store');
+});

@@ -123,59 +123,6 @@
             </div>
         </div>
     </div>
-
-    <!-- View Appointment Modal -->
-    <div class="modal fade" id="viewAppointmentModal" tabindex="-1" aria-labelledby="viewAppointmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewAppointmentModalLabel">Appointment Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="appointmentDetails">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>Patient Information</h4>
-                                <p id="patientNameDetail"></p>
-                                <p id="patientEmailDetail"></p>
-                                <p id="patientPhoneDetail"></p>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <h4>Appointment Information</h4>
-                                <p id="appointmentDateDetail"></p>
-                                <p id="appointmentTimeDetail"></p>
-                                <p id="appointmentStatusDetail"></p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>Diagnosis</h4>
-                                <p id="diagnosisDetail"></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>Prescription</h4>
-                                <p id="prescriptionDetail"></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>Notes</h4>
-                                <p id="notesDetail"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="printAppointmentDetails()">Print</button>
-                    <button type="button" class="btn btn-success" onclick="completeAppointment()">Complete</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -258,21 +205,8 @@
     // Add view appointment function
     function viewAppointment(appointmentId) {
         currentAppointmentId = appointmentId;
-        // Fetch appointment details and populate the modal fields
-        // For demonstration, we'll use dummy data
-        document.getElementById('patientNameDetail').innerText = 'Patient Name for appointment ID: ' + appointmentId;
-        document.getElementById('patientEmailDetail').innerText = 'patient@example.com';
-        document.getElementById('patientPhoneDetail').innerText = '123-456-7890';
-        document.getElementById('appointmentDateDetail').innerText = 'Appointment Date: ' + new Date().toISOString().split('T')[0];
-        document.getElementById('appointmentTimeDetail').innerText = 'Appointment Time: 10:00 AM';
-        document.getElementById('appointmentStatusDetail').innerText = 'Status: Confirmed';
-        document.getElementById('diagnosisDetail').innerText = 'Diagnosis details for appointment ID: ' + appointmentId;
-        document.getElementById('prescriptionDetail').innerText = 'Prescription details for appointment ID: ' + appointmentId;
-        document.getElementById('notesDetail').innerText = 'Notes for appointment ID: ' + appointmentId;
-
-        // Show the modal
-        const viewAppointmentModal = new bootstrap.Modal(document.getElementById('viewAppointmentModal'));
-        viewAppointmentModal.show();
+        // Redirect to the app-invoice-add page with the appointment ID
+        window.location.href = `/addprescription/${appointmentId}`;
     }
 
     // Add complete appointment function
@@ -299,9 +233,6 @@
                 // Refresh the appointments
                 fetchAllAppointments();
                 alert('Appointment marked as completed successfully');
-                // Hide the modal
-                const viewAppointmentModal = bootstrap.Modal.getInstance(document.getElementById('viewAppointmentModal'));
-                viewAppointmentModal.hide();
             } else {
                 alert(data.message || 'Failed to complete appointment');
             }
@@ -344,17 +275,6 @@
             console.error('Error details:', error.response ? error.response.data : error.message);
             alert('Error deleting appointment. Please try again.');
         }
-    }
-
-    // Print appointment details
-    function printAppointmentDetails() {
-        const printContents = document.getElementById('appointmentDetails').innerHTML;
-        const originalContents = document.body.innerHTML;
-
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-        window.location.reload();
     }
 
     // Set greeting message based on the current time
