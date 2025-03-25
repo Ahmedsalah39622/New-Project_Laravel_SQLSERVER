@@ -27,6 +27,13 @@
 @endsection
 
 @section('content')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Doctor:', @json($doctor));
+        console.log('Appointment:', @json($appointment));
+    });
+</script>
+
 <div class="row prescription-add">
   <!-- Prescription Add-->
   <div class="col-lg-9 col-12 mb-lg-0 mb-6">
@@ -52,20 +59,20 @@
               <dd class="col-sm-7">
                 <div class="input-group input-group-merge disabled">
                   <span class="input-group-text">#</span>
-                  <input type="text" class="form-control" disabled placeholder="3905" value="3905" id="prescriptionId" />
+                  <input type="text" class="form-control" disabled placeholder="Auto-generated" id="prescriptionId" />
                 </div>
               </dd>
               <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-end">
                 <span class="fw-normal">Date Issued:</span>
               </dt>
               <dd class="col-sm-7">
-                <input type="text" class="form-control prescription-date" placeholder="YYYY-MM-DD" />
+                <input type="text" class="form-control prescription-date" value="{{ date('Y-m-d') }}" disabled />
               </dd>
               <dt class="col-sm-5 d-md-flex align-items-center justify-content-end">
                 <span class="fw-normal">Due Date:</span>
               </dt>
               <dd class="col-sm-7 mb-0">
-                <input type="text" class="form-control due-date" placeholder="YYYY-MM-DD" />
+                <input type="text" class="form-control due-date" value="{{ date('Y-m-d', strtotime('+7 days')) }}" disabled />
               </dd>
             </dl>
           </div>
@@ -77,16 +84,14 @@
         <div class="row">
           <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-6">
             <h6>Patient Information:</h6>
-            <select class="form-select mb-4 w-50">
-              <option value="Jordan Stevenson">Jordan Stevenson</option>
-              <option value="Wesley Burland">Wesley Burland</option>
-              <option value="Vladamir Koschek">Vladamir Koschek</option>
-              <option value="Tyne Widmore">Tyne Widmore</option>
-            </select>
-            <p class="mb-1">Shelby Company Limited</p>
-            <p class="mb-1">Small Heath, B10 0HF, UK</p>
-            <p class="mb-1">718-986-6062</p>
-            <p class="mb-0">peakyFBlinders@gmail.com</p>
+            <p class="mb-1">Name: {{ $appointment->patient_name }}</p>
+            <p class="mb-1">Address: {{ $appointment->patient_address }}</p>
+            <p class="mb-1">Phone: {{ $appointment->patient_phone }}</p>
+            <p class="mb-1">Email: {{ $appointment->patient_email }}</p>
+            <p class="mb-1">Date of Birth: {{ $appointment->patient_dob }}</p>
+            <p class="mb-1">Gender: {{ $appointment->patient_gender }}</p>
+            <p class="mb-1">Medical History: {{ $appointment->patient_medical_history }}</p>
+            <p class="mb-0">Allergies: {{ $appointment->patient_allergies }}</p>
           </div>
           <div class="col-md-6 col-sm-7">
             <h6>Doctor Information:</h6>
@@ -94,19 +99,19 @@
               <tbody>
                 <tr>
                   <td class="pe-4">Doctor Name:</td>
-                  <td>Dr. John Doe</td>
+                  <td>{{ $doctor->name }}</td>
                 </tr>
                 <tr>
                   <td class="pe-4">Specialization:</td>
-                  <td>Cardiologist</td>
+                  <td>{{ $doctor->specialization }}</td>
                 </tr>
                 <tr>
                   <td class="pe-4">Contact:</td>
-                  <td>+1 (123) 456 7891</td>
+                  <td>{{ $doctor->phone }}</td>
                 </tr>
                 <tr>
                   <td class="pe-4">Email:</td>
-                  <td>dr.johndoe@example.com</td>
+                  <td>{{ $doctor->email }}</td>
                 </tr>
               </tbody>
             </table>
@@ -115,18 +120,20 @@
       </div>
       <hr class="mt-0 mb-6">
       <div class="card-body pt-0 px-0">
-        <form class="source-item">
+        <form id="prescription-form" class="source-item" method="POST" action="{{ route('doctor.addprescription.store') }}">
+          @csrf
+          <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
           <div class="mb-4" data-repeater-list="group-a">
             <div class="repeater-wrapper pt-0 pt-md-9" data-repeater-item>
               <div class="d-flex border rounded position-relative pe-0">
                 <div class="row w-100 p-6">
                   <div class="col-md-6 col-12 mb-md-0 mb-4">
-                    <p class="h6 repeater-title">Diagnosis</p>
-                    <textarea class="form-control" rows="2" placeholder="Enter diagnosis details"></textarea>
+                    <p class="h6 repeater-title">Drugs</p>
+                    <textarea class="form-control" name="drugs[]" rows="2" placeholder="Enter drug details"></textarea>
                   </div>
                   <div class="col-md-6 col-12 mb-md-0 mb-4">
-                    <p class="h6 repeater-title">Prescription</p>
-                    <textarea class="form-control" rows="2" placeholder="Enter prescription details"></textarea>
+                    <p class="h6 repeater-title">Dosage</p>
+                    <textarea class="form-control" name="dosage[]" rows="2" placeholder="Enter dosage details"></textarea>
                   </div>
                 </div>
                 <div class="d-flex flex-column align-items-center justify-content-between border-start p-2">
@@ -163,11 +170,13 @@
   <div class="col-lg-3 col-12 prescription-actions">
     <div class="card mb-6">
       <div class="card-body">
+        <button type="submit" form="prescription-form" class="btn btn-primary d-grid w-100 mb-4">
+          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-save ti-xs me-2"></i>Save Prescription</span>
+        </button>
         <button class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendPrescriptionOffcanvas">
           <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Prescription</span>
         </button>
         <a href="{{url('app/prescription/preview')}}" class="btn btn-label-secondary d-grid w-100 mb-4">Preview</a>
-        <button type="button" class="btn btn-label-secondary d-grid w-100">Save</button>
       </div>
     </div>
     <div>

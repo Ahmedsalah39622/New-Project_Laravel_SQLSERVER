@@ -190,3 +190,6 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
     Route::get('/addprescription/{appointmentId?}', [AddPrescriptionController::class, 'index'])->name('doctor.addprescription');
     Route::post('/addprescription', [AddPrescriptionController::class, 'store'])->name('doctor.addprescription.store');
 });
+
+
+Route::post('/prescriptions/store', [AddPrescriptionController::class, 'store'])->name('prescriptions.store');
