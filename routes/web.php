@@ -23,10 +23,10 @@ use App\Http\Controllers\pages\AdminDashboardController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\UserController;
 use app\Http\Controllers\pages\PatientController;
+use App\Http\Controllers\CompletedPrescriptionController;
 
 use App\Http\Controllers\pages\ReceptionistController ;
 use App\Http\Controllers\Doctor\DashboardController;
-use App\Http\Controllers\Doctor\addprescription;
 use App\Http\Controllers\Doctor\AddPrescriptionController;
 
 // Main Page Route
@@ -191,5 +191,5 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
     Route::post('/addprescription', [AddPrescriptionController::class, 'store'])->name('doctor.addprescription.store');
 });
 
-
 Route::post('/prescriptions/store', [AddPrescriptionController::class, 'store'])->name('prescriptions.store');
+Route::post('/doctor/completedprescriptions/store', [CompletedPrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');

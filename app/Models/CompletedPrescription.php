@@ -9,12 +9,12 @@ class CompletedPrescription extends Model
 {
     use HasFactory;
 
+    protected $table = 'completed_prescriptions';
+
     protected $fillable = [
-        'patient_id',
-        'doctor_id',
-        'date_issued',
-        'due_date',
+        'appointment_id',
         'drugs',
         'dosage',
+        'notes',
     ];
 }

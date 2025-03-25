@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Doctor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Appointment;
 use App\Models\CompletedPrescription; // Import the CompletedPrescription model
 
@@ -26,20 +27,29 @@ class AddPrescriptionController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Store method called');
+        Log::info('Request data: ', $request->all());
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'drugs' => 'required|array',
             'dosage' => 'required|array',
+            'notes' => 'nullable|string',
         ]);
 
+        $appointment = Appointment::find($request->appointment_id);
+
         $prescription = new CompletedPrescription();
-        $prescription->patient_id = Appointment::find($request->appointment_id)->patient_id;
+        $prescription->patient_id = $appointment->patient_id;
         $prescription->doctor_id = Auth::id();
         $prescription->date_issued = now(); // Set date issued to current date
         $prescription->due_date = now()->addDays(7); // Set due date to 7 days after date issued
         $prescription->drugs = json_encode($request->drugs);
         $prescription->dosage = json_encode($request->dosage);
+        $prescription->notes = $request->notes; // Store notes if provided
         $prescription->save();
+
+        Log::info('Prescription saved: ', $prescription->toArray());
 
         return redirect()->route('doctor.addprescription', ['appointmentId' => $request->appointment_id])->with('success', 'Prescription saved successfully.');
     }
