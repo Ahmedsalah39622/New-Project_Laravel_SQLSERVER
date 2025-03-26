@@ -85,13 +85,7 @@
           <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-6">
             <h6>Patient Information:</h6>
             <p class="mb-1">Name: {{ $appointment->patient_name }}</p>
-            <p class="mb-1">Address: {{ $appointment->patient_address }}</p>
-            <p class="mb-1">Phone: {{ $appointment->patient_phone }}</p>
-            <p class="mb-1">Email: {{ $appointment->patient_email }}</p>
-            <p class="mb-1">Date of Birth: {{ $appointment->patient_dob }}</p>
-            <p class="mb-1">Gender: {{ $appointment->patient_gender }}</p>
-            <p class="mb-1">Medical History: {{ $appointment->patient_medical_history }}</p>
-            <p class="mb-0">Allergies: {{ $appointment->patient_allergies }}</p>
+            <p class="mb-0">ID: {{ $appointment->patient }}</p>
           </div>
           <div class="col-md-6 col-sm-7">
             <h6>Doctor Information:</h6>
@@ -123,6 +117,7 @@
         <form id="prescription-form" class="source-item" method="POST" action="{{ route('doctor.completedprescriptions.store') }}">
           @csrf
           <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
+          <input type="hidden" name="prescription_id" id="prescription_id" value="">
           <div class="mb-4" data-repeater-list="group-a">
             <div class="repeater-wrapper pt-0 pt-md-9" data-repeater-item>
               <div class="d-flex border rounded position-relative pe-0">
@@ -186,6 +181,9 @@
           <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Prescription</span>
         </button>
         <a href="{{url('app/prescription/preview')}}" class="btn btn-label-secondary d-grid w-100 mb-4">Preview</a>
+        <button type="button" class="btn btn-secondary d-grid w-100 mb-4" onclick="printPrescription()">
+          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-printer ti-xs me-2"></i>Print Prescription</span>
+        </button>
       </div>
     </div>
     <div>
@@ -221,26 +219,38 @@
 
 <script>
 document.getElementById('prescription-form').addEventListener('submit', function(e) {
-    // Get form data
+    e.preventDefault(); // Prevent actual form submission for testing
     const formData = new FormData(this);
-    const data = {
-        drugs: formData.getAll('group-a[0][drugs]'),
-        dosage: formData.getAll('group-a[0][dosage]'),
-        notes: formData.get('notes'),
-        appointment_id: formData.get('appointment_id')
-    };
 
-    // Debug log
-    console.log('Submitting prescription data:', data);
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
 
-    // Allow form submission to proceed
-    // e.preventDefault();
+    // Allow submission only for debugging purposes
+    this.submit();
 });
 
 // Add success message handler
 @if(session('success'))
     console.log('Prescription saved successfully:', @json(session('success')));
+    alert('Prescription saved successfully!');
 @endif
+
+function printPrescription() {
+    const printContents = document.querySelector('.prescription-add').innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+}
+
+// Redirect to preview page after completing prescription
+document.querySelector('button.btn-success').addEventListener('click', function() {
+    document.getElementById('prescription-form').addEventListener('submit', function() {
+        window.location.href = "{{ url('doctor/prescription/previewprescription') }}";
+    });
+});
 </script>
 @endsection
 

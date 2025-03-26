@@ -12,6 +12,7 @@ use App\Models\Patient;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Exception;
+use App\Models\Prescription;
 
 class DashboardController extends Controller
 {
@@ -155,6 +156,35 @@ class DashboardController extends Controller
             ->where('doctor_id', $doctorId)
             ->where('status', $status)
         ->count();
+    }
+    public function storeCompletedPrescription(Request $request)
+    {
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id',
+            'group-a.*.drugs' => 'required|string',
+            'group-a.*.dosage' => 'required|string',
+            'notes' => 'required|string',
+        ]);
+
+        Log::info('Form data:', $request->all());
+
+        foreach ($request->input('group-a') as $item) {
+            Log::info('Creating prescription:', [
+                'appointment_id' => $request->appointment_id,
+                'drugs' => $item['drugs'],
+                'dosage' => $item['dosage'],
+                'notes' => $request->notes,
+            ]);
+
+            Prescription::create([
+                'appointment_id' => $request->appointment_id,
+                'drugs' => $item['drugs'],
+                'dosage' => $item['dosage'],
+                'notes' => $request->notes,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Prescription saved successfully.');
     }
 }
 

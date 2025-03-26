@@ -24,10 +24,13 @@ use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\UserController;
 use app\Http\Controllers\pages\PatientController;
 use App\Http\Controllers\CompletedPrescriptionController;
+use App\Http\Controllers\PrescriptionController;
 
 use App\Http\Controllers\pages\ReceptionistController ;
 use App\Http\Controllers\Doctor\DashboardController;
 use App\Http\Controllers\Doctor\AddPrescriptionController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\Doctor\PreviewPrescriptionsController;
 
 // Main Page Route
 Route::get('/', [Main::class, 'index'])->name('pages-home');
@@ -191,5 +194,17 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
     Route::post('/addprescription', [AddPrescriptionController::class, 'store'])->name('doctor.addprescription.store');
 });
 
-Route::post('/prescriptions/store', [AddPrescriptionController::class, 'store'])->name('prescriptions.store');
-Route::post('/doctor/completedprescriptions/store', [CompletedPrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');
+// Remove or comment out these duplicate routes
+// Route::post('/prescriptions/store', [AddPrescriptionController::class, 'store'])->name('prescriptions.store');
+// Route::post('/doctor/completedprescriptions/store', [CompletedPrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');
+// Route::post('/doctor/completedprescriptions/store', [DoctorController::class, 'store'])->name('doctor.completedprescriptions.store');
+
+// Add this single, clear route
+
+Route::post('/doctor/completedprescriptions/store', [PrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');
+
+Route::prefix('doctor')->group(function () {
+    Route::get('addprescription', [PreviewPrescriptionsController::class, 'create'])->name('doctor.addprescription');
+    Route::post('completedprescriptions/store', [PreviewPrescriptionsController::class, 'store'])->name('doctor.completedprescriptions.store');
+    Route::get('prescription/previewprescription', [PreviewPrescriptionsController::class, 'preview'])->name('doctor.previewprescription');
+});
