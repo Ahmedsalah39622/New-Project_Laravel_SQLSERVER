@@ -202,9 +202,3 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
 // Add this single, clear route
 
 Route::post('/doctor/completedprescriptions/store', [PrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');
-
-Route::prefix('doctor')->group(function () {
-    Route::get('addprescription', [PreviewPrescriptionsController::class, 'create'])->name('doctor.addprescription');
-    Route::post('completedprescriptions/store', [PreviewPrescriptionsController::class, 'store'])->name('doctor.completedprescriptions.store');
-    Route::get('prescription/previewprescription', [PreviewPrescriptionsController::class, 'preview'])->name('doctor.previewprescription');
-});

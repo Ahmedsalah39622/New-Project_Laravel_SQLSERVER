@@ -124,11 +124,11 @@
                 <div class="row w-100 p-6">
                   <div class="col-md-6 col-12 mb-md-0 mb-4">
                     <p class="h6 repeater-title">Drugs</p>
-                    <textarea class="form-control" name="group-a[0][drugs]" rows="2" placeholder="R/" required></textarea>
+                    <textarea class="form-control" name="group-a[][drugs]" rows="2" placeholder="Enter drug name" required></textarea>
                   </div>
                   <div class="col-md-6 col-12 mb-md-0 mb-4">
                     <p class="h6 repeater-title">Dosage</p>
-                    <textarea class="form-control" name="group-a[0][dosage]" rows="2" placeholder="Enter dosage details" required></textarea>
+                    <textarea class="form-control" name="group-a[][dosage]" rows="2" placeholder="Enter dosage details" required></textarea>
                   </div>
                 </div>
                 <div class="d-flex flex-column align-items-center justify-content-between border-start p-2">

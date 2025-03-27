@@ -8,16 +8,25 @@ class PrescriptionController extends Controller
 {
     public function store(Request $request)
     {
-        $prescription = new Prescription();
-        $prescription->appointment_id = $request->appointment_id;
-        $prescription->drugs = json_encode($request->input('group-a')[0]['drugs']);
-        $prescription->dosage = json_encode($request->input('group-a')[0]['dosage']);
-        $prescription->notes = $request->notes;
-        $prescription->save();
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id',
+            'group-a' => 'required|array',
+            'group-a.*.drugs' => 'required|string|max:65535',
+            'group-a.*.dosage' => 'required|string|max:65535',
+        ]);
 
-        // Set the prescription ID in the session
-        $request->session()->put('prescription_id', $prescription->id);
+        $appointmentId = $request->input('appointment_id');
 
-        return redirect()->back()->with('success', 'Prescription saved successfully.');
+        // Loop through the drugs and dosages to save them as separate entries
+        foreach ($request->input('group-a') as $item) {
+            Prescription::create([
+                'appointment_id' => $appointmentId,
+                'drugs' => trim($item['drugs']), // Ensure no leading/trailing spaces
+                'dosage' => trim($item['dosage']),
+                'notes' => $request->input('notes'),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Prescription saved successfully!');
     }
 }

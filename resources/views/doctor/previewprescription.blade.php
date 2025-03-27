@@ -8,13 +8,17 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Prescription Preview</h5>
-        <p class="card-text">Prescription ID: {{ $prescription->id }}</p>
-        <p class="card-text">Patient Name: {{ $prescription->patient_name }}</p>
-        <p class="card-text">Doctor Name: {{ $prescription->doctor_name }}</p>
-        <p class="card-text">Drugs: {{ $prescription->drugs }}</p>
-        <p class="card-text">Dosage: {{ $prescription->dosage }}</p>
-        <p class="card-text">Notes: {{ $prescription->notes }}</p>
-        <!-- Add more fields as necessary -->
+        @if($prescriptions && $prescriptions->count())
+          @foreach($prescriptions as $prescription)
+            <p class="card-text">Appointment ID: {{ $prescription->appointment_id }}</p>
+            <p class="card-text">Drugs: {{ $prescription->drugs }}</p>
+            <p class="card-text">Dosage: {{ $prescription->dosage }}</p>
+            <p class="card-text">Notes: {{ $prescription->notes }}</p>
+            <hr>
+          @endforeach
+        @else
+          <p class="card-text text-danger">No prescription data available.</p>
+        @endif
       </div>
     </div>
   </div>
