@@ -12,7 +12,8 @@ class Doctor extends Model
         'name',
         'email',
         'password',
-        'specialization'
+        'specialization',
+        'user_id',
     ];
 
     // Define the relationship with appointments

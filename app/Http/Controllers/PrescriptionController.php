@@ -1,8 +1,9 @@
 <?php
 namespace App\Http\Controllers;
-
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Models\Prescription;
+use App\Models\Patient;
 
 class PrescriptionController extends Controller
 {
@@ -27,6 +28,18 @@ class PrescriptionController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Prescription saved successfully!');
+        // Retrieve the appointment and related patient
+        $appointment = Appointment::find($appointmentId);
+        $patient = Patient::find($appointment->patient_id); // Correctly retrieve the patient by ID
+        $doctor = $appointment->doctor;
+        $prescriptions = Prescription::where('appointment_id', $appointmentId)->get();
+
+        // Redirect to /doctor/app-invoice-preview after completing the prescription
+        if ($request->has('complete')) {
+            return redirect()->to('/doctor/app-invoice-preview?appointment_id=' . $appointmentId)
+                ->with('success', 'Prescription completed successfully!');
+        }
+
+        return view('doctor.app-invoice-preview', compact('prescriptions', 'appointment', 'doctor', 'patient'));
     }
 }

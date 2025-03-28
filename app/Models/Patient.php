@@ -16,6 +16,7 @@ class Patient extends Model
         'email',
         'phone',
         'address', // Add relevant fields
+        'id',
     ];
 
     // Define relationships if necessary

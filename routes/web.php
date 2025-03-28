@@ -31,6 +31,7 @@ use App\Http\Controllers\Doctor\DashboardController;
 use App\Http\Controllers\Doctor\AddPrescriptionController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\Doctor\PreviewPrescriptionsController;
+use App\Http\Controllers\AppInvoicePreviewController;
 
 // Main Page Route
 Route::get('/', [Main::class, 'index'])->name('pages-home');
@@ -202,3 +203,7 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
 // Add this single, clear route
 
 Route::post('/doctor/completedprescriptions/store', [PrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');
+
+Route::get('/doctor/app-invoice-preview/{appointmentId?}', [AppInvoicePreviewController::class, 'index'])
+    ->name('doctor.app-invoice-preview');
+

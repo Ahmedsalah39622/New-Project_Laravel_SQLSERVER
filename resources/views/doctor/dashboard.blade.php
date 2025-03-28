@@ -78,6 +78,56 @@
         </div>
     </div>
 
+    <!-- Filtered Appointments Section -->
+    <div id="filteredAppointments" class="mt-4">
+        <h3>Filtered Appointments</h3>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Doctor Name</th>
+                                <th>Appointment Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($appointments as $appointment)
+                                <tr>
+                                    <td>{{ $appointment->patient_name }}</td>
+                                    <td>{{ auth()->user()->name }}<br>
+                                        <small class="text-muted">{{ auth()->user()->specialization }}</small>
+                                    </td>
+                                    <td>{{ $appointment->appointment_date }}</td>
+                                    <td>{{ $appointment->start_time }}</td>
+                                    <td><span class="badge bg-{{ $appointment->status === 'confirmed' ? 'success' : 'warning' }}">{{ $appointment->status }}</span></td>
+                                    <td>{{ $appointment->notes ?? 'N/A' }}</td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm" onclick="viewAppointment({{ $appointment->id }})">
+                                            <i class="fas fa-eye me-1"></i> View
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteAppointment({{ $appointment->id }})">
+                                            <i class="fas fa-trash me-1"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7">No appointments found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Manage Patient Data Modal -->
     <div class="modal fade" id="managePatientModal" tabindex="-1" aria-labelledby="managePatientModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -127,6 +177,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+    let authUserName = @json(auth()->user()->name);
+    let authUserSpec = @json(auth()->user()->specialization);
+
+
     let currentAppointmentId = null;
 
     async function fetchAllAppointments() {
@@ -151,8 +205,8 @@
                     return `
                         <tr>
                             <td>${apt.patient_name}</td>
-                            <td>${apt.doctor ? apt.doctor.name : 'N/A'}<br>
-                                <small class="text-muted">${apt.doctor ? apt.doctor.specialization : 'N/A'}</small>
+                            <td>${authUserName}<br>
+                                <small class="text-muted">${authUserSpec}</small>
                             </td>
                             <td>${apt.appointment_date}</td>
                             <td>${apt.start_time}</td>

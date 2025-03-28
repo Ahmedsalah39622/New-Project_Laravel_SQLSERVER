@@ -85,7 +85,7 @@
           <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-6">
             <h6>Patient Information:</h6>
             <p class="mb-1">Name: {{ $appointment->patient_name }}</p>
-            <p class="mb-0">ID: {{ $appointment->patient }}</p>
+            <p class="mb-0">ID: {{ $appointment->patient_id}}</p>
           </div>
           <div class="col-md-6 col-sm-7">
             <h6>Doctor Information:</h6>
@@ -93,7 +93,7 @@
               <tbody>
                 <tr>
                   <td class="pe-4">Doctor Name:</td>
-                  <td>{{ $doctor->name }}</td>
+                  <td>{{ $doctor->name}}</td>
                 </tr>
                 <tr>
                   <td class="pe-4">Specialization:</td>
@@ -151,18 +151,6 @@
         </form>
       </div>
       <hr class="my-0">
-      <div class="card-body px-0">
-
-        <div class="row row-gap-4">
-          <div class="col-md-6 mb-md-0 mb-4">
-            <div class="d-flex align-items-center mb-4">
-              <label for="notes" class="me-2 fw-medium text-heading">Notes:</label>
-              <textarea class="form-control" id="notes" rows="2" placeholder="Enter any additional notes"></textarea>
-            </div>
-          </div>
-        </div>
-
-      </div>
     </div>
   </div>
   <!-- /Prescription Add-->
@@ -174,9 +162,7 @@
         <button type="submit" form="prescription-form" class="btn btn-primary d-grid w-100 mb-4">
           <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-save ti-xs me-2"></i>Save Prescription</span>
         </button>
-        <button type="submit" form="prescription-form" formaction="{{ route('doctor.completedprescriptions.store') }}" class="btn btn-success d-grid w-100 mb-4">
-          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-check ti-xs me-2"></i>Complete Prescription</span>
-        </button>
+
         <button class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendPrescriptionOffcanvas">
           <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Prescription</span>
         </button>
@@ -244,13 +230,12 @@ function printPrescription() {
     window.print();
     document.body.innerHTML = originalContents;
 }
-
-// Redirect to preview page after completing prescription
 document.querySelector('button.btn-success').addEventListener('click', function() {
     document.getElementById('prescription-form').addEventListener('submit', function() {
-        window.location.href = "{{ url('doctor/prescription/previewprescription') }}";
+        window.location.href = "{{ url('doctor/app-invoice-preview.blade') }}";
     });
 });
+// Removed redirection logic for preview page
 </script>
 @endsection
 

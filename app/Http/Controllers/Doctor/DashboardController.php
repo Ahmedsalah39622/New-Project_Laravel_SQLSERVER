@@ -18,35 +18,32 @@ class DashboardController extends Controller
 {
     public function index()
     {
-
         try {
-            $doctorId = Auth::id();
+            $doctorId = Auth::id(); // Get the authenticated doctor's ID
             Log::info('Doctor ID: ' . $doctorId);
 
             $today = now()->toDateString();
 
+            // Calculate counts for the cards
             $todayAppointments = Appointment::where('doctor_id', $doctorId)
                 ->whereDate('appointment_date', $today)
                 ->count();
 
             $totalAppointments = Appointment::where('doctor_id', $doctorId)->count();
 
-            $pendingAppointments = $this->countAppointmentsByStatus($doctorId, 'pending');
-            $completedAppointments = $this->countAppointmentsByStatus($doctorId, 'completed');
-            $cancelledAppointments = $this->countAppointmentsByStatus($doctorId, 'cancelled');
+            $pendingAppointments = Appointment::where('doctor_id', $doctorId)
+                ->where('status', 'pending')
+                ->count();
 
             $confirmedAppointments = Appointment::where('doctor_id', $doctorId)
                 ->where('status', 'confirmed')
-                ->select('patient_name', 'appointment_date', 'start_time', 'end_time')
-                ->orderBy('appointment_date')
-                ->get();
+                ->count();
 
+            // Pass the counts to the view
             return view("doctor.dashboard", [
                 'todayAppointments' => $todayAppointments,
                 'totalAppointments' => $totalAppointments,
                 'pendingAppointments' => $pendingAppointments,
-                'completedAppointments' => $completedAppointments,
-                'cancelledAppointments' => $cancelledAppointments,
                 'confirmedAppointments' => $confirmedAppointments,
             ]);
         } catch (Exception $e) {
@@ -185,6 +182,26 @@ class DashboardController extends Controller
         }
 
         return redirect()->back()->with('success', 'Prescription saved successfully.');
+    }
+
+    public function filterAppointmentsByDoctor(Request $request)
+    {
+        try {
+            $userId = Auth::id(); // Get the authenticated user's ID
+
+            // Fetch the doctor's appointments where user_id matches the user's ID
+            $appointments = Appointment::whereHas('doctor', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->get();
+
+            // Count the filtered appointments
+            $filteredAppointmentsCount = $appointments->count();
+
+            return view('doctor.dashboard', compact('appointments', 'filteredAppointmentsCount'));
+        } catch (Exception $e) {
+            Log::error('Error in filterAppointmentsByDoctor method: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
 

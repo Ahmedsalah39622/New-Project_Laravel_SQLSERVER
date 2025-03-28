@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Appointment;
 use App\Models\CompletedPrescription; // Import the CompletedPrescription model
+use App\Models\Prescription; // Import the Prescription model
 
 class AddPrescriptionController extends Controller
 {
@@ -21,7 +22,9 @@ class AddPrescriptionController extends Controller
 
         // Get the logged-in doctor's details
         $doctor = Auth::user();
-
+        $appointment = Appointment::find($appointmentId);
+        $doctor = $appointment->doctor;
+        $prescriptions = CompletedPrescription::where('patient_id', $appointment->patient_id ?? null)->get();
         return view('doctor.addprescription', compact('appointment', 'doctor'));
     }
 
@@ -37,7 +40,7 @@ class AddPrescriptionController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $appointment = Appointment::find($request->appointment_id);
+        $appointment = Appointment::find(id: $request->appointment_id);
 
         $prescription = new CompletedPrescription();
         $prescription->patient_id = $appointment->patient_id;
@@ -50,7 +53,7 @@ class AddPrescriptionController extends Controller
         $prescription->save();
 
         Log::info('Prescription saved: ', $prescription->toArray());
-
-        return redirect()->route('doctor.addprescription', ['appointmentId' => $request->appointment_id])->with('success', 'Prescription saved successfully.');
+dd("sasdas");
+        return redirect()->route('doctor.app-invoice-preview', ['appointmentId' => $request->appointment_id])->with('success', 'Prescription saved successfully.');
     }
 }
