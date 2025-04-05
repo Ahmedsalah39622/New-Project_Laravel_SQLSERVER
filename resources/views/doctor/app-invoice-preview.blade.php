@@ -67,28 +67,24 @@
             <p class="mb-0">ID: {{ $appointment->patient_id}}</p>
           </div>
           <div class="col-xl-6 col-md-12 col-sm-7 col-12">
-            <h6>Bill To:</h6>
+            <h6>Doctor Information:</h6>
             <table>
               <tbody>
                 <tr>
-                  <td class="pe-4">Total Due:</td>
-                  <td class="fw-medium">$12,110.55</td>
+                  <td class="pe-4">Doctor Name:</td>
+                  <td>{{ $doctor->name}}</td>
                 </tr>
                 <tr>
-                  <td class="pe-4">Bank name:</td>
-                  <td>American Bank</td>
+                  <td class="pe-4">Specialization:</td>
+                  <td>{{ $doctor->specialization }}</td>
                 </tr>
                 <tr>
-                  <td class="pe-4">Country:</td>
-                  <td>United States</td>
+                  <td class="pe-4">Contact:</td>
+                  <td>{{ $doctor->phone }}</td>
                 </tr>
                 <tr>
-                  <td class="pe-4">IBAN:</td>
-                  <td>ETD95476213874685</td>
-                </tr>
-                <tr>
-                  <td class="pe-4">SWIFT code:</td>
-                  <td>BR91905</td>
+                  <td class="pe-4">Email:</td>
+                  <td>{{ $doctor->email }}</td>
                 </tr>
               </tbody>
             </table>

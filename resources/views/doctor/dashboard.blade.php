@@ -17,70 +17,56 @@
 
     <!-- Appointment Counts Section -->
     <div id="appointmentCounts" class="row mt-4">
+        <!-- Total Appointments Card -->
         <div class="col-md-3">
             <div class="card text-white bg-primary mb-3">
                 <div class="card-header">Total Appointments</div>
                 <div class="card-body">
-                    <h5 class="card-title" id="totalAppointments">0</h5>
+                    <h5 class="card-title">{{ $appointments->count() }}</h5>
                 </div>
             </div>
         </div>
+
+        <!-- Confirmed Appointments Card -->
         <div class="col-md-3">
             <div class="card text-white bg-success mb-3">
                 <div class="card-header">Confirmed Appointments</div>
                 <div class="card-body">
-                    <h5 class="card-title" id="confirmedCount">0</h5>
+                    <h5 class="card-title">
+                        {{ $appointments->where('status', 'confirmed')->count() }}
+                    </h5>
                 </div>
             </div>
         </div>
+
+        <!-- Pending Appointments Card -->
         <div class="col-md-3">
             <div class="card text-white bg-warning mb-3">
                 <div class="card-header">Pending Appointments</div>
                 <div class="card-body">
-                    <h5 class="card-title" id="pendingCount">0</h5>
+                    <h5 class="card-title">
+                        {{ $appointments->where('status', 'pending')->count() }}
+                    </h5>
                 </div>
             </div>
         </div>
+
+        <!-- Today's Appointments Card -->
         <div class="col-md-3">
             <div class="card text-white bg-info mb-3">
                 <div class="card-header">Today's Appointments</div>
                 <div class="card-body">
-                    <h5 class="card-title" id="todaysAppointments">0</h5>
+                    <h5 class="card-title">
+                        {{ $appointments->where('appointment_date', now()->toDateString())->count() }}
+                    </h5>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- All Appointments Section -->
-    <div id="allAppointments" class="mt-4">
-        <h3>All Appointments</h3>
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Patient Name</th>
-                                <th>Doctor Name</th>
-                                <th>Appointment Date</th>
-                                <th>Time</th>
-                                <th>Status</th>
-                                <th>Notes</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="allAppointmentHistory">
-                        </tbody>
-                    </table>
-                </div>
-                <p id="allAppointmentCount" class="mt-3"></p>
             </div>
         </div>
     </div>
 
     <!-- Filtered Appointments Section -->
     <div id="filteredAppointments" class="mt-4">
-        <h3>Filtered Appointments</h3>
+        <h3>Today Appointments</h3>
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -105,7 +91,11 @@
                                     </td>
                                     <td>{{ $appointment->appointment_date }}</td>
                                     <td>{{ $appointment->start_time }}</td>
-                                    <td><span class="badge bg-{{ $appointment->status === 'confirmed' ? 'success' : 'warning' }}">{{ $appointment->status }}</span></td>
+                                    <td>
+                                        <span class="badge bg-{{ $appointment->status === 'confirmed' ? 'success' : 'warning' }}">
+                                            {{ $appointment->status }}
+                                        </span>
+                                    </td>
                                     <td>{{ $appointment->notes ?? 'N/A' }}</td>
                                     <td>
                                         <button class="btn btn-info btn-sm" onclick="viewAppointment({{ $appointment->id }})">
@@ -124,6 +114,10 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Total Appointments Count -->
+                <p id="filteredAppointmentCount" class="mt-3">
+                    Total Appointments: {{ $appointments->count() }}
+                </p>
             </div>
         </div>
     </div>
@@ -180,158 +174,18 @@
     let authUserName = @json(auth()->user()->name);
     let authUserSpec = @json(auth()->user()->specialization);
 
-
     let currentAppointmentId = null;
 
     async function fetchAllAppointments() {
-        try {
-            console.log('Fetching all appointments...');
-            const response = await axios.get('/api/appointments');
-            const data = response.data;
-
-            console.log('Appointments data:', data);
-
-            if (data.length > 0) {
-                document.getElementById('allAppointments').classList.remove('d-none');
-
-                // Filter and display only confirmed appointments
-                const confirmedAppointments = data.filter(apt => apt.status === 'confirmed');
-
-                // Display confirmed appointments
-                const allAppointmentHistory = document.getElementById('allAppointmentHistory');
-                const appointments = confirmedAppointments.map(apt => {
-                    const statusColor = 'success';
-
-                    return `
-                        <tr>
-                            <td>${apt.patient_name}</td>
-                            <td>${authUserName}<br>
-                                <small class="text-muted">${authUserSpec}</small>
-                            </td>
-                            <td>${apt.appointment_date}</td>
-                            <td>${apt.start_time}</td>
-                            <td><span class="badge bg-${statusColor}">${apt.status}</span></td>
-                            <td>${apt.notes || 'N/A'}</td>
-                            <td>
-                                <button class="btn btn-info btn-sm" onclick="viewAppointment(${apt.id})">
-                                    <i class="fas fa-eye me-1"></i> View
-                                </button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteAppointment(${apt.id})">
-                                    <i class="fas fa-trash me-1"></i> Delete
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-
-                allAppointmentHistory.innerHTML = appointments;
-
-                // Calculate and display the counts of appointments
-                const confirmedCount = confirmedAppointments.length;
-                const pendingCount = data.filter(apt => apt.status === 'pending').length;
-                const cancelledCount = data.filter(apt => apt.status === 'cancelled').length;
-
-                // Calculate today's appointments
-                const today = new Date().toISOString().split('T')[0];
-                const todaysAppointmentsCount = confirmedAppointments.filter(apt => apt.appointment_date === today).length;
-
-                document.getElementById('confirmedCount').innerText = confirmedCount;
-                document.getElementById('pendingCount').innerText = pendingCount;
-                document.getElementById('todaysAppointments').innerText = todaysAppointmentsCount;
-
-                // Display the count of all appointments
-                document.getElementById('totalAppointments').innerText = data.length;
-                document.getElementById('allAppointmentCount').innerText = `Total Appointments: ${data.length}`;
-            } else {
-                document.getElementById('allAppointments').classList.remove('d-none');
-                document.getElementById('allAppointmentHistory').innerHTML = '<tr><td colspan="7">No appointments found.</td></tr>';
-                document.getElementById('allAppointmentCount').innerText = 'Total Appointments: 0';
-                document.getElementById('totalAppointments').innerText = '0';
-                document.getElementById('todaysAppointments').innerText = '0';
-            }
-        } catch (error) {
-            console.error('Error fetching all appointments:', error);
-            console.error('Error details:', error.response ? error.response.data : error.message);
-            alert('Error fetching all appointments. Please try again.');
-        }
+        console.log('Fetching all appointments...');
+        // Logic for fetching appointments
     }
 
-    // Add view appointment function
     function viewAppointment(appointmentId) {
         currentAppointmentId = appointmentId;
-        // Redirect to the app-invoice-add page with the appointment ID
         window.location.href = `/addprescription/${appointmentId}`;
     }
 
-    // Add complete appointment function
-    async function completeAppointment() {
-        if (!confirm('Are you sure you want to mark this appointment as completed?')) {
-            return;
-        }
-
-        try {
-            console.log(`Completing appointment with ID: ${currentAppointmentId}`);
-            const response = await axios.post(`/api/appointments/${currentAppointmentId}/complete`, {}, {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = response.data;
-
-            console.log('Complete response data:', data);
-
-            if (response.status === 200 && data.success) {
-                // Refresh the appointments
-                fetchAllAppointments();
-                alert('Appointment marked as completed successfully');
-            } else {
-                alert(data.message || 'Failed to complete appointment');
-            }
-        } catch (error) {
-            console.error('Error completing appointment:', error);
-            console.error('Error details:', error.response ? error.response.data : error.message);
-            alert('Error completing appointment. Please try again.');
-        }
-    }
-
-    // Add delete appointment function
-    async function deleteAppointment(appointmentId) {
-        if (!confirm('Are you sure you want to delete this appointment?')) {
-            return;
-        }
-
-        try {
-            console.log(`Deleting appointment with ID: ${appointmentId}`);
-            const response = await axios.delete(`/api/appointments/${appointmentId}`, {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = response.data;
-
-            console.log('Delete response data:', data);
-
-            if (response.status === 200 && data.success) {
-                // Refresh the appointments
-                fetchAllAppointments();
-                alert('Appointment deleted successfully');
-            } else {
-                alert(data.message || 'Failed to delete appointment');
-            }
-        } catch (error) {
-            console.error('Error deleting appointment:', error);
-            console.error('Error details:', error.response ? error.response.data : error.message);
-            alert('Error deleting appointment. Please try again.');
-        }
-    }
-
-    // Set greeting message based on the current time
     function setGreetingMessage() {
         const now = new Date();
         const hours = now.getHours();
@@ -348,7 +202,6 @@
         document.getElementById('greetingMessage').innerText = greeting;
     }
 
-    // Fetch appointments and set greeting message on page load
     document.addEventListener('DOMContentLoaded', function() {
         setGreetingMessage();
         fetchAllAppointments();

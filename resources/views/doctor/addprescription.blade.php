@@ -137,15 +137,17 @@
               </div>
             </div>
           </div>
+        </br>
           <div class="row">
             <div class="col-12">
               <button type="button" class="btn btn-sm btn-primary" data-repeater-create><i class='ti ti-plus ti-14px me-1_5'></i>Add Item</button>
             </div>
           </div>
+          <br>
           <div class="row">
             <div class="col-12">
               <label for="notes" class="me-2 fw-medium text-heading">Notes:</label>
-              <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter any additional notes" required></textarea>
+              <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter any additional notes" ></textarea>
             </div>
           </div>
         </form>

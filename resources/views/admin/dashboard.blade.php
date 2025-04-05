@@ -771,6 +771,21 @@
     </div>
   </div>
   <!--/ Projects table -->
+
+  <!-- Appointments This Month -->
+  <div class="col-xl-3 col-sm-6">
+    <div class="card h-100">
+        <div class="card-header pb-0">
+            <h5 class="mb-3 card-title">Appointments This Month</h5>
+            <p class="mb-0 text-body">Total Appointments</p>
+            <h4 class="mb-0">{{ $appointmentsThisMonth ?? 0 }}</h4>
+        </div>
+        <div class="card-body px-0">
+            <div id="appointmentsThisMonthChart"></div>
+        </div>
+    </div>
+  </div>
+  <!--/ Appointments This Month -->
 </div>
 
 @endsection
