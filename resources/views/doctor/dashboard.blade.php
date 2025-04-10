@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <h2 class="text-primary" id="greetingMessage">Welcome, Doctor</h2>
+    <h2 class="text-primary" id="greetingMessage">Welcome, {{ auth()->user()->name }}</h2>
     <p>Manage appointments and patients efficiently.</p>
 
     <div class="d-flex justify-content-between mb-4">
@@ -83,7 +83,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($appointments as $appointment)
+                            @forelse ($appointments->where('appointment_date', now()->toDateString())->where('status', 'confirmed') as $appointment)
                                 <tr>
                                     <td>{{ $appointment->patient_name }}</td>
                                     <td>{{ auth()->user()->name }}<br>
@@ -92,7 +92,7 @@
                                     <td>{{ $appointment->appointment_date }}</td>
                                     <td>{{ $appointment->start_time }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $appointment->status === 'confirmed' ? 'success' : 'warning' }}">
+                                        <span class="badge bg-success">
                                             {{ $appointment->status }}
                                         </span>
                                     </td>
@@ -108,7 +108,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7">No appointments found.</td>
+                                    <td colspan="7">No confirmed appointments found for today.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -116,7 +116,7 @@
                 </div>
                 <!-- Total Appointments Count -->
                 <p id="filteredAppointmentCount" class="mt-3">
-                    Total Appointments: {{ $appointments->count() }}
+                    Total Appointments: {{ $appointments->where('appointment_date', now()->toDateString())->where('status', 'confirmed')->count() }}
                 </p>
             </div>
         </div>
@@ -189,14 +189,14 @@
     function setGreetingMessage() {
         const now = new Date();
         const hours = now.getHours();
-        let greeting = 'Welcome, Doctor';
+        let greeting = 'Welcome, {{ auth()->user()->name }}';
 
         if (hours < 12) {
-            greeting = 'Good Morning, Doctor';
+            greeting = 'Good Morning, {{ auth()->user()->name }}';
         } else if (hours < 18) {
-            greeting = 'Good Afternoon, Doctor';
+            greeting = 'Good Afternoon, {{ auth()->user()->name }}';
         } else {
-            greeting = 'Good Evening, Doctor';
+            greeting = 'Good Evening, {{ auth()->user()->name }}';
         }
 
         document.getElementById('greetingMessage').innerText = greeting;
