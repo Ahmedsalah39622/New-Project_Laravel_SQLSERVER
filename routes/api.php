@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Doctor\DashboardController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorDashboardController;
 
@@ -38,4 +39,8 @@ Route::middleware('auth:api')->get('/api/doctor/dashboard', [DoctorDashboardCont
 
 Route::get('/doctor/dashboard/patient/{patientId}', [DashboardController::class, 'getPatientData']);
 Route::get('/doctor/dashboard/data', [DashboardController::class, 'getDashboardData']);
+
+Route::get('/appointments-daily-count', [AppointmentController::class, 'getDailyAppointmentsCount']);
+Route::get('/total-appointments', [AppointmentController::class, 'getTotalAppointments']);
+Route::get('/total-doctors', [DoctorController::class, 'getTotalDoctors']);
 

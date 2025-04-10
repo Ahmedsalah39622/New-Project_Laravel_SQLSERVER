@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CompletedPrescription;
 use App\Models\Prescription;
+use App\Models\Doctor;
 use Illuminate\Support\Facades\Log;
 
 class DoctorController extends Controller
@@ -84,5 +85,24 @@ class DoctorController extends Controller
         }
 
         return redirect()->back()->with('success', 'Prescription saved successfully.');
+    }
+
+    /**
+     * Get the total number of doctors.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTotalDoctors()
+    {
+        $totalDoctors = Doctor::count(); // Assuming you have a Doctor model
+
+        return response()->json([
+            'totalDoctors' => $totalDoctors,
+        ]);
+    }
+    public function dashboard()
+    {
+        $totalDoctors = Doctor::count(); // Fetch total doctors
+        return view('admin.dashboard', compact('totalAppointments', 'totalDoctors'));
     }
 }

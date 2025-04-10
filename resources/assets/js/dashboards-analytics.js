@@ -37,95 +37,278 @@
     });
   }
 
-  // Average Daily Sales
+  // Average Daily Sales (Dynamic Data from Appointments Table)
   // --------------------------------------------------------------------
-  const averageDailySalesEl = document.querySelector('#averageDailySales'),
-    averageDailySalesConfig = {
-      chart: {
-        height: 105,
-        type: 'area',
-        toolbar: {
-          show: false
-        },
-        sparkline: {
-          enabled: true
-        }
-      },
-      markers: {
-        colors: 'transparent',
-        strokeColors: 'transparent'
-      },
-      grid: {
-        show: false
-      },
-      colors: [config.colors.success],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: shadeColor,
-          shadeIntensity: 0.8,
-          opacityFrom: 0.6,
-          opacityTo: 0.1
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        width: 5,
-        curve: 'smooth'
-      },
-      series: [
-        {
-          data: [100,10,1,40,,50,11,34,21,554,6,64]
-        }
-      ],
-      xaxis: {
-        show: true,
-        lines: {
-          show: false
-        },
-        labels: {
-          show: false
-        },
-        stroke: {
-          width: 0
-        },
-        axisBorder: {
-          show: false
-        }
-      },
-      yaxis: {
-        stroke: {
-          width: 0
-        },
-        show: false
-      },
-      tooltip: {
-        enabled: false
-      },
-      responsive: [
-        {
-          breakpoint: 1387,
-          options: {
-            chart: {
-              height: 80
+  const averageDailySalesEl = document.querySelector('#averageDailySales');
+
+  if (averageDailySalesEl) {
+    fetch('/api/appointments-daily-count') // Fetch data from the API
+      .then((response) => response.json())
+      .then((data) => {
+        const averageDailySalesConfig = {
+          chart: {
+            height: 110,
+            type: 'area',
+            toolbar: {
+              show: true
+            },
+            sparkline: {
+              enabled: true
+            }
+          },
+          markers: {
+            colors: 'transparent',
+            strokeColors: 'transparent'
+          },
+          grid: {
+            show: false
+          },
+          colors: [config.colors.success],
+          fill: {
+            type: 'gradient',
+            gradient: {
+              shade: shadeColor,
+              shadeIntensity: 0.8,
+              opacityFrom: 0.6,
+              opacityTo: 0.1
+            }
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            width: 5,
+            curve: 'smooth'
+          },
+          series: [
+            {
+              name: 'Appointments',
+              data: data.dailyCounts // Use the fetched daily counts
+            }
+          ],
+          xaxis: {
+            show: true,
+            categories: data.days, // Use the fetched days for the x-axis
+            lines: {
+              show: false
+            },
+            labels: {
+              show: true, // Ensure labels are visible
+              style: {
+                colors: '#6e6b7b',
+                fontSize: '12px',
+                fontFamily: 'Public Sans'
+              }
+            },
+            stroke: {
+              width: 0
+            },
+            axisBorder: {
+              show: false
+            }
+          },
+          yaxis: {
+            stroke: {
+              width: 0
+            },
+            show: false
+          },
+          tooltip: {
+            enabled: true,
+            x: {
+              formatter: function (val, opts) {
+                return data.days[opts.dataPointIndex]; // Show the day in the tooltip
+              }
+            },
+            y: {
+              formatter: function (val) {
+                return `${val} Appointments`; // Show the count in the tooltip
+              }
+            }
+          },
+          responsive: [
+            {
+              breakpoint: 1387,
+              options: {
+                chart: {
+                  height: 80
+                }
+              }
+            },
+            {
+              breakpoint: 1200,
+              options: {
+                chart: {
+                  height: 123
+                }
+              }
+            }
+          ]
+        };
+
+        const averageDailySales = new ApexCharts(averageDailySalesEl, averageDailySalesConfig);
+        averageDailySales.render();
+      })
+      .catch((error) => console.error('Error fetching appointments data:', error));
+  }
+
+  // Fetch and display the total number of appointments
+  const totalAppointmentsEl = document.querySelector('#totalAppointments'); // Ensure this ID exists in your HTML
+
+  if (totalAppointmentsEl) {
+    fetch('/api/total-appointments') // Fetch data from the API
+      .then((response) => response.json())
+      .then((data) => {
+        totalAppointmentsEl.textContent = data.totalAppointments; // Update the total appointments count
+      })
+      .catch((error) => console.error('Error fetching total appointments:', error));
+  }
+
+  // Fetch and display the total number of doctors
+  const totalDoctorsEl = document.querySelector('#totalDoctors'); // Ensure this ID exists in your HTML
+
+  if (totalDoctorsEl) {
+    fetch('/api/total-doctors') // Corrected API endpoint
+      .then((response) => response.json())
+      .then((data) => {
+        totalDoctorsEl.textContent = data.totalDoctors; // Corrected variable reference
+      })
+      .catch((error) => console.error('Error fetching total doctors:', error));
+  }
+
+  // Total Doctors Chart
+  // --------------------------------------------------------------------
+  const totalDoctorsChartEl = document.querySelector('#totalDoctorsChart');
+
+  if (totalDoctorsChartEl) {
+    fetch('/api/total-doctors') // Fetch data from the API
+      .then((response) => response.json())
+      .then((data) => {
+        const totalDoctorsChartOptions = {
+          series: [data.totalDoctors], // Use the fetched total doctors count
+          chart: {
+            height: 300,
+            type: 'radialBar'
+          },
+          plotOptions: {
+            radialBar: {
+              hollow: {
+                size: '65%'
+              },
+              dataLabels: {
+                name: {
+                  offsetY: -10,
+                  color: '#6e6b7b',
+                  fontSize: '16px',
+                  fontFamily: 'Public Sans'
+                },
+                value: {
+                  offsetY: 5,
+                  color: '#7367F0',
+                  fontSize: '36px',
+                  fontWeight: 'bold',
+                  fontFamily: 'Public Sans'
+                }
+              }
+            }
+          },
+          labels: ['Doctors'],
+          colors: ['#7367F0'], // Customize the color
+          fill: {
+            type: 'gradient',
+            gradient: {
+              shade: 'dark',
+              shadeIntensity: 0.5,
+              gradientToColors: ['#28C76F'],
+              inverseColors: true,
+              opacityFrom: 1,
+              opacityTo: 0.6,
+              stops: [0, 100]
             }
           }
-        },
-        {
-          breakpoint: 1200,
-          options: {
-            chart: {
-              height: 123
+        };
+
+        const totalDoctorsChart = new ApexCharts(totalDoctorsChartEl, totalDoctorsChartOptions);
+        totalDoctorsChart.render();
+      })
+      .catch((error) => console.error('Error fetching total doctors data:', error));
+  }
+
+  // Doctors Growth Chart
+  // --------------------------------------------------------------------
+  const doctorsGrowthChartEl = document.querySelector('#doctorsGrowthChart');
+
+  if (doctorsGrowthChartEl) {
+    fetch('/api/doctors-growth') // Fetch data from the API
+      .then((response) => response.json())
+      .then((data) => {
+        const doctorsGrowthChartOptions = {
+          chart: {
+            height: 300,
+            type: 'line',
+            toolbar: {
+              show: true
             }
+          },
+          series: [
+            {
+              name: 'Doctors Added',
+              data: data.growthCounts // Use the fetched growth data
+            }
+          ],
+          xaxis: {
+            categories: data.months, // Use the fetched months for the x-axis
+            title: {
+              text: 'Months'
+            },
+            labels: {
+              style: {
+                colors: '#6e6b7b',
+                fontSize: '12px',
+                fontFamily: 'Public Sans'
+              }
+            }
+          },
+          yaxis: {
+            title: {
+              text: 'Number of Doctors'
+            },
+            labels: {
+              style: {
+                colors: '#6e6b7b',
+                fontSize: '12px',
+                fontFamily: 'Public Sans'
+              }
+            }
+          },
+          colors: ['#7367F0'], // Customize the color
+          stroke: {
+            width: 3,
+            curve: 'smooth'
+          },
+          tooltip: {
+            enabled: true,
+            x: {
+              formatter: function (val, opts) {
+                return data.months[opts.dataPointIndex]; // Show the month in the tooltip
+              }
+            },
+            y: {
+              formatter: function (val) {
+                return `${val} Doctors`; // Show the count in the tooltip
+              }
+            }
+          },
+          grid: {
+            borderColor: '#e7e7e7',
+            strokeDashArray: 5
           }
-        }
-      ]
-    };
-  if (typeof averageDailySalesEl !== undefined && averageDailySalesEl !== null) {
-    const averageDailySales = new ApexCharts(averageDailySalesEl, averageDailySalesConfig);
-    averageDailySales.render();
+        };
+
+        const doctorsGrowthChart = new ApexCharts(doctorsGrowthChartEl, doctorsGrowthChartOptions);
+        doctorsGrowthChart.render();
+      })
+      .catch((error) => console.error('Error fetching doctors growth data:', error));
   }
 
   // Earning Reports Bar Chart

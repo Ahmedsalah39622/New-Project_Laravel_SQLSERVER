@@ -60,6 +60,8 @@ Route::get('/payment/{appointment_id}', [payment::class, 'showPaymentPage']);
 
 Route::post('/process-payment', [payment::class, 'processPayment'])->name('process.payment');
 use App\Http\Controllers\pages\PaymentController;
+use App\Models\DoctorSchedule;
+
 Route::post('/process-payment', [Payment::class, 'processPayment'])->middleware('web')->name('process.payment');
 Route::get('/payment/{appointmentId}', [Payment::class, 'showPaymentPage'])->name('payment.page');
 
@@ -206,4 +208,7 @@ Route::post('/doctor/completedprescriptions/store', [PrescriptionController::cla
 
 Route::get('/doctor/app-invoice-preview/{appointmentId?}', [AppInvoicePreviewController::class, 'index'])
     ->name('doctor.app-invoice-preview');
+
+Route::get('/admin/dashboard', [AppointmentController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [DoctorController::class, 'dashboard'])->name('admin.dashboard');
 

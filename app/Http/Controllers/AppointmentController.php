@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DoctorSchedule;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
@@ -18,6 +19,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
+
         $specialties = [
             'Cardiology',
             'Dermatology',
@@ -25,8 +27,6 @@ class AppointmentController extends Controller
         ];
 
         return view('content.pages.Appointment', compact('specialties'));
-
-
     }
 
     /**
@@ -35,7 +35,6 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -161,10 +160,9 @@ class AppointmentController extends Controller
                                    ->orderBy('appointment_date', 'desc')
                                    ->get();
 
-
-
         return view('content.pages.pages-home', compact('appointments'));
     }
+
     public function show($id)
     {
         $appointment = Appointment::find($id);
@@ -314,5 +312,55 @@ class AppointmentController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Get daily appointments count for the last 30 days.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDailyAppointmentsCount()
+    {
+        $startDate = Carbon::now()->subDays(29); // Start date (30 days ago)
+        $endDate = Carbon::now(); // End date (today)
+
+        // Initialize an array to store daily counts
+        $dailyCounts = [];
+        $days = [];
+
+        // Loop through the last 30 days
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            $count = Appointment::whereDate('created_at', $date->toDateString())->count();
+            $dailyCounts[] = $count;
+            $days[] = $date->format('M d'); // Format: "Apr 10"
+        }
+
+        // Return the data as JSON
+        return response()->json([
+            'days' => $days,
+            'dailyCounts' => $dailyCounts,
+        ]);
+    }
+
+    /**
+     * Get the total number of appointments.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTotalAppointments()
+    {
+        $totalAppointments = Appointment::count(); // Fetch total appointments
+        return response()->json(['totalAppointments' => $totalAppointments]);
+    }
+
+    /**
+     * Show the admin dashboard with total appointments.
+     *
+     */
+    public function dashboard()
+    {
+        $totalAppointments = Appointment::count(); // Fetch total appointments
+        $totalDoctors = Doctor::count(); // Fetch total doctors
+        return view('admin.dashboard', compact('totalAppointments', 'totalDoctors'));
     }
 }
