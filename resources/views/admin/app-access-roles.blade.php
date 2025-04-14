@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handle role removal
-    document.querySelectorAll('.remove-role').forEach(function (element) {
-        element.addEventListener('click', function () {
+    document.querySelectorAll('.remove-role').forEach(function (selectElement) {
+        selectElement.addEventListener('change', function () {
             const userId = this.getAttribute('data-user-id');
-            const role = this.getAttribute('data-role');
+            const role = this.value;
 
-            if (confirm(`Are you sure you want to remove the role "${role}" from this user?`)) {
+            if (role) {
                 fetch(`/admin/users/${userId}/remove-role`, {
                     method: 'POST',
                     headers: {
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
 
                                     <!-- Remove Role Dropdown -->
-                                    <div class="dropdown me-2">
+                                    <div class="dropdown me-2"> <!-- Added 'me-2' for spacing -->
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="removeRoleDropdown{{ $user->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                             Remove Role
                                         </button>
