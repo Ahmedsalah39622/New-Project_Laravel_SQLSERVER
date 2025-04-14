@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RoleController extends Controller
 {
@@ -51,7 +52,7 @@ class RoleController extends Controller
                 $query->where('name', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%");
             })
-            ->get();
+            ->paginate(10); // Paginate resultste(10); // Paginate results
 
         return view('admin.app-access-roles', compact('roles', 'users', 'search'));
     }
@@ -141,5 +142,34 @@ class RoleController extends Controller
         $user->removeRole($request->role);
 
         return response()->json(['success' => true, 'message' => 'Role removed successfully!']);
+    }
+
+    public function exportUsers()
+    {
+        $users = User::with('roles')->get();
+
+        $response = new StreamedResponse(function () use ($users) {
+            $handle = fopen('php://output', 'w');
+
+            // Add CSV headers
+            fputcsv($handle, ['Name', 'Email', 'Roles', 'Status']);
+
+            // Add user data
+            foreach ($users as $user) {
+                fputcsv($handle, [
+                    $user->name,
+                    $user->email,
+                    $user->roles->pluck('name')->implode(', '),
+                    $user->status ? 'Active' : 'Inactive',
+                ]);
+            }
+
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="users.csv"');
+
+        return $response;
     }
 }

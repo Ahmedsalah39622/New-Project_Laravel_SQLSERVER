@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle role assignment
     document.querySelectorAll('.assign-role').forEach(function (selectElement) {
-        selectElement.addEventListener('change', function () {
+        selectElement.addEventListener('click', function () {
             const userId = this.getAttribute('data-user-id');
-            const role = this.value;
+            const role = this.getAttribute('data-role');
 
             if (role) {
                 fetch(`/admin/users/${userId}/assign-role`, {
@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handle role removal
-    document.querySelectorAll('.remove-role').forEach(function (selectElement) {
-        selectElement.addEventListener('change', function () {
+    document.querySelectorAll('.remove-role').forEach(function (element) {
+        element.addEventListener('click', function () {
             const userId = this.getAttribute('data-user-id');
-            const role = this.value;
+            const role = this.getAttribute('data-role');
 
-            if (role) {
+            if (confirm(`Are you sure you want to remove the role "${role}" from this user?`)) {
                 fetch(`/admin/users/${userId}/remove-role`, {
                     method: 'POST',
                     headers: {
@@ -124,6 +124,35 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Handle user deletion
+    document.querySelectorAll('.delete-user').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const userId = this.getAttribute('data-id');
+
+            if (confirm('Are you sure you want to delete this user?')) {
+                fetch(`/admin/users/${userId}/delete`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            alert(data.message);
+                            location.reload(); // Reload the page to reflect changes
+                        } else {
+                            alert('Failed to delete user. Please try again.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+            }
+        });
+    });
 });
 </script>
 @endsection
@@ -139,18 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
         color: #fff; /* Text color */
         font-weight: bold;
         text-transform: uppercase;
-    }
-
-    .rounded-circle {
-        border-radius: 50%;
-    }
-
-    .avatar-group .avatar {
-        margin-right: -8px; /* Overlap avatars slightly */
-    }
-
-    .avatar img {
-        border: 2px solid #fff; /* Add a white border around images */
     }
 </style>
 
@@ -237,9 +254,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 </select>
             </div>
             <div class="d-flex align-items-center">
-                <input type="text" class="form-control form-control-sm me-2" placeholder="Search User" style="width: 200px;">
-                <button class="btn btn-sm btn-outline-secondary me-2">Export</button>
-                <button class="btn btn-sm btn-primary">+ Add New Role</button>
+                <!-- Search Form -->
+                <form method="GET" action="{{ route('admin.roles.index') }}" class="d-flex me-2">
+                    <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search User" value="{{ request('search') }}" style="width: 200px;">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <i class="ti ti-search"></i> Search
+                    </button>
+                </form>
+
+                <!-- Reset Button -->
+                <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm me-2">
+                    <i class="ti ti-reload"></i> Reset
+                </a>
+
+                <!-- Export Dropdown -->
+                <div class="dropdown me-2">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="ti ti-upload"></i> Export
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'print']) }}"><i class="ti ti-printer me-2"></i> Print</a></li>
+                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'csv']) }}"><i class="ti ti-file-csv me-2"></i> Csv</a></li>
+                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'excel']) }}"><i class="ti ti-file-spreadsheet me-2"></i> Excel</a></li>
+                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'pdf']) }}"><i class="ti ti-file-pdf me-2"></i> Pdf</a></li>
+                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'copy']) }}"><i class="ti ti-copy me-2"></i> Copy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Add New Role Button -->
+                <a href="javascript:;" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                    <i class="ti ti-plus"></i> Add New Role
+                </a>
             </div>
         </div>
         <div class="card-datatable table-responsive">
@@ -293,32 +338,42 @@ document.addEventListener('DOMContentLoaded', function () {
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <a href="javascript:;" class="btn btn-sm btn-outline-secondary me-2 edit-user" data-id="{{ $user->id }}">
-                                        <i class="ti ti-pencil"></i>
-                                    </a>
-                                    <a href="javascript:;" class="btn btn-sm btn-outline-danger delete-user" data-id="{{ $user->id }}">
-                                        <i class="ti ti-trash"></i>
-                                    </a>
-                                    <a href="javascript:;" class="btn btn-sm btn-outline-primary view-user" data-id="{{ $user->id }}">
-                                        <i class="ti ti-eye"></i>
-                                    </a>
-                                </div>
-                                <div class="d-flex align-items-center mt-2">
                                     <!-- Assign Role Dropdown -->
-                                    <select class="form-select form-select-sm assign-role me-2" data-user-id="{{ $user->id }}">
-                                        <option value="">Assign Role</option>
-                                        @foreach ($roles as $role)
-                                            <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="dropdown me-2"> <!-- Added 'me-2' for spacing -->
+                                        <button class="btn btn-primary dropdown-toggle" type="button" id="assignRoleDropdown{{ $user->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Assign Role
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="assignRoleDropdown{{ $user->id }}">
+                                            @foreach ($roles as $role)
+                                                <li>
+                                                    <a class="dropdown-item assign-role" href="javascript:;" data-user-id="{{ $user->id }}" data-role="{{ $role->name }}">
+                                                        {{ ucfirst($role->name) }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
 
                                     <!-- Remove Role Dropdown -->
-                                    <select class="form-select form-select-sm remove-role" data-user-id="{{ $user->id }}">
-                                        <option value="">Remove Role</option>
-                                        @foreach ($user->roles as $role)
-                                            <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="dropdown me-2">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="removeRoleDropdown{{ $user->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Remove Role
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="removeRoleDropdown{{ $user->id }}">
+                                            @foreach ($user->roles as $role)
+                                                <li>
+                                                    <a class="dropdown-item remove-role" href="javascript:;" data-user-id="{{ $user->id }}" data-role="{{ $role->name }}">
+                                                        {{ ucfirst($role->name) }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+
+                                    <!-- Delete User Button -->
+                                    <a href="javascript:;" class="btn btn-sm btn-outline-danger delete-user">
+                                        <i class="ti ti-trash"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

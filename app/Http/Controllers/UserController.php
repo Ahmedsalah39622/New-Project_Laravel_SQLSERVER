@@ -1,20 +1,4 @@
-<?php
-
-namespace App\Http\Controllers\Admin;
-
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Role;
-use Illuminate\Http\Request;
-
-class UserController extends Controller
-{
-    public function index()
-    {
-        $users = User::all();
-        return view('admin.dashboard', compact('users'));
-    }
-    public function removeRole(Request $request, $userId)
+public function removeRole(Request $request, $userId)
 {
     $request->validate([
         'role' => 'required|exists:roles,name',
@@ -28,5 +12,4 @@ class UserController extends Controller
     }
 
     return response()->json(['success' => false, 'message' => 'Failed to remove role.']);
-}
 }
