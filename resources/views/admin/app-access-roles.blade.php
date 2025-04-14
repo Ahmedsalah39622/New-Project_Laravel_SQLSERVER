@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handle role removal
-    document.querySelectorAll('.remove-role').forEach(function (selectElement) {
-        selectElement.addEventListener('change', function () {
+    document.querySelectorAll('.remove-role').forEach(function (element) {
+        element.addEventListener('click', function () {
             const userId = this.getAttribute('data-user-id');
-            const role = this.value;
+            const role = this.getAttribute('data-role');
 
-            if (role) {
+            if (confirm(`Are you sure you want to remove the role "${role}" from this user?`)) {
                 fetch(`/admin/users/${userId}/remove-role`, {
                     method: 'POST',
                     headers: {

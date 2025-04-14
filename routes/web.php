@@ -220,8 +220,10 @@ Route::post('/admin/users/{userId}/change-role', [RoleController::class, 'change
 Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.roles.index');
 Route::post('/admin/users/{userId}/assign-role', [RoleController::class, 'assignRole'])->name('users.assign-role');
 Route::post('/admin/users/{userId}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');
-Route::post('/admin/users/{user}/remove-role', [UserController::class, 'removeRole'])->name('users.remove-role');
+Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');
 Route::get('/admin/users/export', [RoleController::class, 'exportUsers'])->name('users.export');
 Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
 Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
 Route::get('/admin/roles', [RoleController::class, 'index'])->name('admin.roles.index');
+Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');
+

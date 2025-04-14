@@ -139,9 +139,13 @@ class RoleController extends Controller
         ]);
 
         $user = User::findOrFail($userId);
-        $user->removeRole($request->role);
+        $role = Role::where('name', $request->input('role'))->first();
 
-        return response()->json(['success' => true, 'message' => 'Role removed successfully!']);
+        if ($user->roles()->detach($role)) {
+            return response()->json(['success' => true, 'message' => 'Role removed successfully!']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Failed to remove role.']);
     }
 
     public function exportUsers()
