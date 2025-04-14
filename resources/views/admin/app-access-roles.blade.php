@@ -253,22 +253,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="50">Show 50</option>
                 </select>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center flex-wrap">
                 <!-- Search Form -->
-                <form method="GET" action="{{ route('admin.roles.index') }}" class="d-flex me-2">
+                <form method="GET" action="{{ route('admin.roles.index') }}" class="d-flex align-items-center me-3">
                     <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search User" value="{{ request('search') }}" style="width: 200px;">
                     <button type="submit" class="btn btn-outline-secondary btn-sm">
                         <i class="ti ti-search"></i> Search
                     </button>
-                </form>
 
                 <!-- Reset Button -->
-                <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm me-2">
+                <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm me-3">
                     <i class="ti ti-reload"></i> Reset
                 </a>
 
                 <!-- Export Dropdown -->
-                <div class="dropdown me-2">
+                <div class="dropdown me-3">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="ti ti-upload"></i> Export
                     </button>
@@ -282,10 +281,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
 
                 <!-- Add New Role Button -->
-                <a href="javascript:;" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                <a href="javascript:;" class="btn btn-primary btn-sm">
                     <i class="ti ti-plus"></i> Add New Role
                 </a>
             </div>
+          </form>
         </div>
         <div class="card-datatable table-responsive">
             <table class="table table-hover border-top">
