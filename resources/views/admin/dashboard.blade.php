@@ -151,4 +151,11 @@
     </div>
 </div>
 
+<li class="nav-item">
+    <a class="nav-link" href="{{ route('admin.access-roles') }}">
+        <i class="ti ti-lock"></i>
+        <span>Access Roles</span>
+    </a>
+</li>
+
 @endsection

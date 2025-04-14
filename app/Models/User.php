@@ -10,6 +10,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+// Ensure the Role model exists in the specified namespace
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -63,4 +65,13 @@ class User extends Authenticatable
         ];
     }
 
+    // Define the relationship with the Role model
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id'); // Ensure 'role_id' matches your database column
+    }
+
+
 }
+
+

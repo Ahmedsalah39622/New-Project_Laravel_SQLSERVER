@@ -12,6 +12,20 @@
 
 @section('content')
 
+<!-- Chatbot Section -->
+<div class="chatbot-container">
+    <div class="chatbot-header">
+        <h5>Hospital Chatbot</h5>
+    </div>
+    <div class="chatbot-body" id="chatbotBody">
+        <!-- Chat messages will appear here -->
+    </div>
+    <div class="chatbot-footer">
+        <input type="text" id="chatbotInput" placeholder="Ask a question..." />
+        <button id="chatbotSend" class="btn btn-primary">Send</button>
+    </div>
+</div>
+
 <!-- Clinic Cards Section -->
 <div class="row mb-12 g-6" id="clinic-cards">
   @foreach ([
@@ -422,6 +436,45 @@
   #doctors-list {
     row-gap: 1.5rem; /* Creates vertical gaps between rows of cards */
     column-gap: 1rem; /* Optional: adds horizontal spacing between columns */
+  }
+
+  /* Chatbot styles */
+  .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      z-index: 1000;
+  }
+  .chatbot-header {
+      background: #7367F0;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+  }
+  .chatbot-body {
+      height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+  }
+  .chatbot-footer {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+  }
+  #chatbotInput {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+  }
+  #chatbotSend {
+      margin-left: 10px;
   }
 </style>
 </style>

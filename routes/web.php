@@ -211,4 +211,14 @@ Route::get('/doctor/app-invoice-preview/{appointmentId?}', [AppInvoicePreviewCon
 
 Route::get('/admin/dashboard', [AppointmentController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/dashboard', [DoctorController::class, 'dashboard'])->name('admin.dashboard');
-
+//Route for role admin
+Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
+Route::post('/admin/roles', [RoleController::class, 'store'])->name('roles.store');
+Route::put('/admin/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
+Route::delete('/admin/roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+Route::post('/admin/users/{userId}/change-role', [RoleController::class, 'changeUserRole'])->name('users.change-role');
+Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
+Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.roles.index');
+Route::post('/admin/users/{userId}/assign-role', [RoleController::class, 'assignRole'])->name('users.assign-role');
+Route::post('/admin/users/{userId}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');
+Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
