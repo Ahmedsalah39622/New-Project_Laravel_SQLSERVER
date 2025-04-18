@@ -206,7 +206,7 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
 
 Route::post('/doctor/completedprescriptions/store', [PrescriptionController::class, 'store'])->name('doctor.completedprescriptions.store');
 
-Route::get('/doctor/app-invoice-preview/{appointmentId?}', [AppInvoicePreviewController::class, 'index'])
+Route::get('/doctor/app-invoice-preview/{appointmentId}', [PrescriptionController::class, 'showInvoicePreview'])
     ->name('doctor.app-invoice-preview');
 
 Route::get('/admin/dashboard', [AppointmentController::class, 'dashboard'])->name('admin.dashboard');
@@ -226,4 +226,3 @@ Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin
 Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
 Route::get('/admin/roles', [RoleController::class, 'index'])->name('admin.roles.index');
 Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');
-

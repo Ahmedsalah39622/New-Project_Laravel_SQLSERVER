@@ -13,18 +13,7 @@
 @section('content')
 
 <!-- Chatbot Section -->
-<div class="chatbot-container">
-    <div class="chatbot-header">
-        <h5>Hospital Chatbot</h5>
-    </div>
-    <div class="chatbot-body" id="chatbotBody">
-        <!-- Chat messages will appear here -->
-    </div>
-    <div class="chatbot-footer">
-        <input type="text" id="chatbotInput" placeholder="Ask a question..." />
-        <button id="chatbotSend" class="btn btn-primary">Send</button>
-    </div>
-</div>
+
 
 <!-- Clinic Cards Section -->
 <div class="row mb-12 g-6" id="clinic-cards">
@@ -33,12 +22,12 @@
       ['name' => 'Dentistry', 'image' => 'https://th.bing.com/th/id/OIP.FDv4CjYHYwDIfKollMEGwwHaE8?rs=1&pid=ImgDetMain', 'description' => 'Comprehensive dental services for all ages.'],
       ['name' => 'Neurology', 'image' => 'https://th.bing.com/th/id/OIP.G8GkePvKtmQ87SY1dmisIQHaE7?w=626&h=417&rs=1&pid=ImgDetMain', 'description' => 'Advanced brain and nervous system care.'],
       ['name' => 'Orthopedics', 'image' => 'https://res.cloudinary.com/lowellgeneral/image/upload/c_fill,w_auto,g_faces,q_auto,dpr_auto,f_auto/orthopedic-center1_BFAFBDC0-FC11-11E9-92C400218628D024.jpg', 'description' => 'Bone and joint health specialists.'],
-      ['name' => 'Pediatrics', 'image' => 'https://th.bing.com/th/id/R.3ad22fe95e70c998264acaf1d471d668?rik=DohY9CkyOVlH2w&pid=ImgRaw&r=0', 'description' => 'Healthcare tailored for children and infants.'],
+      ['name' => 'Pediatrics', 'image' => 'https://th.bing.com/th/id/OIP.VPe-t1oyyTxUuYA7s7Z-UgHaE8?rs=1&pid=ImgDetMain', 'description' => 'Healthcare tailored for children and infants.'],
       ['name' => 'Dermatology', 'image' => 'https://www.nccpa.net/wp-content/uploads/2022/03/shutterstock_625301408.jpg', 'description' => 'Skin, hair, and nail treatment solutions.'],
       ['name' => 'Oncology', 'image' => 'https://th.bing.com/th/id/OIP.ltfNltFBGV21XxzgZuDbsgHaE8?w=1000&h=667&rs=1&pid=ImgDetMain', 'description' => 'Focuses on the diagnosis and treatment of cancer.'],
       ['name' => 'Ophthalmology', 'image' => 'https://th.bing.com/th/id/R.3cb7a106f02a04e3dff40f61ee317329?rik=3HaGAdZB%2bEYJzw&pid=ImgRaw&r=0', 'description' => 'Deals with eye and vision care.'],
       ['name' => 'Endocrinology', 'image' => 'https://eunamed.com/wp-content/uploads/2021/02/portada-endocrino-scaled.jpg', 'description' => 'Focuses on hormonal and metabolic disorders'],
-      ['name' => 'Gastroenterology', 'image' => 'https://gastroliversc.com.sg/wp-content/uploads/2022/09/gastro-home-page-image-2-3.jpg', 'description' => 'Specializes in digestive system disorders'],
+      ['name' => 'Gastroenterology', 'image' => 'https://assets-global.website-files.com/6265a955fd624c60a9c38baa/6298637e70be9df472603e4a_stomach.jpeg', 'description' => 'Specializes in digestive system disorders'],
       ['name' => 'Urology', 'image' => 'https://amarhospital.com/wp-content/uploads/2020/06/urology.jpg', 'description' => 'Deals with the urinary tract and male reproductive system.'],
   ] as $card)
     <div class="col-md-6 col-lg-4">
@@ -58,7 +47,7 @@
 <div class="row mb-12 g-6 d-none" id="doctors-section">
   <div class="col-12">
     <h3>Select a Doctor</h3>
-    <div id="doctors-list" class="row"></div>
+    <div id="doctors-list" class="row g-3"></div>
     <button class="btn btn-secondary mt-3" id="back-to-clinics">Back to Clinics</button>
 
   </div>
@@ -197,7 +186,7 @@
             const timeSlot = document.createElement('div');
             timeSlot.className = 'col-md-3 mb-3';
             timeSlot.innerHTML = `
-                <button class="btn w-100 time-slot ${slot.isOccupied ? 'btn-danger' : 'btn-light'}" data-time="${slot.time}" ${slot.isOccupied ? 'disabled' : ''}>
+                <button class="btn w-100 time-slot ${slot.isOccupied ? 'btn-danger disabled' : 'btn-light'}" data-time="${slot.time}" ${slot.isOccupied ? 'disabled' : ''}>
                     ${slot.time}
                 </button>
             `;

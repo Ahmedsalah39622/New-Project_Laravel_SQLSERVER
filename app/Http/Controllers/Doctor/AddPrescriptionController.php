@@ -42,7 +42,7 @@ class AddPrescriptionController extends Controller
 
         $appointment = Appointment::find(id: $request->appointment_id);
 
-        $prescription = new CompletedPrescription();
+        $prescription = new Prescription();
         $prescription->patient_id = $appointment->patient_id;
         $prescription->doctor_id = Auth::id();
         $prescription->date_issued = now(); // Set date issued to current date
@@ -53,7 +53,6 @@ class AddPrescriptionController extends Controller
         $prescription->save();
 
         Log::info('Prescription saved: ', $prescription->toArray());
-dd("sasdas");
         return redirect()->route('doctor.app-invoice-preview', ['appointmentId' => $request->appointment_id])->with('success', 'Prescription saved successfully.');
     }
 }

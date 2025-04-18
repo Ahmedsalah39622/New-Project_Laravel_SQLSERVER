@@ -4,6 +4,7 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Models\Prescription;
 use App\Models\Patient;
+use App\Models\User;
 
 class PrescriptionController extends Controller
 {
@@ -18,15 +19,24 @@ class PrescriptionController extends Controller
 
         $appointmentId = $request->input('appointment_id');
 
-        // Loop through the drugs and dosages to save them as separate entries
         foreach ($request->input('group-a') as $item) {
-            Prescription::create([
-                'appointment_id' => $appointmentId,
-                'drugs' => trim($item['drugs']), // Ensure no leading/trailing spaces
-                'dosage' => trim($item['dosage']),
-                'notes' => $request->input('notes'),
-            ]);
-        }
+          $drug = trim($item['drugs']);
+          $dosage = trim($item['dosage']);
+
+          $exists = Prescription::where('appointment_id', $appointmentId)
+                      ->where('drugs', $drug)
+                      ->where('dosage', $dosage)
+                      ->exists();
+
+          if (!$exists) {
+              Prescription::create([
+                  'appointment_id' => $appointmentId,
+                  'drugs' => $drug,
+                  'dosage' => $dosage,
+                  'notes' => $request->input('notes'),
+              ]);
+          }
+      }
 
         // Retrieve the appointment and related patient
         $appointment = Appointment::find($appointmentId);
@@ -41,5 +51,16 @@ class PrescriptionController extends Controller
         }
 
         return view('doctor.app-invoice-preview', compact('prescriptions', 'appointment', 'doctor', 'patient'));
+    }
+
+    public function showInvoicePreview($appointmentId)
+    {
+        $appointment = Appointment::findOrFail($appointmentId);
+        $doctor = $appointment->doctor;
+        $prescriptions = Prescription::where('appointment_id', $appointmentId)->get();
+
+        // Assuming the receptionist is related to the appointment or fetched separately
+
+        return view('doctor.app-invoice-preview', compact('appointment', 'doctor', 'prescriptions', 'receptionist'));
     }
 }

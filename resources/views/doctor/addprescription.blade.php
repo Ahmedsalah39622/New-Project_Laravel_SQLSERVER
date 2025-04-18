@@ -161,17 +161,15 @@
   <div class="col-lg-3 col-12 prescription-actions">
     <div class="card mb-6">
       <div class="card-body">
-        <button type="submit" form="prescription-form" class="btn btn-primary d-grid w-100 mb-4">
-          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-save ti-xs me-2"></i>Save Prescription</span>
+
+        <button type="submit" form="prescription-form" onclick="this.disabled=true; this.form.submit();" class="btn btn-primary d-grid w-100 mb-4">
+          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-save ti-xs me-2"></i>Save and Preview Prescription</span>
         </button>
 
         <button class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendPrescriptionOffcanvas">
           <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Prescription</span>
         </button>
-        <a href="{{url('app/prescription/preview')}}" class="btn btn-label-secondary d-grid w-100 mb-4">Preview</a>
-        <button type="button" class="btn btn-secondary d-grid w-100 mb-4" onclick="printPrescription()">
-          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-printer ti-xs me-2"></i>Print Prescription</span>
-        </button>
+
       </div>
     </div>
     <div>

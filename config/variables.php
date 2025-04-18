@@ -2,7 +2,7 @@
 // Variables
 return [
   "creatorName" => "Lifeline",
-  "creatorUrl" => "https://Lifeline.com",
+  "creatorUrl" => "https://Lifeline.eg",
   "templateName" => "Lifeline",
   "templateSuffix" => "Bootstrap Admin Template",
   "templateVersion" => "2.0.0",

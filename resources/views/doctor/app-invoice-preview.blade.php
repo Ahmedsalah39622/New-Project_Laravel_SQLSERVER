@@ -29,6 +29,60 @@
 
 @section('content')
 
+<style>
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact; /* Ensures colors are printed accurately */
+      color-adjust: exact;
+    }
+
+    .invoice-preview {
+      margin: 0 auto;
+      width: 100%;
+      max-width: 800px; /* Center the content and limit the width */
+    }
+
+    .invoice-preview-card {
+      border: none;
+      box-shadow: none;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th, .table td {
+      border: 1px solid #ddd; /* Add borders to table cells */
+      padding: 8px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-end {
+      text-align: right;
+    }
+
+    .fw-medium {
+      font-weight: 500;
+    }
+
+    .text-heading {
+      font-size: 1.1rem;
+    }
+
+    .btn, .invoice-actions {
+      display: none; /* Hide buttons and actions when printing */
+    }
+
+    hr {
+      border: 1px solid #ddd;
+    }
+  }
+</style>
+
 <div class="row invoice-preview">
   <!-- Invoice -->
   <div class="col-xl-9 col-md-8 col-12 mb-md-0 mb-6">
@@ -54,7 +108,7 @@
             </div>
             <div class="text-heading">
               <span>Date Due:</span>
-              <span>{{ now()->addDays(30)->toDateString() }}</span> <!-- Example due date -->
+              <span>{{ now()->addDays(7)->toDateString() }}</span> <!-- Example due date -->
             </div>
           </div>
         </div>
@@ -64,7 +118,6 @@
           <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-6 mb-sm-0 mb-6">
             <h6>Patient Information:</h6>
             <p class="mb-1">Name: {{ $appointment->patient_name }}</p>
-            <p class="mb-0">ID: {{ $appointment->patient_id}}</p>
           </div>
           <div class="col-xl-6 col-md-12 col-sm-7 col-12">
             <h6>Doctor Information:</h6>
@@ -91,6 +144,8 @@
           </div>
         </div>
       </div>
+      <h6>Prescription Details:</h6>
+
       <div class="table-responsive border border-bottom-0 border-top-0 rounded">
         <table class="table m-0">
           <thead>
@@ -121,22 +176,30 @@
             <tr>
               <td class="align-top pe-6 ps-0 py-6">
                 <p class="mb-1">
-                  <span class="me-2 h6">Salesperson:</span>
-                  <span>Alfie Solomons</span>
+                  <span class="me-2 h6">Receptionist:</span>
+                  <span>{{ $receptionist->name ?? 'N/A' }}</span>
                 </p>
-                <span>Thanks for your business</span>
+                <p class="text-center">Thanks for your Trust!</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-responsive">
+        <table class="table m-0 table-borderless">
+          <tbody>
+            <tr>
+              <td class="align-top pe-6 ps-0 py-6">
+                <p class="mb-1">
+                  <span class="me-2 h6">Prescription Summary:</span>
+                </p>
               </td>
               <td class="px-0 py-6 w-px-100">
-                <p class="mb-2">Subtotal:</p>
-                <p class="mb-2">Discount:</p>
-                <p class="mb-2 border-bottom pb-2">Tax:</p>
-                <p class="mb-0 pt-2">Total:</p>
+
+                <p class="mb-2 border-bottom pb-2">Total Drugs:</p>
               </td>
               <td class="text-end px-0 py-6 w-px-100 fw-medium text-heading">
-                <p class="fw-medium mb-2">$1800</p>
-                <p class="fw-medium mb-2">$28</p>
-                <p class="fw-medium mb-2 border-bottom pb-2">21%</p>
-                <p class="fw-medium mb-0 pt-2">$1690</p>
+                <p class="fw-medium mb-2 border-bottom pb-2">{{ $prescriptions->count() }}</p>
               </td>
             </tr>
           </tbody>
@@ -148,7 +211,8 @@
         <div class="row">
           <div class="col-12">
             <span class="fw-medium text-heading">Note:</span>
-            <span>It was a pleasure working with you and your team. We hope you will keep us in mind for future freelance projects. Thank You!</span>
+            <span>It was a pleasure working with you and the LifeLine team. We hope that you will keep us in mind for future freelance projects related to LifeLine and patient management. Thank you for the opportunity to contribute to such an impactful project!
+            </span>
           </div>
         </div>
       </div>

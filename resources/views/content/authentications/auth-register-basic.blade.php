@@ -28,10 +28,8 @@ $configData = Helper::appClasses();
     <!-- /Left Text -->
     <div class="d-none d-lg-flex col-lg-8 p-0">
       <div class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center"
-           style="background-image: url('https://sanctuarywellnessinstitute.com/blog/wp-content/uploads/2023/07/Top-5-Things-to-Look-For-When-Choosing-a-Cannabis-Doctor.jpeg'); background-size: cover; background-position: center;">
+           style="background-image: url('https://sanctuarywellnessinstitute.com/blog/wp-content/uploads/2023/07/Top-5-Things-to-Look-For-When-Choosing-a-Cannabis-Doctor.jpeg'); background-size: cover; background-position: center;"
         <img src="{{ asset('assets/img/illustrations/auth-register-illustration-'.$configData['style'].'.png') }}" alt="" class="my-5 auth-illustration" data-app-light-img="illustrations/auth-register-illustration-light.png" data-app-dark-img="illustrations/auth-register-illustration-dark.png">
-
-        <img src="{{ asset('assets/img/illustrations/bg-shape-image-'.$configData['style'].'.png') }}" alt="auth-register-cover" class="platform-bg" data-app-light-img="illustrations/bg-shape-image-light.png" data-app-dark-img="illustrations/bg-shape-image-dark.png">
       </div>
     </div>
 
@@ -124,15 +122,6 @@ $configData = Helper::appClasses();
             @enderror
           </div>
 
-          <div class="mb-6">
-            <label for="phone" class="form-label">Phone Number</label>
-            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Enter your phone number" value="{{ old('phone') }}" />
-            @error('phone')
-              <span class="invalid-feedback" role="alert">
-                <span class="fw-medium">{{ $message }}</span>
-              </span>
-            @enderror
-            </br>
 
           <div class="mb-6">
             <label for="insurance_provider" class="form-label">Insurance Provider</label>
