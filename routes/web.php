@@ -226,3 +226,10 @@ Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin
 Route::get('/admin/access-roles', [RoleController::class, 'index'])->name('admin.access-roles');
 Route::get('/admin/roles', [RoleController::class, 'index'])->name('admin.roles.index');
 Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');Route::post('/admin/users/{user}/remove-role', [RoleController::class, 'removeRole'])->name('users.remove-role');
+
+Route::get('/appointment/{appointmentId}/treatment-plan', [PrescriptionController::class, 'getTreatmentPlan'])
+    ->name('appointment.treatment-plan');
+
+Route::get('/pharmacy', function () {
+    return view('content.pages.pharmacy');
+})->name('pharmacy');

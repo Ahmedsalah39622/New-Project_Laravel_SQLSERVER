@@ -37,7 +37,7 @@
       <div>
         <h5 class="fw-bold">Pharmacy</h5>
         <p>Get your medicine and all your pharmacy needs.</p>
-        <a href="javascript:void(0)" class="btn btn-outline-light px-4 py-2">Place Order</a>
+        <a href="{{ route('pharmacy') }}" class="btn btn-outline-primary">Visit Pharmacy</a>
       </div>
       <div>
         <img src="your-image-url.png" alt="Pharmacy Items" style="height: 100px;">
@@ -88,9 +88,15 @@
                         <i class="ti ti-dots-vertical"></i>
                       </button>
                       <div class="dropdown-menu">
-                        <a href="javascript:void(0)" class="dropdown-item view-details">View Details</a>
+                        <a href="javascript:void(0)" class="dropdown-item view-details">
+                          <i class="ti ti-eye me-1"></i> View Details
+                        </a>
                         <a href="javascript:void(0)" class="dropdown-item cancel-appointment @if($appointment->status == 'confirmed') disabled @endif">
                           <i class="ti ti-trash me-1"></i> Cancel
+                        </a>
+                        <!-- New Action for Viewing Treatment Plan -->
+                        <a href="javascript:void(0)" class="dropdown-item view-treatment-plan" data-appointment-id="{{ $appointment->id }}">
+                          <i class="ti ti-file-text me-1"></i> View Treatment Plan
                         </a>
                       </div>
                     </div>
@@ -144,6 +150,33 @@
                 alert('Failed to cancel appointment. Please try again.');
             }
         }
+    });
+
+    // Handle "View Treatment Plan" action
+    document.querySelectorAll('.view-treatment-plan').forEach(button => {
+        button.addEventListener('click', async function () {
+            const appointmentId = this.getAttribute('data-appointment-id');
+
+            try {
+                const response = await fetch(`/appointment/${appointmentId}/treatment-plan`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch treatment plan.');
+                }
+
+                const data = await response.json();
+                if (data.treatment_plan) {
+                    let treatmentPlanDetails = 'Treatment Plan:\n\n';
+                    data.treatment_plan.forEach(plan => {
+                        treatmentPlanDetails += `Drug: ${plan.drug}\nDosage: ${plan.dosage}\nNotes: ${plan.notes}\n\n`;
+                    });
+                    alert(treatmentPlanDetails);
+                } else {
+                    alert('No treatment plan found for this appointment.');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
     });
   });
 </script>

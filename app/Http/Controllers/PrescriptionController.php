@@ -63,4 +63,25 @@ class PrescriptionController extends Controller
 
         return view('doctor.app-invoice-preview', compact('appointment', 'doctor', 'prescriptions', 'receptionist'));
     }
+
+    public function getTreatmentPlan($appointmentId)
+    {
+        // Fetch prescriptions for the given appointment ID
+        $prescriptions = Prescription::where('appointment_id', $appointmentId)->get();
+
+        if ($prescriptions->isEmpty()) {
+            return response()->json(['error' => 'No treatment plan found for this appointment.'], 404);
+        }
+
+        // Format the treatment plan data
+        $treatmentPlan = $prescriptions->map(function ($prescription) {
+            return [
+                'drug' => $prescription->drugs,
+                'dosage' => $prescription->dosage,
+                'notes' => $prescription->notes,
+            ];
+        });
+
+        return response()->json(['treatment_plan' => $treatmentPlan]);
+    }
 }
