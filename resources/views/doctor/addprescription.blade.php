@@ -257,7 +257,7 @@
       <div class="modal-body">
         <form id="add-disease-form">
           <div class="mb-3">
-            <label for="new-disease" class="form-label">Disease Name</label>
+            <label for="new-disease" class="form-label">Disease Name </label>
             <input type="text" class="form-control" id="new-disease" placeholder="Enter disease name" required>
           </div>
           <button type="submit" class="btn btn-primary">Add Disease</button>
