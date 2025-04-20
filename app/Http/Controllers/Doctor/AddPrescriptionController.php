@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Appointment;
 use App\Models\CompletedPrescription; // Import the CompletedPrescription model
 use App\Models\Prescription; // Import the Prescription model
@@ -25,7 +26,17 @@ class AddPrescriptionController extends Controller
         $appointment = Appointment::find($appointmentId);
         $doctor = $appointment->doctor;
         $prescriptions = CompletedPrescription::where('patient_id', $appointment->patient_id ?? null)->get();
-        return view('doctor.addprescription', compact('appointment', 'doctor'));
+
+        // Fetch all column names from the disease_statistics table
+        $columns = Schema::getColumnListing('disease_statistics');
+
+        // Exclude non-disease columns like 'id', 'ds', 'created_at', 'updated_at'
+        $diseases = array_filter($columns, function ($column) {
+            return !in_array($column, ['id', 'ds', 'created_at', 'updated_at']);
+        });
+
+        // Pass the diseases to the view
+        return view('doctor.addprescription', compact('appointment', 'doctor', 'prescriptions', 'diseases'));
     }
 
     public function store(Request $request)

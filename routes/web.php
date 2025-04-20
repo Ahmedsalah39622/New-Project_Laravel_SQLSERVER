@@ -32,6 +32,8 @@ use App\Http\Controllers\Doctor\AddPrescriptionController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\Doctor\PreviewPrescriptionsController;
 use App\Http\Controllers\AppInvoicePreviewController;
+use App\Http\Controllers\DiseaseStatisticController;
+use App\Http\Controllers\DiseaseStatisticsController;
 
 // Main Page Route
 Route::get('/', [Main::class, 'index'])->name('pages-home');
@@ -233,3 +235,13 @@ Route::get('/appointment/{appointmentId}/treatment-plan', [PrescriptionControlle
 Route::get('/pharmacy', function () {
     return view('content.pages.pharmacy');
 })->name('pharmacy');
+//ai testing
+Route::get('/disease-statistics', [DiseaseStatisticController::class, 'index'])->name('disease-statistics.index');
+Route::post('/disease-statistics/add-disease', [DiseaseStatisticController::class, 'addDisease'])->name('disease-statistics.add-disease');
+Route::post('/disease-statistics/store', [PrescriptionController::class, 'storeDiseases'])->name('disease-statistics.store');
+
+Route::post('/disease-statistics/add-disease', [DiseaseStatisticsController::class, 'addDisease'])->name('disease-statistics.add-disease');
+
+Route::get('/doctor/add-prescription', [PrescriptionController::class, 'create'])->name('doctor.addprescription.create');
+
+Route::post('/disease-statistics/add-disease', [PrescriptionController::class, 'addDisease'])->name('disease-statistics.add-disease');

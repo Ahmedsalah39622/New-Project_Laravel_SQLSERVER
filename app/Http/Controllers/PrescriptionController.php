@@ -5,11 +5,18 @@ use Illuminate\Http\Request;
 use App\Models\Prescription;
 use App\Models\Patient;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use App\Models\DiseaseStatistic;
 
 class PrescriptionController extends Controller
 {
     public function store(Request $request)
     {
+        // Log the request data
+        Log::info($request->all());
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'group-a' => 'required|array',
@@ -83,5 +90,85 @@ class PrescriptionController extends Controller
         });
 
         return response()->json(['treatment_plan' => $treatmentPlan]);
+    }
+
+    public function destroy($id)
+    {
+        $prescription = Prescription::findOrFail($id);
+        $prescription->delete();
+
+        return redirect()->back()->with('success', 'Prescription deleted successfully!');
+    }
+
+    public function storeDiseases(Request $request)
+    {
+        $request->validate([
+            'diseases' => 'required|array',
+            'diseases.*' => 'string',
+            'ds' => 'required|date',
+        ]);
+
+        // Validate diseases against the table columns
+        $validDiseases = Schema::getColumnListing('disease_statistics');
+        $data = ['ds' => $request->input('ds')];
+
+        foreach ($request->input('diseases') as $disease) {
+            $diseaseColumn = strtolower(str_replace(' ', '_', $disease));
+            if (in_array($diseaseColumn, $validDiseases)) {
+                // Increment the count for the disease
+                $existingRecord = DiseaseStatistic::where('ds', $data['ds'])->first();
+
+                if ($existingRecord) {
+                    $existingRecord->increment($diseaseColumn);
+                } else {
+                    $data[$diseaseColumn] = 1; // Initialize the count for the disease
+                }
+            } else {
+                return redirect()->back()->with('error', "Disease '{$disease}' is not recognized.");
+            }
+        }
+
+        // Insert or update the record in the database
+        DiseaseStatistic::updateOrCreate(
+            ['ds' => $data['ds']], // Match by date
+            $data
+        );
+
+        return redirect()->back()->with('success', 'Diseases saved and counted successfully!');
+    }
+
+    public function create()
+    {
+        // Fetch all column names from the disease_statistics table
+        $columns = Schema::getColumnListing('disease_statistics');
+
+        // Exclude non-disease columns like 'id', 'ds', 'created_at', 'updated_at'
+        $diseases = array_filter($columns, function ($column) {
+            return !in_array($column, ['id', 'ds', 'created_at', 'updated_at']);
+        });
+
+        // Pass the diseases to the view
+        return view('doctor.addprescription', compact('diseases'));
+    }
+
+    public function addDisease(Request $request)
+    {
+        $request->validate([
+            'disease_name' => 'required|string',
+        ]);
+
+        $diseaseName = strtolower(str_replace(' ', '_', $request->disease_name));
+
+        // Check if the column already exists in the table
+        if (Schema::hasColumn('disease_statistics', $diseaseName)) {
+            return redirect()->back()->with('error', 'The disease already exists!');
+        }
+
+        // Add the new column to the table
+        Schema::table('disease_statistics', function (Blueprint $table) use ($diseaseName) {
+            $table->integer($diseaseName)->default(0);
+        });
+
+        return redirect()->back()->with('success', 'New disease added successfully!');
     }
 }

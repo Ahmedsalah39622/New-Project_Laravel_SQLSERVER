@@ -32,6 +32,36 @@
         console.log('Doctor:', @json($doctor));
         console.log('Appointment:', @json($appointment));
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get today's date
+        const today = new Date();
+
+        // Format the date as YYYY-MM-DD
+        const formattedDate = today.toISOString().split('T')[0];
+
+        // Set the value of the date input field
+        document.getElementById('ds').value = formattedDate;
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-diseases');
+        const diseasesSelect = document.getElementById('diseases');
+
+        searchInput.addEventListener('input', function () {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            // Loop through all options in the dropdown
+            Array.from(diseasesSelect.options).forEach(option => {
+                const diseaseName = option.text.toLowerCase();
+                if (diseaseName.includes(searchTerm)) {
+                    option.style.display = ''; // Show matching options
+                } else {
+                    option.style.display = 'none'; // Hide non-matching options
+                }
+            });
+        });
+    });
 </script>
 
 <div class="row prescription-add">
@@ -162,8 +192,11 @@
     <div class="card mb-6">
       <div class="card-body">
 
+        <!-- Save and Preview Button -->
         <button type="submit" form="prescription-form" onclick="this.disabled=true; this.form.submit();" class="btn btn-primary d-grid w-100 mb-4">
-          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-save ti-xs me-2"></i>Save and Preview Prescription</span>
+            <span class="d-flex align-items-center justify-content-center text-nowrap">
+                <i class="ti ti-save ti-xs me-2"></i>Save and Preview Prescription
+            </span>
         </button>
 
         <button class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendPrescriptionOffcanvas">
@@ -172,36 +205,77 @@
 
       </div>
     </div>
-    <div>
-      <label for="acceptPaymentsVia" class="form-label">Accept payments via</label>
-      <select class="form-select mb-6" id="acceptPaymentsVia">
-        <option value="Bank Account">Bank Account</option>
-        <option value="Paypal">Paypal</option>
-        <option value="Card">Credit/Debit Card</option>
-        <option value="UPI Transfer">UPI Transfer</option>
-      </select>
-      <div class="d-flex justify-content-between mb-2">
-        <label for="payment-terms">Payment Terms</label>
-        <div class="form-check form-switch me-n2">
-          <input type="checkbox" class="form-check-input" id="payment-terms" checked />
-        </div>
-      </div>
-      <div class="d-flex justify-content-between mb-2">
-        <label for="client-notes">Client Notes</label>
-        <div class="form-check form-switch me-n2">
-          <input type="checkbox" class="form-check-input" id="client-notes" checked />
-        </div>
-      </div>
-      <div class="d-flex justify-content-between">
-        <label for="payment-stub">Payment Stub</label>
-        <div class="form-check form-switch me-n2">
-          <input type="checkbox" class="form-check-input" id="payment-stub" checked />
-        </div>
+
+    <!-- Select Diseases Section -->
+    <div class="card mb-6">
+      <div class="card-body">
+        <h6 class="fw-bold text-heading">Select Diseases</h6>
+        <form id="disease-form" action="{{ route('disease-statistics.store') }}" method="POST">
+          @csrf
+          <div class="form-group">
+            <label for="search-diseases" class="form-label">Search Diseases</label>
+            <input type="text" id="search-diseases" class="form-control" placeholder="Search by disease name">
+          </div>
+          <div class="form-group mt-3">
+            <label for="diseases" class="form-label">Diseases</label>
+            <select id="diseases" name="diseases[]" class="form-select" multiple>
+              @foreach($diseases as $disease)
+                <option value="{{ $disease }}">{{ ucfirst(str_replace('_', ' ', $disease)) }}</option>
+              @endforeach
+            </select>
+            <small class="text-muted">Search or select multiple diseases. Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+          </div>
+          <div class="form-group mt-3">
+            <label for="ds" class="form-label">Date</label>
+            <input type="date" name="ds" id="ds" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary mt-3">Save Diseases</button>
+        </form>
+
+        <!-- Add New Disease -->
+        <form id="add-disease-form" action="{{ route('disease-statistics.add-disease') }}" method="POST" class="mt-4">
+          @csrf
+          <div class="mb-3">
+            <label for="disease_name" class="form-label">New Disease Name</label>
+            <input type="text" name="disease_name" id="disease_name" class="form-control" placeholder="Enter disease name" required>
+          </div>
+          <button type="submit" class="btn btn-secondary">Add Disease</button>
+        </form>
       </div>
     </div>
   </div>
-  <!-- /Prescription Actions -->
 </div>
+
+<!-- Modal for Adding New Disease -->
+<div class="modal fade" id="addDiseaseModal" tabindex="-1" aria-labelledby="addDiseaseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addDiseaseModalLabel">Add New Disease</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="add-disease-form">
+          <div class="mb-3">
+            <label for="new-disease" class="form-label">Disease Name</label>
+            <input type="text" class="form-control" id="new-disease" placeholder="Enter disease name" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Disease</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #diseases {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+  }
+</style>
 
 <script>
 document.getElementById('prescription-form').addEventListener('submit', function(e) {
@@ -235,7 +309,52 @@ document.querySelector('button.btn-success').addEventListener('click', function(
         window.location.href = "{{ url('doctor/app-invoice-preview.blade') }}";
     });
 });
-// Removed redirection logic for preview page
+
+// Initialize Select2 for searchable dropdown
+$(document).ready(function () {
+    $('#diseases').select2({
+        placeholder: "Search or select diseases",
+        allowClear: true,
+        width: '100%' // Ensure the dropdown fits the container
+    });
+});
+
+// Handle "Add New Disease" button click
+document.getElementById('add-new-disease').addEventListener('click', function () {
+    const addDiseaseModal = new bootstrap.Modal(document.getElementById('addDiseaseModal'));
+    addDiseaseModal.show();
+});
+
+// Handle "Add Disease" form submission
+document.getElementById('add-disease-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = this;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Add the new disease to the dropdown
+            const diseasesSelect = document.getElementById('diseases');
+            const newOption = new Option(data.disease_name, data.disease_name, true, true);
+            diseasesSelect.add(newOption);
+
+            // Reset the form
+            form.reset();
+            alert('New disease added successfully!');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
 </script>
 @endsection
 

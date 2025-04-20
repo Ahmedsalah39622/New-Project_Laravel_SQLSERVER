@@ -74,14 +74,18 @@
                   <td>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d M Y') }}</td>
                   <td>{{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }}</td>
                   <td>
+                    <!-- Color of the appointment status-->
                     <span class="badge
                       @if($appointment->status == 'confirmed') bg-success
                       @elseif($appointment->status == 'cancelled') bg-danger
                       @else bg-warning
+
                       @endif">
                       {{ ucfirst($appointment->status) }}
                     </span>
                   </td>
+                     <!-- Actions of the appointment-->
+
                   <td>
                     <div class="dropdown">
                       <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -127,11 +131,12 @@
     // Handle "View Details" and "Cancel" actions
     document.getElementById('appointmentsTable').addEventListener('click', async (e) => {
         if (e.target.classList.contains('view-details')) {
-            const appointmentId = e.target.closest('tr').dataset.appointmentId;
+            const appointmentId = e.target.closest('tr').dataset.appointmentId
             // Fetch and display appointment details
             const response = await fetch(`/appointment/details/${appointmentId}`);
             const appointment = await response.json();
             alert(`Appointment Details:\n\nPatient: ${appointment.patient_name}\nDate: ${appointment.appointment_date}\nTime: ${appointment.start_time}\nStatus: ${appointment.status}`);
+            //if the appointment status is pending that is mean that the action has cancel appointment class and not disabled this means that the appointments status are pending
         } else if (e.target.classList.contains('cancel-appointment') && !e.target.classList.contains('disabled')) {
             const appointmentId = e.target.closest('tr').dataset.appointmentId;
             // Cancel the appointment
