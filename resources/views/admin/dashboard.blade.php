@@ -151,6 +151,29 @@
     </div>
 </div>
 
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">Disease Statistics</h5>
+  </div>
+  <div class="card-body">
+    <a href="{{ route('disease-statistics.export') }}" class="btn btn-primary">
+      <i class="ti ti-download"></i> Download Disease Statistics
+    </a>
+    <form action="{{ route('disease-statistics.predict') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="form-group">
+            <label for="file">Upload CSV File</label>
+            <input type="file" name="file" id="file" class="form-control" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="months_to_predict">Months to Predict</label>
+            <input type="number" name="months_to_predict" id="months_to_predict" class="form-control" min="1" max="12" value="3" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Predict</button>
+    </form>
+  </div>
+</div>
+
 <li class="nav-item">
     <a class="nav-link" href="{{ route('admin.access-roles') }}">
         <i class="ti ti-lock"></i>

@@ -6,6 +6,8 @@ $configData = Helper::appClasses();
 @endphp
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 @isset($configData["layout"])
 @include((( $configData["layout"] === 'horizontal') ? 'layouts.horizontalLayout' :
 (( $configData["layout"] === 'blank') ? 'layouts.blankLayout' :

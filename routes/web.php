@@ -245,3 +245,8 @@ Route::post('/disease-statistics/add-disease', [DiseaseStatisticsController::cla
 Route::get('/doctor/add-prescription', [PrescriptionController::class, 'create'])->name('doctor.addprescription.create');
 
 Route::post('/disease-statistics/add-disease', [PrescriptionController::class, 'addDisease'])->name('disease-statistics.add-disease');
+//admin csv download
+Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::class, 'export'])->name('disease-statistics.export');
+Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::class, 'export'])->name('disease-statistics.export');
+Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::class, 'export'])->name('disease-statistics.export');
+Route::post('/admin/disease-statistics/predict', [DiseaseStatisticController::class, 'predict'])->name('disease-statistics.predict');
