@@ -110,6 +110,12 @@ class DiseaseStatisticController extends Controller
 
         if ($response->successful()) {
             $predictions = $response->json();
+
+            // Debug the predictions data
+
+            // Ensure predictions are sorted by disease name
+            $predictions['predictions'] = collect($predictions['predictions'])->sortKeys()->toArray();
+
             return view('admin.predictions', compact('predictions'));
         } else {
             return redirect()->back()->with('error', 'Failed to get predictions from the AI model.');

@@ -27,15 +27,9 @@ months_to_predict = st.sidebar.slider("🔮 عدد الأشهر للتوقع", 1
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
     try:
-        # Ensure 'ds' column is datetime and sort the data
         df['ds'] = pd.to_datetime(df['ds'])
         df = df.sort_values('ds')
-
-        # Exclude unwanted columns (id, created_at, updated_at)
-        excluded_columns = ['id', 'created_at', 'updated_at']
-        diseases = [col for col in df.columns if col not in excluded_columns + ['ds']]
-
-        # Get the last date in the dataset
+        diseases = [col for col in df.columns if col != 'ds']
         last_date = df['ds'].max()
         st.sidebar.markdown(f"### 📅 آخر تاريخ في البيانات: {last_date.strftime('%Y-%m')}")
     except Exception as e:
@@ -44,14 +38,12 @@ if uploaded_file:
         for disease in diseases:
             st.markdown(f"---\n### 🔬 تحليل المرض: {disease}")
             try:
-                # Prepare data for the Prophet model
                 df_selected = df[['ds', disease]].dropna().rename(columns={disease: 'y'})
 
                 if len(df_selected) < 12:
                     st.warning("⚠ بيانات غير كافية للتدريب (تحتاج إلى 12 شهر على الأقل)!")
                     continue
 
-                # Train the Prophet model
                 m = Prophet(
                     yearly_seasonality=True,
                     weekly_seasonality=False,
@@ -63,12 +55,11 @@ if uploaded_file:
                 )
                 m.fit(df_selected)
 
-                # Make future predictions
                 future = m.make_future_dataframe(periods=months_to_predict, freq='MS')
                 forecast = m.predict(future)
                 future_forecast = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(months_to_predict)
 
-                # Evaluate the model on historical data
+                # تقييم على التاريخ السابق
                 fitted = forecast[forecast['ds'].isin(df_selected['ds'])]
                 y_true = df_selected['y'].values
                 y_pred = fitted['yhat'].values
@@ -77,7 +68,7 @@ if uploaded_file:
                 rmse = np.sqrt(mean_squared_error(y_true, y_pred))
                 mape = np.mean(np.abs((y_true - y_pred) / (y_true + 1e-10))) * 100
 
-                # Accuracy if future actual data exists
+                # الدقة فقط إذا عندنا بيانات فعلية مستقبلية
                 future_actual = df[df['ds'].isin(future_forecast['ds'])][['ds', disease]].dropna()
                 if not future_actual.empty:
                     merged = pd.merge(future_forecast, future_actual, on='ds')
@@ -94,7 +85,7 @@ if uploaded_file:
                 col4.metric("MAPE", f"{mape:.2f}%")
                 st.progress(min(int(accuracy), 100) / 100, text=f"مستوى الدقة: {accuracy:.2f}%")
 
-                # Warning if predictions are significantly higher than last year's average
+                # تحذير إذا التوقعات مرتفعة جدًا
                 last_year_avg = df_selected[df_selected['ds'] >= (last_date - pd.DateOffset(months=12))]['y'].mean()
                 if future_forecast['yhat'].mean() > 1.25 * last_year_avg:
                     st.warning("📈 تنبيه: التوقعات أعلى بنسبة كبيرة من متوسط السنة الماضية!")
@@ -138,3 +129,5 @@ if uploaded_file:
 
             except Exception as e:
                 st.error(f"❌ خطأ في تحليل {disease}: {str(e)}")
+
+

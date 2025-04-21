@@ -62,7 +62,7 @@ def predict():
             mape = np.mean(np.abs((y_true - y_pred) / (y_true + 1e-10))) * 100
 
             # Add historical data to the response
-            historical_data = fitted[['ds', 'yhat']].rename(columns={'yhat': 'y'}).to_dict(orient='records')
+            historical_data = df_selected[['ds', 'y']].to_dict(orient='records')  # Use actual historical data instead of fitted values
 
             # Convert predictions to JSON
             predictions[disease] = {
