@@ -250,3 +250,5 @@ Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::clas
 Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::class, 'export'])->name('disease-statistics.export');
 Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::class, 'export'])->name('disease-statistics.export');
 Route::post('/admin/disease-statistics/predict', [DiseaseStatisticController::class, 'predict'])->name('disease-statistics.predict');
+Route::get('/doctor/patient-statistics', [DashboardController::class, 'getPatientStatistics'])
+    ->name('doctor.patientStatistics');

@@ -8,6 +8,7 @@ use App\Http\Controllers\Doctor\DashboardController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorDashboardController;
+use App\Http\Controllers\DiseaseStatisticsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -43,4 +44,14 @@ Route::get('/doctor/dashboard/data', [DashboardController::class, 'getDashboardD
 Route::get('/appointments-daily-count', [AppointmentController::class, 'getDailyAppointmentsCount']);
 Route::get('/total-appointments', [AppointmentController::class, 'getTotalAppointments']);
 Route::get('/total-doctors', [DoctorController::class, 'getTotalDoctors']);
+Route::get('/total-patients', [DashboardController::class, 'getTotalPatients']);
 
+///
+Route::get('/top-diseases', [DiseaseStatisticsController::class, 'getTopDiseases']);
+Route::get('/patient-statistics', [DashboardController::class, 'getPatientStatisticsApi'])
+    ->name('api.patientStatistics');
+Route::get('/patient-statistics', [PatientController::class, 'getPatientStatistics']);
+Route::get('/new-patients', [PatientController::class, 'getNewPatients']);
+
+
+Route::get('/total-patients', [DashboardController::class, 'getTotalPatients']);

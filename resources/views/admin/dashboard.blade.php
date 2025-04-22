@@ -30,15 +30,18 @@
 @section('content')
 
 <div class="row g-4">
-    <!-- Appointments This Month -->
-    <div class="col-xl-3 col-sm-6">
+    <!-- Total Patients -->
+    <div class="col-xl-6 col-md-12">
         <div class="card h-100">
             <div class="card-header pb-0">
-                <h5 class="mb-3 card-title">Appointments This Month</h5>
-                <p class="mb-0 text-body">Total Appointments</p>
-                <h4 class="mb-0" id="totalAppointments">120</h4>            </div>
+                <h5 class="mb-3 card-title">Total Patients</h5>
+                <p class="mb-0 text-body">Registered Patients</p>
+                <!-- Dynamic Total Patients Count -->
+                <h4 class="mb-0" id="totalPatients">Loading...</h4>
+            </div>
             <div class="card-body px-0">
-              <div id="averageDailySales" style="height: 200px;"></div>
+                <!-- Graph Container -->
+                <div id="totalPatientsChart" style="height: 300px;"></div>
             </div>
         </div>
     </div>
@@ -48,63 +51,74 @@
         <div class="card h-100">
             <div class="card-header pb-0">
                 <h5 class="mb-3 card-title">Total Doctors</h5>
-                <p class="mb-0 text-body">Active Doctors</p>
-                <h4 class="mb-0" id="totalDoctors">120</h4>            </div>
-            <div class="card-body px-0">
-              <div id="totalDoctorsChart" style="height: 200px;"></div>
+                <p class="mb-0 text-body">Active vs Total Staff</p>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <!-- Chart Container -->
+                <div id="totalDoctorsChart" style="height: 200px; width: 100%;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Total Patients -->
-    <div class="col-xl-3 col-sm-6">
+    <!-- Appointments This Month -->
+    <div class="col-xl-3 col-md-6">
         <div class="card h-100">
             <div class="card-header pb-0">
-                <h5 class="mb-3 card-title">Total Patients</h5>
-                <p class="mb-0 text-body">Registered Patients</p>
-                <h4 class="mb-0">450</h4>
+                <h5 class="mb-3 card-title">Appointments This Month</h5>
+                <p class="mb-0 text-body">Total Appointments</p>
+                <h4 class="mb-0" id="totalAppointments">120</h4>
             </div>
             <div class="card-body px-0">
-                <div id="totalPatientsChart" style="height: 150px;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Revenue -->
-    <div class="col-xl-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-header pb-0">
-                <h5 class="mb-3 card-title">Revenue</h5>
-                <p class="mb-0 text-body">This Month</p>
-                <h4 class="mb-0">$15,000</h4>
-            </div>
-            <div class="card-body px-0">
-                <div id="revenueChart" style="height: 150px;"></div>
+                <div id="averageDailySales" style="height: 150px;"></div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row g-4 mt-4">
-    <!-- Average Daily Sales -->
-    <div class="col-xxl-6">
-        <div class="card">
+    <!-- Disease Statistics -->
+    <div class="col-xl-6 col-md-12">
+        <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0">Average Daily Sales</h5>
+                <h5 class="mb-0">Disease Statistics</h5>
             </div>
             <div class="card-body">
-                <div id="averageDailySales" style="height: 200px;"></div>
+                <a href="{{ route('disease-statistics.export') }}" class="btn btn-primary">
+                    <i class="ti ti-download"></i> Download Disease Statistics
+                </a>
+                <form action="{{ route('disease-statistics.predict') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="file">Upload CSV File</label>
+                        <input type="file" name="file" id="file" class="form-control" required>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="months_to_predict">Months to Predict</label>
+                        <input type="number" name="months_to_predict" id="months_to_predict" class="form-control" min="1" max="12" value="3" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Predict</button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Weekly Earning Reports -->
-    <div class="col-xxl-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Weekly Earning Reports</h5>
+    <!-- Earnings Report -->
+    <div class="col-xl-6 col-md-12">
+        <div class="card h-100">
+            <div class="card-header pb-0 d-flex justify-content-between">
+                <div class="card-title mb-0">
+                    <h5 class="mb-1">Earning Reports</h5>
+                    <p class="card-subtitle">Weekly Earnings Overview</p>
+                </div>
             </div>
             <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="mb-0">$468</h2>
+                        <small class="text-success">+4.2%</small>
+                    </div>
+                    <small>You informed of this week compared to last week</small>
+                </div>
                 <div id="weeklyEarningReports" style="height: 200px;"></div>
             </div>
         </div>
@@ -112,9 +126,54 @@
 </div>
 
 <div class="row g-4 mt-4">
+    <!-- Top 3 Diseases by Cases -->
+    <div class="col-xl-4 col-md-6">
+        <div class="card h-100">
+            <div class="card-header pb-0 d-flex justify-content-between">
+                <div class="card-title mb-0">
+                    <h5 class="mb-1">Top 3 Diseases by Cases</h5>
+                    <p class="card-subtitle">Most Prevalent Diseases</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="topDiseasesChart" style="height: 150px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Patients -->
+    <div class="col-xl-4 col-md-6">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <h5 class="mb-3 card-title">New Patients</h5>
+                <p class="mb-0 text-body">This Month</p>
+                <h4 class="mb-0">50</h4>
+                <small class="text-success">+10% from last month</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Access Roles -->
+    <div class="col-xl-4 col-md-12">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <h5 class="mb-3 card-title">Access Roles</h5>
+                <p class="mb-0 text-body">Manage User Permissions</p>
+            </div>
+            <div class="card-body">
+                <a href="{{ route('admin.access-roles') }}" class="btn btn-primary">
+                    <i class="ti ti-lock"></i> Manage Roles
+                </a>
+                <p class="mt-3">Control and assign roles to users for secure access to the system.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-4">
     <!-- Support Tracker -->
-    <div class="col-xxl-6">
-        <div class="card">
+    <div class="col-xl-6 col-md-12">
+        <div class="card h-100">
             <div class="card-header">
                 <h5 class="mb-0">Support Tracker</h5>
             </div>
@@ -125,8 +184,8 @@
     </div>
 
     <!-- Total Earning Chart -->
-    <div class="col-xxl-6">
-        <div class="card">
+    <div class="col-xl-6 col-md-12">
+        <div class="card h-100">
             <div class="card-header">
                 <h5 class="mb-0">Total Earning Chart</h5>
             </div>
@@ -136,49 +195,5 @@
         </div>
     </div>
 </div>
-
-<div class="row g-4 mt-4">
-    <!-- Doctors Growth Over Time -->
-    <div class="col-xxl-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Doctors Growth Over Time</h5>
-            </div>
-            <div class="card-body">
-                <div id="doctorsGrowthChart" style="height: 300px;"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card">
-  <div class="card-header">
-    <h5 class="card-title">Disease Statistics</h5>
-  </div>
-  <div class="card-body">
-    <a href="{{ route('disease-statistics.export') }}" class="btn btn-primary">
-      <i class="ti ti-download"></i> Download Disease Statistics
-    </a>
-    <form action="{{ route('disease-statistics.predict') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="form-group">
-            <label for="file">Upload CSV File</label>
-            <input type="file" name="file" id="file" class="form-control" required>
-        </div>
-        <div class="form-group mt-3">
-            <label for="months_to_predict">Months to Predict</label>
-            <input type="number" name="months_to_predict" id="months_to_predict" class="form-control" min="1" max="12" value="3" required>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Predict</button>
-    </form>
-  </div>
-</div>
-
-<li class="nav-item">
-    <a class="nav-link" href="{{ route('admin.access-roles') }}">
-        <i class="ti ti-lock"></i>
-        <span>Access Roles</span>
-    </a>
-</li>
 
 @endsection

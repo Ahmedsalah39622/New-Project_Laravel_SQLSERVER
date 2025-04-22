@@ -163,7 +163,7 @@
       })
       .catch((error) => console.error('Error fetching total appointments:', error));
   }
-
+//////////////////////////////////////Appointments This Month///////////////////////////////////////////////////
   // Fetch and display the total number of doctors
   const totalDoctorsEl = document.querySelector('#totalDoctors'); // Ensure this ID exists in your HTML
 
@@ -175,9 +175,34 @@
       })
       .catch((error) => console.error('Error fetching total doctors:', error));
   }
+/////////////////////////////////////////////Doctor caunter////////////////////////////////////////////////////
 
-  // Total Doctors Chart
-  // --------------------------------------------------------------------
+
+
+
+const totalPatientsEl = document.querySelector('#totalPatients'); // Ensure this ID exists in your HTML
+
+  if (totalPatientsEl) {
+    fetch('/api/total-patients') // Corrected API endpoint
+      .then((response) => response.json())
+      .then((data) => {
+        totalDoctorsEl.textContent = data.totalDoctors; // Corrected variable reference
+      })
+      .catch((error) => console.error('Error fetching total doctors:', error));
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  // --------------------------------------------------------------------  // Total Doctors Chart
   const totalDoctorsChartEl = document.querySelector('#totalDoctorsChart');
 
   if (totalDoctorsChartEl) {
@@ -233,85 +258,10 @@
       })
       .catch((error) => console.error('Error fetching total doctors data:', error));
   }
+  /////////////////////////////////////////////Doctor Chart////////////////////////////////////////////////////
 
-  // Doctors Growth Chart
-  // --------------------------------------------------------------------
-  const doctorsGrowthChartEl = document.querySelector('#doctorsGrowthChart');
 
-  if (doctorsGrowthChartEl) {
-    fetch('/api/doctors-growth') // Fetch data from the API
-      .then((response) => response.json())
-      .then((data) => {
-        const doctorsGrowthChartOptions = {
-          chart: {
-            height: 300,
-            type: 'line',
-            toolbar: {
-              show: true
-            }
-          },
-          series: [
-            {
-              name: 'Doctors Added',
-              data: data.growthCounts // Use the fetched growth data
-            }
-          ],
-          xaxis: {
-            categories: data.months, // Use the fetched months for the x-axis
-            title: {
-              text: 'Months'
-            },
-            labels: {
-              style: {
-                colors: '#6e6b7b',
-                fontSize: '12px',
-                fontFamily: 'Public Sans'
-              }
-            }
-          },
-          yaxis: {
-            title: {
-              text: 'Number of Doctors'
-            },
-            labels: {
-              style: {
-                colors: '#6e6b7b',
-                fontSize: '12px',
-                fontFamily: 'Public Sans'
-              }
-            }
-          },
-          colors: ['#7367F0'], // Customize the color
-          stroke: {
-            width: 3,
-            curve: 'smooth'
-          },
-          tooltip: {
-            enabled: true,
-            x: {
-              formatter: function (val, opts) {
-                return data.months[opts.dataPointIndex]; // Show the month in the tooltip
-              }
-            },
-            y: {
-              formatter: function (val) {
-                return `${val} Doctors`; // Show the count in the tooltip
-              }
-            }
-          },
-          grid: {
-            borderColor: '#e7e7e7',
-            strokeDashArray: 5
-          }
-        };
-
-        const doctorsGrowthChart = new ApexCharts(doctorsGrowthChartEl, doctorsGrowthChartOptions);
-        doctorsGrowthChart.render();
-      })
-      .catch((error) => console.error('Error fetching doctors growth data:', error));
-  }
-
-  // Earning Reports Bar Chart
+  // Weekly Earning Reports Bar Chart
   // --------------------------------------------------------------------
   const weeklyEarningReportsEl = document.querySelector('#weeklyEarningReports'),
     weeklyEarningReportsConfig = {
@@ -343,20 +293,14 @@
         }
       },
       colors: [
-        config.colors_label.primary,
-        config.colors_label.primary,
-        config.colors_label.primary,
-        config.colors_label.primary,
-        config.colors.primary,
-        config.colors_label.primary,
-        config.colors_label.primary
+        '#7367F0', '#7367F0', '#7367F0', '#7367F0', '#28C76F', '#7367F0', '#7367F0'
       ],
       dataLabels: {
         enabled: false
       },
       series: [
         {
-          data: [40, 65, 50, 45, 90, 55, 70]
+          data: [40, 65, 50, 45, 90, 55, 70] // Hardcoded data for weekly earnings
         }
       ],
       legend: {
@@ -372,7 +316,7 @@
         },
         labels: {
           style: {
-            colors: labelColor,
+            colors: '#a1acb8',
             fontSize: '13px',
             fontFamily: 'Public Sans'
           }
@@ -384,23 +328,167 @@
         }
       },
       tooltip: {
-        enabled: false
-      },
-      responsive: [
-        {
-          breakpoint: 1025,
-          options: {
-            chart: {
-              height: 199
-            }
+        enabled: true,
+        y: {
+          formatter: function (val) {
+            return `$${val}`;
           }
         }
-      ]
+      }
     };
+
   if (typeof weeklyEarningReportsEl !== undefined && weeklyEarningReportsEl !== null) {
     const weeklyEarningReports = new ApexCharts(weeklyEarningReportsEl, weeklyEarningReportsConfig);
     weeklyEarningReports.render();
   }
+
+  // Disease Statistics Card
+  const diseaseStatisticsEl = document.querySelector('#diseaseStatisticsChart');
+
+  // Fetch data from the API
+  fetch('http://127.0.0.1:8000/disease-statistics')
+    .then((response) => response.json())
+    .then((data) => {
+      // Update Total Cases
+      document.getElementById('totalCases').textContent = data.total_cases;
+
+      // Update Recovery Rate
+      document.getElementById('recoveryRate').textContent = `${data.recovery_rate}%`;
+
+      // Update Critical Cases
+      document.getElementById('criticalCases').textContent = data.critical_cases;
+
+      // Render the chart
+      const diseaseStatisticsConfig = {
+        chart: {
+          height: 200,
+          type: 'bar',
+          toolbar: {
+            show: false
+          }
+        },
+        plotOptions: {
+          bar: {
+            columnWidth: '30%',
+            startingShape: 'rounded',
+            endingShape: 'rounded',
+            borderRadius: 4
+          }
+        },
+        grid: {
+          show: true,
+          padding: {
+            top: 0,
+            bottom: 0,
+            left: 10,
+            right: 10
+          }
+        },
+        colors: ['#7367F0'],
+        series: [
+          {
+            name: 'Cases',
+            data: data.weekly_data
+          }
+        ],
+        xaxis: {
+          categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+          labels: {
+            style: {
+              colors: '#a1acb8',
+              fontSize: '13px',
+              fontFamily: 'Public Sans'
+            }
+          }
+        },
+        yaxis: {
+          labels: {
+            style: {
+              colors: '#a1acb8',
+              fontSize: '13px',
+              fontFamily: 'Public Sans'
+            }
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return `${val} cases`;
+            }
+          }
+        }
+      };
+
+      if (typeof diseaseStatisticsEl !== undefined && diseaseStatisticsEl !== null) {
+        const diseaseStatisticsChart = new ApexCharts(diseaseStatisticsEl, diseaseStatisticsConfig);
+        diseaseStatisticsChart.render();
+      }
+    })
+    .catch((error) => console.error('Error fetching disease statistics:', error));
+
+  // Top 3 Diseases Chart
+  const topDiseasesEl = document.querySelector('#topDiseasesChart');
+
+  // Fetch data from the API
+  fetch('http://127.0.0.1:8000/api/top-diseases')
+    .then((response) => response.json())
+    .then((data) => {
+        const topDiseases = data.top_diseases;
+
+        const topDiseasesConfig = {
+            chart: {
+                height: 200,
+                type: 'bar',
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    columnWidth: '50%',
+                    distributed: true,
+                    borderRadius: 4
+                }
+            },
+            colors: ['#7367F0', '#28C76F', '#EA5455'],
+            series: [
+                {
+                    name: 'Cases',
+                    data: Object.values(topDiseases)
+                }
+            ],
+            xaxis: {
+                categories: Object.keys(topDiseases),
+                labels: {
+                    style: {
+                        colors: '#a1acb8',
+                        fontSize: '13px',
+                        fontFamily: 'Public Sans'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: '#a1acb8',
+                        fontSize: '13px',
+                        fontFamily: 'Public Sans'
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return `${val} cases`;
+                    }
+                }
+            }
+        };
+
+        const topDiseasesChart = new ApexCharts(topDiseasesEl, topDiseasesConfig);
+        topDiseasesChart.render();
+    })
+    .catch((error) => console.error('Error fetching top diseases:', error));
 
   // Support Tracker - Radial Bar Chart
   // --------------------------------------------------------------------
@@ -899,3 +987,66 @@
     $('.dataTables_length .form-select').removeClass('form-select-sm');
   }, 300);
 })();
+document.addEventListener('DOMContentLoaded', function () {
+    // Fetch data from the API
+    fetch('/api/patient-statistics')
+        .then((response) => response.json())
+        .then((data) => {
+            // Total Patients Chart
+            var totalPatientsOptions = {
+                series: [{
+                    name: 'Patients',
+                    data: data.counts // Use the fetched patient counts
+                }],
+                chart: {
+                    type: 'line', // Line chart
+                    height: 300,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
+                xaxis: {
+                    categories: data.months, // Use the fetched months
+                    title: {
+                        text: 'Months'
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Number of Patients'
+                    }
+                },
+                colors: ['#7367F0'], // Primary color
+                grid: {
+                    borderColor: '#e7e7e7'
+                },
+                tooltip: {
+                    x: {
+                        format: 'MMM'
+                    }
+                }
+            };
+
+            var totalPatientsChart = new ApexCharts(
+                document.querySelector("#totalPatientsChart"),
+                totalPatientsOptions
+            );
+
+            totalPatientsChart.render();
+        })
+        .catch((error) => console.error('Error fetching patient statistics:', error));
+});
+document.addEventListener('DOMContentLoaded', function () {
+    // Fetch total patients from the API
+    fetch('/api/total-patients')
+        .then(response => response.json())
+        .then(data => {
+            // Update the Total Patients counter
+            document.getElementById('totalPatients').textContent = data.totalPatients;
+        })
+        .catch(error => console.error('Error fetching total patients:', error));
+});

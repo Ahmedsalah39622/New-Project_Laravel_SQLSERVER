@@ -121,4 +121,5 @@ class DiseaseStatisticController extends Controller
             return redirect()->back()->with('error', 'Failed to get predictions from the AI model.');
         }
     }
+    
 }

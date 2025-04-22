@@ -39,12 +39,25 @@ class DashboardController extends Controller
                 ->where('status', 'confirmed')
                 ->count();
 
+            $startOfWeek = Carbon::now()->startOfWeek();
+            $endOfWeek = Carbon::now()->endOfWeek();
+
+            $weeklyAppointments = Appointment::where('doctor_id', $doctorId)
+                ->whereBetween('appointment_date', [$startOfWeek, $endOfWeek])
+                ->count();
+
+            $completedAppointments = Appointment::where('doctor_id', $doctorId)
+                ->where('status', 'completed')
+                ->count();
+
             // Pass the counts to the view
             return view("doctor.dashboard", [
                 'todayAppointments' => $todayAppointments,
                 'totalAppointments' => $totalAppointments,
                 'pendingAppointments' => $pendingAppointments,
                 'confirmedAppointments' => $confirmedAppointments,
+                'weeklyAppointments' => $weeklyAppointments,
+                'completedAppointments' => $completedAppointments,
             ]);
         } catch (Exception $e) {
             Log::error('Error in index method: ' . $e->getMessage());
@@ -139,7 +152,9 @@ class DashboardController extends Controller
             Log::error('Error in getDoctorSchedule method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }   public function dashboard()
+    }
+
+    public function dashboard()
     {
         $doctor = Auth::user()->doctor;
         $doctorName = $doctor ? $doctor->name : 'Doctor';
@@ -154,6 +169,7 @@ class DashboardController extends Controller
             ->where('status', $status)
         ->count();
     }
+
     public function storeCompletedPrescription(Request $request)
     {
         $request->validate([
@@ -194,13 +210,25 @@ class DashboardController extends Controller
                 $query->where('user_id', $userId);
             })->get();
 
-            // Count the filtered appointments
+            // Count the filtered appointmentsw
             $filteredAppointmentsCount = $appointments->count();
 
             return view('doctor.dashboard', compact('appointments', 'filteredAppointmentsCount'));
         } catch (Exception $e) {
             Log::error('Error in filterAppointmentsByDoctor method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getTotalPatients(): JsonResponse
+    {
+        try {
+            // Fetch the total number of patients
+            $totalPatients = Patient::count();
+
+            return response()->json(['totalPatients' => $totalPatients], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch total patients'], 500);
         }
     }
 }
