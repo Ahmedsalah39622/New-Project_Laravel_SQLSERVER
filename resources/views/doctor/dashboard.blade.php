@@ -2,63 +2,123 @@
 
 @section('title', 'Doctor Dashboard')
 
-@section('content')
-<div class="container">
-    <h2 class="text-primary" id="greetingMessage">Welcome, {{ auth()->user()->name }}</h2>
-    <p>Manage appointments and patients efficiently.</p>
+@section('vendor-style')
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/animate/animate.css') }}" />
+<style>
+    /* Professional Medical Theme */
+    :root {
+        --medical-blue: #4F46E5;
+        --medical-green: #059669;
+        --medical-red: #DC2626;
+    }
 
-    <div class="d-flex justify-content-between mb-4">
-        <div>
-            <a href="{{ url('/appointment') }}" class="btn btn-primary">Schedule Appointment</a>
-            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#managePatientModal">Manage Patient Data</button>
-            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewPatientRecordsModal">View Patient Records</button>
+    .medical-gradient {
+        background: linear-gradient(135deg, var(--medical-blue), #818CF8);
+    }
+
+    .stats-card {
+        transition: transform 0.2s;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .appointment-table th {
+        background-color: #F3F4F6;
+        color: #374151;
+    }
+
+    .appointment-table tbody tr:hover {
+        background-color: #F9FAFB;
+    }
+
+    .quick-action-btn {
+        transition: all 0.3s;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="container-fluid p-4">
+    <!-- Welcome Banner -->
+    <div class="card medical-gradient text-white mb-4 overflow-hidden">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h2 id="greetingMessage" class="display-6 mb-2">Welcome, Dr. {{ auth()->user()->name }}</h2>
+                    <p class="mb-0 fs-5">{{ auth()->user()->specialization }}</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="current-datetime">
+                        <h3 class="mb-0" id="currentTime"></h3>
+                        <p class="mb-0" id="currentDate"></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Appointment Counts Section -->
-    <div id="appointmentCounts" class="row mt-4">
-        <!-- Total Appointments Card -->
+    <!-- Quick Actions Row -->
+    <div class="row g-4 mb-4">
         <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-header">Total Appointments</div>
+            <div class="card stats-card bg-primary text-white h-100">
                 <div class="card-body">
-                    <h5 class="card-title">{{ $appointments->count() }}</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Today's Patients</h6>
+                            <h2 class="mt-2 mb-0">{{ $appointments->where('appointment_date', now()->toDateString())->count() }}</h2>
+                        </div>
+                        <i class="ti ti-users fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Confirmed Appointments Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">Confirmed Appointments</div>
+            <div class="card stats-card bg-success text-white h-100">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        {{ $appointments->where('status', 'confirmed')->count() }}
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Confirmed</h6>
+                            <h2 class="mt-2 mb-0">{{ $appointments->where('status', 'confirmed')->count() }}</h2>
+                        </div>
+                        <i class="ti ti-check fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Pending Appointments Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-header">Pending Appointments</div>
+            <div class="card stats-card bg-warning text-white h-100">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        {{ $appointments->where('status', 'pending')->count() }}
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Pending</h6>
+                            <h2 class="mt-2 mb-0">{{ $appointments->where('status', 'pending')->count() }}</h2>
+                        </div>
+                        <i class="ti ti-clock fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Today's Appointments Card -->
         <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-header">Today's Appointments</div>
+            <div class="card stats-card bg-info text-white h-100">
                 <div class="card-body">
-                    <h5 class="card-title">
-                        {{ $appointments->where('appointment_date', now()->toDateString())->count() }}
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Today's Appointments</h6>
+                            <h2 class="mt-2 mb-0">{{ $appointments->where('appointment_date', now()->toDateString())->count() }}</h2>
+                        </div>
+                        <i class="ti ti-calendar fs-1"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,7 +130,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered appointment-table">
                         <thead>
                             <tr>
                                 <th>Patient Name</th>
@@ -118,52 +178,6 @@
                 <p id="filteredAppointmentCount" class="mt-3">
                     Total Appointments: {{ $appointments->where('appointment_date', now()->toDateString())->where('status', 'confirmed')->count() }}
                 </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Manage Patient Data Modal -->
-    <div class="modal fade" id="managePatientModal" tabindex="-1" aria-labelledby="managePatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="managePatientModalLabel">Manage Patient Data</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Form content for managing patient data -->
-                    <form>
-                        <div class="mb-3">
-                            <label for="patientName" class="form-label">Patient Name</label>
-                            <input type="text" class="form-control" id="patientName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientEmail" class="form-label">Patient Email</label>
-                            <input type="email" class="form-control" id="patientEmail" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientPhone" class="form-label">Patient Phone</label>
-                            <input type="tel" class="form-control" id="patientPhone" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Patient Records Modal -->
-    <div class="modal fade" id="viewPatientRecordsModal" tabindex="-1" aria-labelledby="viewPatientRecordsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewPatientRecordsModalLabel">View Patient Records</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Content for viewing patient records -->
-                    <p>Patient records will be displayed here.</p>
-                </div>
             </div>
         </div>
     </div>

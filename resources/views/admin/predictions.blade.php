@@ -26,18 +26,7 @@ use Illuminate\Support\Str;
                                         {{ number_format(100 - $forecast['metrics']['mape'], 2) }}%
                                     </span>
                                 </div>
-                                <div class="col-md-3">
-                                    <strong>MAE:</strong>
-                                    {{ number_format($forecast['metrics']['mae'], 2) }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>RMSE:</strong>
-                                    {{ number_format($forecast['metrics']['rmse'], 2) }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>MAPE:</strong>
-                                    {{ number_format($forecast['metrics']['mape'], 2) }}%
-                                </div>
+                                
                             </div>
                         </div>
                     @endif

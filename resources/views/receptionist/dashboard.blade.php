@@ -4,7 +4,7 @@
 
 @section('vendor-style')
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/animate/animate.css') }}" />
-@endsection
+
 
 @section('content')
 <!-- Welcome Section with Quick Stats -->
@@ -349,7 +349,39 @@
         document.getElementById('appointmentHistory').innerHTML = '';
     });
 </script>
+<style>
+  /* Background Pattern */
+  body {
+      position: relative;
+      background-color: #f8f9fa;
+  }
 
+  body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background:
+          linear-gradient(45deg, transparent 49%, rgba(115, 103, 240, 0.03) 50%, transparent 51%);
+      background-size: 20px 20px;
+  }
+
+  /* Enhance card visibility against pattern */
+  .card {
+      backdrop-filter: blur(5px);
+      background-color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* Override primary card background */
+  .card.bg-primary {
+      backdrop-filter: none;
+      background: linear-gradient(135deg, #7367f0, #9754cb) !important;
+  }
+</style>
+@endsection
 <style>
     .card {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
