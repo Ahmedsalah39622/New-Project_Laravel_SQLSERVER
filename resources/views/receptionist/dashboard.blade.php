@@ -2,65 +2,123 @@
 
 @section('title', 'Receptionist Dashboard')
 
+@section('vendor-style')
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/animate/animate.css') }}" />
+@endsection
+
 @section('content')
-<div class="container">
-    <h2 class="text-primary">Receptionist Dashboard</h2>
-    <p>Manage appointments and patients efficiently.</p>
-
-    <div class="d-flex justify-content-between mb-4">
-        <div>
-            <a href="{{ url('/appointment') }}" class="btn btn-primary">Schedule Appointment</a>
-            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#managePatientModal">Manage Patient Data</button>
-            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#viewPatientRecordsModal">View Patient Records</button>
-        </div>
-        <div class="d-flex gap-2">
-            <input
-                type="text"
-                class="form-control"
-                id="searchGeneral"
-                placeholder="Search by name, email or phone"
-            >
-            <input
-                type="number"
-                class="form-control"
-                id="searchId"
-                placeholder="Search by Patient ID"
-                min="1"
-            >
-            <button class="btn btn-outline-primary" id="searchBtn">Search</button>
-            <button class="btn btn-outline-secondary" id="clearBtn">Clear</button>
-
+<!-- Welcome Section with Quick Stats -->
+<div class="card bg-primary text-white mb-4">
+    <div class="card-body p-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="mb-3">Welcome, {{ auth()->user()->name }}!</h2>
+                <p class="mb-0 fs-5">Manage appointments and patient records efficiently</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="current-time fs-4 mb-2">
+                    <i class="ti ti-clock me-2"></i>
+                    <span id="currentTime"></span>
+                </div>
+                <div class="current-date">
+                    <i class="ti ti-calendar me-2"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Search Results Section -->
-    <div id="searchResults" class="mt-4 d-none">
-        <h3>Search Results</h3>
-        <div class="card">
+<!-- Quick Actions and Search Section -->
+<div class="row g-4 mb-4">
+    <!-- Quick Actions -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
             <div class="card-body">
-                <h4 class="card-title">Patient Information</h4>
-                <div id="patientInfo"></div>
-
-                <h4 class="card-title mt-4">Appointment History</h4>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Doctor (Specialization)</th>
-                                <th>Appointment Date</th>
-                                <th>Time</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="appointmentHistory">
-                        </tbody>
-                    </table>
+                <div class="d-grid gap-2">
+                    <a href="{{ url('/appointment') }}" class="btn btn-primary">
+                        <i class="ti ti-calendar-plus me-2"></i>Schedule Appointment
+                    </a>
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#managePatientModal">
+                        <i class="ti ti-user-plus me-2"></i>Manage Patient Data
+                    </button>
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewPatientRecordsModal">
+                        <i class="ti ti-file-text me-2"></i>View Patient Records
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Search Section -->
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Patient Search</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Search by Name/Email/Phone</label>
+                        <input type="text" class="form-control" id="searchGeneral" placeholder="Enter patient details">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search by ID</label>
+                        <input type="number" class="form-control" id="searchId" placeholder="Patient ID" min="1">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="d-grid gap-2 w-100">
+                            <button class="btn btn-primary" id="searchBtn">
+                                <i class="ti ti-search me-2"></i>Search
+                            </button>
+                            <button class="btn btn-outline-secondary" id="clearBtn">
+                                <i class="ti ti-x me-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results Section with Enhanced Styling -->
+<div id="searchResults" class="mt-4 d-none animate__animated animate__fadeIn">
+    <div class="card">
+        <div class="card-header border-bottom">
+            <h5 class="card-title mb-0">Search Results</h5>
+        </div>
+        <div class="card-body">
+            <!-- Patient Information Card -->
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">Patient Information</h6>
+                    <div id="patientInfo" class="row"></div>
+                </div>
+            </div>
+
+            <!-- Appointment History -->
+            <h6 class="mb-3">Appointment History</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Doctor (Specialization)</th>
+                            <th>Appointment Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentHistory"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Manage Patient Data Modal -->
 <div class="modal fade" id="managePatientModal" tabindex="-1" aria-labelledby="managePatientModalLabel" aria-hidden="true">
@@ -108,7 +166,20 @@
   </div>
 </div>
 
+@endsection
+
+@section('page-script')
 <script>
+    // Add current time and date display
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        document.getElementById('currentDate').textContent = now.toLocaleDateString();
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
     async function searchPatient(generalQuery, idQuery) {
         if (!generalQuery.trim() && !idQuery.trim()) return;
 
@@ -278,4 +349,34 @@
         document.getElementById('appointmentHistory').innerHTML = '';
     });
 </script>
+
+<style>
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(115, 103, 240, 0.06);
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+    }
+
+    .btn i {
+        font-size: 1.1em;
+    }
+
+    .current-time, .current-date {
+        opacity: 0.9;
+    }
+</style>
 @endsection

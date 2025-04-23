@@ -25,6 +25,7 @@ class Appointment extends Model
        'end_time',
        'paid_status',
         'selected_symptoms',
+        'patient_id',
     ];
 
     // Define the relationship with the Doctor model

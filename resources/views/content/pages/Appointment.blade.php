@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Appointment Page')
+@section('title', 'Book Your Appointment')
 
 @section('vendor-script')
 @vite('resources/assets/vendor/libs/masonry/masonry.js')
@@ -11,36 +11,51 @@
 @endsection
 
 @section('content')
-
-<!-- Chatbot Section -->
-
-
-<!-- Clinic Cards Section -->
-<div class="row mb-12 g-6" id="clinic-cards">
-  @foreach ([
-      ['name' => 'Cardiology', 'image' => 'https://www.hawaiipacifichealth.org/media/3922/what-is-a-cardiologist-web.jpg', 'description' => 'Expert heart care and cardiovascular treatments.'],
-      ['name' => 'Dentistry', 'image' => 'https://th.bing.com/th/id/OIP.FDv4CjYHYwDIfKollMEGwwHaE8?rs=1&pid=ImgDetMain', 'description' => 'Comprehensive dental services for all ages.'],
-      ['name' => 'Neurology', 'image' => 'https://th.bing.com/th/id/OIP.G8GkePvKtmQ87SY1dmisIQHaE7?w=626&h=417&rs=1&pid=ImgDetMain', 'description' => 'Advanced brain and nervous system care.'],
-      ['name' => 'Orthopedics', 'image' => 'https://res.cloudinary.com/lowellgeneral/image/upload/c_fill,w_auto,g_faces,q_auto,dpr_auto,f_auto/orthopedic-center1_BFAFBDC0-FC11-11E9-92C400218628D024.jpg', 'description' => 'Bone and joint health specialists.'],
-      ['name' => 'Pediatrics', 'image' => 'https://th.bing.com/th/id/OIP.VPe-t1oyyTxUuYA7s7Z-UgHaE8?rs=1&pid=ImgDetMain', 'description' => 'Healthcare tailored for children and infants.'],
-      ['name' => 'Dermatology', 'image' => 'https://www.nccpa.net/wp-content/uploads/2022/03/shutterstock_625301408.jpg', 'description' => 'Skin, hair, and nail treatment solutions.'],
-      ['name' => 'Oncology', 'image' => 'https://th.bing.com/th/id/OIP.ltfNltFBGV21XxzgZuDbsgHaE8?w=1000&h=667&rs=1&pid=ImgDetMain', 'description' => 'Focuses on the diagnosis and treatment of cancer.'],
-      ['name' => 'Ophthalmology', 'image' => 'https://th.bing.com/th/id/R.3cb7a106f02a04e3dff40f61ee317329?rik=3HaGAdZB%2bEYJzw&pid=ImgRaw&r=0', 'description' => 'Deals with eye and vision care.'],
-      ['name' => 'Endocrinology', 'image' => 'https://eunamed.com/wp-content/uploads/2021/02/portada-endocrino-scaled.jpg', 'description' => 'Focuses on hormonal and metabolic disorders'],
-      ['name' => 'Gastroenterology', 'image' => 'https://assets-global.website-files.com/6265a955fd624c60a9c38baa/6298637e70be9df472603e4a_stomach.jpeg', 'description' => 'Specializes in digestive system disorders'],
-      ['name' => 'Urology', 'image' => 'https://amarhospital.com/wp-content/uploads/2020/06/urology.jpg', 'description' => 'Deals with the urinary tract and male reproductive system.'],
-  ] as $card)
-    <div class="col-md-6 col-lg-4">
-      <div class="card h-100 clinic-card" data-specialty="{{ $card['name'] }}">
-        <img class="document.addEventListener-img-top" src="{{ $card['image'] }}" alt="{{ $card['name'] }}">
-        <div class="card-body">
-          <h5 class="card-title">{{ $card['name'] }}</h5>
-          <p class="card-text">{{ $card['description'] }}</p>
-          <button class="btn btn-outline-primary choose-clinic">Choose Clinic</button>
+<!-- Welcome Banner -->
+<div class="card bg-primary mb-4 text-white position-relative overflow-hidden">
+    <div class="card-body p-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 mb-3">Book Your Appointment</h2>
+                <p class="lead mb-0">Choose from our expert medical specialists for personalized care.</p>
+            </div>
         </div>
-      </div>
     </div>
-  @endforeach
+    <div class="position-absolute top-0 end-0 w-25 h-100 d-none d-lg-block" style="background: url('assets/img/elements/doctor.png') no-repeat center right; background-size: cover; opacity: 0.1;"></div>
+</div>
+
+<!-- Specialties Grid -->
+<div class="row g-4 mb-4" id="clinic-cards">
+    @foreach ([
+        ['name' => 'Cardiology', 'image' => 'https://www.hawaiipacifichealth.org/media/3922/what-is-a-cardiologist-web.jpg', 'description' => 'Expert heart care and cardiovascular treatments.'],
+        ['name' => 'Dentistry', 'image' => 'https://th.bing.com/th/id/OIP.FDv4CjYHYwDIfKollMEGwwHaE8?rs=1&pid=ImgDetMain', 'description' => 'Comprehensive dental services for all ages.'],
+        ['name' => 'Neurology', 'image' => 'https://th.bing.com/th/id/OIP.G8GkePvKtmQ87SY1dmisIQHaE7?w=626&h=417&rs=1&pid=ImgDetMain', 'description' => 'Advanced brain and nervous system care.'],
+        ['name' => 'Orthopedics', 'image' => 'https://res.cloudinary.com/lowellgeneral/image/upload/c_fill,w_auto,g_faces,q_auto,dpr_auto,f_auto/orthopedic-center1_BFAFBDC0-FC11-11E9-92C400218628D024.jpg', 'description' => 'Bone and joint health specialists.'],
+        ['name' => 'Pediatrics', 'image' => 'https://th.bing.com/th/id/OIP.VPe-t1oyyTxUuYA7s7Z-UgHaE8?rs=1&pid=ImgDetMain', 'description' => 'Healthcare tailored for children and infants.'],
+        ['name' => 'Dermatology', 'image' => 'https://www.nccpa.net/wp-content/uploads/2022/03/shutterstock_625301408.jpg', 'description' => 'Skin, hair, and nail treatment solutions.'],
+        ['name' => 'Oncology', 'image' => 'https://th.bing.com/th/id/OIP.ltfNltFBGV21XxzgZuDbsgHaE8?w=1000&h=667&rs=1&pid=ImgDetMain', 'description' => 'Focuses on the diagnosis and treatment of cancer.'],
+        ['name' => 'Ophthalmology', 'image' => 'https://th.bing.com/th/id/R.3cb7a106f02a04e3dff40f61ee317329?rik=3HaGAdZB%2bEYJzw&pid=ImgRaw&r=0', 'description' => 'Deals with eye and vision care.'],
+        ['name' => 'Endocrinology', 'image' => 'https://eunamed.com/wp-content/uploads/2021/02/portada-endocrino-scaled.jpg', 'description' => 'Focuses on hormonal and metabolic disorders'],
+        ['name' => 'Gastroenterology', 'image' => 'https://assets-global.website-files.com/6265a955fd624c60a9c38baa/6298637e70be9df472603e4a_stomach.jpeg', 'description' => 'Specializes in digestive system disorders'],
+        ['name' => 'Urology', 'image' => 'https://amarhospital.com/wp-content/uploads/2020/06/urology.jpg', 'description' => 'Deals with the urinary tract and male reproductive system.'],
+    ] as $card)
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-elevate-up clinic-card" data-specialty="{{ $card['name'] }}">
+            <div class="position-relative">
+                <img class="card-img-top" src="{{ $card['image'] }}" alt="{{ $card['name'] }}" style="height: 200px; object-fit: cover;">
+                <div class="card-img-overlay d-flex align-items-end bg-dark bg-opacity-25">
+                    <h5 class="card-title text-white mb-0">{{ $card['name'] }}</h5>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text text-muted">{{ $card['description'] }}</p>
+                <button class="btn btn-primary w-100 choose-clinic">
+                    <i class="ti ti-calendar-plus me-2"></i>Book Now
+                </button>
+            </div>
+        </div>
+    </div>
+    @endforeach
 </div>
 
 <!-- Doctors Section (Hidden by Default) -->
@@ -49,7 +64,6 @@
     <h3>Select a Doctor</h3>
     <div id="doctors-list" class="row g-3"></div>
     <button class="btn btn-secondary mt-3" id="back-to-clinics">Back to Clinics</button>
-
   </div>
 </div>
 
@@ -101,14 +115,6 @@
     </div>
   </div>
 </div>
-<!-- Color Legend -->
-
-
-<!-- Time Slots (Initially Hidden) -->
-<div id="timeSelection" class="d-none">
-    <h4>Select a Time Slot:</h4>
-    <div id="timeSlots" class="row"></div>
-</div>
 
 <!-- Symptoms Modal -->
 <div class="modal fade" id="symptomsModal" tabindex="-1" aria-labelledby="symptomsModalLabel" aria-hidden="true">
@@ -133,7 +139,6 @@
     </div>
   </div>
 </div>
-
 @endsection
 
 @section('page-script')
@@ -228,7 +233,6 @@
                 } else {
                     this.classList.remove('btn-light');
                     this.classList.add('btn-danger');
-                  //  alert('The selected time slot is already occupied. Please choose another time slot.');
                 }
             });
         });
@@ -372,99 +376,152 @@
 
 @section('styles')
 <style>
-  /* Existing styles */
-  #timeSlots .time-slot {
-    padding: 10px;
-    font-size: 14px;
-    text-align: center;
-  }
+    /* Enhanced Card Styling */
+    .hover-elevate-up {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        overflow: hidden;
+    }
 
-  #timeSlots .time-slot:hover {
-    background-color: #007bff;
-    color: #fff;
-  }
+    .hover-elevate-up:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
 
-  #timeSlots .time-slot.selected {
-    background-color: #007bff;
-    color: #fff;
-  }
+    /* Time Slot Styling */
+    .time-slot {
+        padding: 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
 
-  /* Modal centering styles */
-  .modal-dialog {
-    display: flex;
-    align-items: center;
-    min-height: calc(100% - 1rem);
-  }
+    .time-slot:not(.disabled):hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-  .modal {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-  }
+    /* Doctor Cards */
+    .doctor-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
 
-  .modal-content {
-    margin: 0 auto;
-  }
+    .doctor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(115, 103, 240, 0.15);
+    }
 
-  /* New styles for doctors list */
-  #doctors-list .col-md-6.col-lg-4 {
-    margin-bottom: 1rem; /* Adds vertical space between rows of cards */
-  }
+    /* Modal Enhancements */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
 
-  #doctors-list .doctor-card {
-    margin-bottom: 1rem; /* Adds additional space if needed */
-  }
-  <style>
-  /* Previous existing styles */
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
 
-  /* Add vertical gap above the doctors list */
-  #doctors-section {
-    padding-top: 2rem; /* Adds space above the entire doctors section */
-  }
+    /* Status Badges */
+    .badge {
+        padding: 8px 12px;
+        font-weight: 500;
+        border-radius: 6px;
+    }
 
-  #doctors-list {
-    row-gap: 1.5rem; /* Creates vertical gaps between rows of cards */
-    column-gap: 1rem; /* Optional: adds horizontal spacing between columns */
-  }
+    /* Existing styles */
+    #timeSlots .time-slot {
+        padding: 10px;
+        font-size: 14px;
+        text-align: center;
+    }
 
-  /* Chatbot styles */
-  .chatbot-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 300px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      z-index: 1000;
-  }
-  .chatbot-header {
-      background: #7367F0;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-  }
-  .chatbot-body {
-      height: 300px;
-      overflow-y: auto;
-      padding: 10px;
-  }
-  .chatbot-footer {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-  }
-  #chatbotInput {
-      flex: 1;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-  }
-  #chatbotSend {
-      margin-left: 10px;
-  }
-</style>
+    #timeSlots .time-slot:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    #timeSlots .time-slot.selected {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Modal centering styles */
+    .modal-dialog {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
+    }
+
+    .modal {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        margin: 0 auto;
+    }
+
+    /* New styles for doctors list */
+    #doctors-list .col-md-6.col-lg-4 {
+        margin-bottom: 1rem; /* Adds vertical space between rows of cards */
+    }
+
+    #doctors-list .doctor-card {
+        margin-bottom: 1rem; /* Adds additional space if needed */
+    }
+
+    /* Add vertical gap above the doctors list */
+    #doctors-section {
+        padding-top: 2rem; /* Adds space above the entire doctors section */
+    }
+
+    #doctors-list {
+        row-gap: 1.5rem; /* Creates vertical gaps between rows of cards */
+        column-gap: 1rem; /* Optional: adds horizontal spacing between columns */
+    }
+
+    /* Chatbot styles */
+    .chatbot-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        z-index: 1000;
+    }
+    .chatbot-header {
+        background: #7367F0;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+    }
+    .chatbot-body {
+        height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+    .chatbot-footer {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+    }
+    #chatbotInput {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    #chatbotSend {
+        margin-left: 10px;
+    }
 </style>
 @endsection

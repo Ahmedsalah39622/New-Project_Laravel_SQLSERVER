@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Appointment; // Ensure you import the Appointment model
+use Carbon\Carbon; // Import Carbon for date handling
 
 class HomePage extends Controller
 {
@@ -15,7 +16,19 @@ class HomePage extends Controller
     }
 
     $user = Auth::user();
+    $appointments = Appointment::query()
+    ->orderBy('appointment_date')
+    ->get();
 
+    $nextAppointment = Appointment::where('appointment_date', '>=', now())
+    ->where('status', '!=', 'cancelled')
+    ->with('doctor')  // Eager load doctor relationship
+    ->orderBy('appointment_date')
+    ->orderBy('start_time')
+    ->first();
+
+$totalAppointments = Appointment::count();
+    // Ensure $appointmentId is defined and assigned a value before using it
     $appointments = Appointment::where('patient_id', $user->id)
 
         ->orderBy('date', 'desc') // Sort by latest first
@@ -37,7 +50,11 @@ class HomePage extends Controller
           return view('receptionist.dashboard');
 
         }
+            // Get upcoming appointments (next 2 appointments)
 
-    return view('content.pages.pages-home', compact('appointments'));
+
+
+        // Pass the data to the view
+    return view('content.pages.pages-home', compact('appointments','upcomingAppointments','nextAppointment', 'totalAppointments'));
   }
 }
