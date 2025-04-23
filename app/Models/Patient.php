@@ -17,6 +17,11 @@ class Patient extends Model
         'phone',
         'address', // Add relevant fields
         'id',
+        'age',
+        'birthdate',
+        'gender',
+        'blood_type',
+        'insurance_provider',
     ];
 
     // Define relationships if necessary
