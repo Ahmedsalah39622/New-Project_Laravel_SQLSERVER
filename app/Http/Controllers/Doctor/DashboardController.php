@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Doctor;
-use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -10,59 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\Patient;
 use App\Models\Appointment;
-use Carbon\Carbon;
-use Exception;
 use App\Models\Prescription;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        try {
-            $doctorId = Auth::id(); // Get the authenticated doctor's ID
-            Log::info('Doctor ID: ' . $doctorId);
+        // Fetch appointments for the logged-in doctor
+        $appointments = Appointment::where('doctor_id', Auth::id())->get();
 
-            $today = now()->toDateString();
-
-            // Calculate counts for the cards
-            $todayAppointments = Appointment::where('doctor_id', $doctorId)
-                ->whereDate('appointment_date', $today)
-                ->count();
-
-            $totalAppointments = Appointment::where('doctor_id', $doctorId)->count();
-
-            $pendingAppointments = Appointment::where('doctor_id', $doctorId)
-                ->where('status', 'pending')
-                ->count();
-
-            $confirmedAppointments = Appointment::where('doctor_id', $doctorId)
-                ->where('status', 'confirmed')
-                ->count();
-
-            $startOfWeek = Carbon::now()->startOfWeek();
-            $endOfWeek = Carbon::now()->endOfWeek();
-
-            $weeklyAppointments = Appointment::where('doctor_id', $doctorId)
-                ->whereBetween('appointment_date', [$startOfWeek, $endOfWeek])
-                ->count();
-
-            $completedAppointments = Appointment::where('doctor_id', $doctorId)
-                ->where('status', 'completed')
-                ->count();
-
-            // Pass the counts to the view
-            return view("doctor.dashboard", [
-                'todayAppointments' => $todayAppointments,
-                'totalAppointments' => $totalAppointments,
-                'pendingAppointments' => $pendingAppointments,
-                'confirmedAppointments' => $confirmedAppointments,
-                'weeklyAppointments' => $weeklyAppointments,
-                'completedAppointments' => $completedAppointments,
-            ]);
-        } catch (Exception $e) {
-            Log::error('Error in index method: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        // Pass the appointments to the view
+        return view('doctor.dashboard', compact('appointments'));
     }
 
     public function getDashboardData()
@@ -76,21 +34,14 @@ class DashboardController extends Controller
             $completedAppointments = Appointment::where('status', 'completed')->count();
             $cancelledAppointments = Appointment::where('status', 'cancelled')->count();
 
-            $confirmedAppointments = Appointment::where('status', 'confirmed')
-                ->select('patient_name', 'appointment_date', 'start_time', 'end_time')
-                ->orderByDesc('appointment_date')
-                ->orderBy('start_time')
-                ->get();
-
             return view("doctor.dashboard", [
                 'todayAppointments' => $todayAppointments,
                 'totalAppointments' => $totalAppointments,
                 'pendingAppointments' => $pendingAppointments,
                 'completedAppointments' => $completedAppointments,
                 'cancelledAppointments' => $cancelledAppointments,
-                'confirmedAppointments' => $confirmedAppointments,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Error in getDashboardData method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -118,56 +69,10 @@ class DashboardController extends Controller
                 'patientPhone' => $patient->phone,
                 'appointments' => $appointments,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Error in getPatientData method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-
-    public function getDoctorSchedule(Request $request)
-    {
-        try {
-            $doctorId = Auth::id();
-            $today = today();
-
-            $todaysAppointments = Appointment::where('doctor_id', $doctorId)
-                ->whereDate('appointment_date', $today)
-                ->count();
-
-            $nextAppointment = Appointment::where('doctor_id', $doctorId)
-                ->whereDate('appointment_date', '>=', $today)
-                ->orderBy('appointment_date')
-                ->orderBy('start_time')
-                ->first();
-
-            $nextAppointmentText = $nextAppointment
-                ? $nextAppointment->appointment_date . ' ' . $nextAppointment->start_time
-                : 'No upcoming appointments';
-
-            return response()->json([
-                'todaysAppointments' => $todaysAppointments,
-                'nextAppointment' => $nextAppointmentText,
-            ]);
-        } catch (Exception $e) {
-            Log::error('Error in getDoctorSchedule method: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function dashboard()
-    {
-        $doctor = Auth::user()->doctor;
-        $doctorName = $doctor ? $doctor->name : 'Doctor';
-
-        return view('doctor.dashboard', compact('doctorName'));
-    }
-
-    private function countAppointmentsByStatus($doctorId, $status)
-    {
-        return DB::table('appointments')
-            ->where('doctor_id', $doctorId)
-            ->where('status', $status)
-        ->count();
     }
 
     public function storeCompletedPrescription(Request $request)
@@ -179,16 +84,7 @@ class DashboardController extends Controller
             'notes' => 'required|string',
         ]);
 
-        Log::info('Form data:', $request->all());
-
         foreach ($request->input('group-a') as $item) {
-            Log::info('Creating prescription:', [
-                'appointment_id' => $request->appointment_id,
-                'drugs' => $item['drugs'],
-                'dosage' => $item['dosage'],
-                'notes' => $request->notes,
-            ]);
-
             Prescription::create([
                 'appointment_id' => $request->appointment_id,
                 'drugs' => $item['drugs'],
@@ -214,7 +110,7 @@ class DashboardController extends Controller
             $filteredAppointmentsCount = $appointments->count();
 
             return view('doctor.dashboard', compact('appointments', 'filteredAppointmentsCount'));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Error in filterAppointmentsByDoctor method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }

@@ -1,87 +1,8 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Preview - Invoice')
-
-@section('vendor-style')
-@vite('resources/assets/vendor/libs/flatpickr/flatpickr.scss')
-@endsection
-
-@section('page-style')
-@vite('resources/assets/vendor/scss/pages/app-invoice.scss')
-@endsection
-
-@section('vendor-script')
-@vite([
-  'resources/assets/vendor/libs/moment/moment.js',
-  'resources/assets/vendor/libs/flatpickr/flatpickr.js',
-  'resources/assets/vendor/libs/cleavejs/cleave.js',
-  'resources/assets/vendor/libs/cleavejs/cleave-phone.js'
-])
-@endsection
-
-@section('page-script')
-@vite([
-  'resources/assets/js/offcanvas-add-payment.js',
-  'resources/assets/js/offcanvas-send-invoice.js'
-])
-@endsection
-
+@section('title', 'Preview - Prescription')
 
 @section('content')
-
-<style>
-  @media print {
-    body {
-      -webkit-print-color-adjust: exact; /* Ensures colors are printed accurately */
-      color-adjust: exact;
-    }
-
-    .invoice-preview {
-      margin: 0 auto;
-      width: 100%;
-      max-width: 800px; /* Center the content and limit the width */
-    }
-
-    .invoice-preview-card {
-      border: none;
-      box-shadow: none;
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .table th, .table td {
-      border: 1px solid #ddd; /* Add borders to table cells */
-      padding: 8px;
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .text-end {
-      text-align: right;
-    }
-
-    .fw-medium {
-      font-weight: 500;
-    }
-
-    .text-heading {
-      font-size: 1.1rem;
-    }
-
-    .btn, .invoice-actions {
-      display: none; /* Hide buttons and actions when printing */
-    }
-
-    hr {
-      border: 1px solid #ddd;
-    }
-  }
-</style>
 
 <div class="row invoice-preview">
   <!-- Invoice -->
@@ -101,14 +22,14 @@
             <p class="mb-0">+1 (123) 456 7891, +44 (876) 543 2198</p>
           </div>
           <div>
-            <h5 class="mb-6">Appointment ID: {{$appointment->id}}</h5> <!-- Use $appointment instead of $prescriptions -->
+            <h5 class="mb-6">Appointment ID: {{$appointment->id}}</h5>
             <div class="mb-1 text-heading">
-              <span>Date Issues:</span>
-              <span>{{ $appointment->appointment_date }}</span> <!-- Display appointment date -->
+              <span>Date Issued:</span>
+              <span>{{ $appointment->appointment_date }}</span>
             </div>
             <div class="text-heading">
               <span>Date Due:</span>
-              <span>{{ now()->addDays(7)->toDateString() }}</span> <!-- Example due date -->
+              <span>{{ now()->addDays(7)->toDateString() }}</span>
             </div>
           </div>
         </div>
@@ -125,7 +46,7 @@
               <tbody>
                 <tr>
                   <td class="pe-4">Doctor Name:</td>
-                  <td>{{ $doctor->name}}</td>
+                  <td>{{ $doctor->name }}</td>
                 </tr>
                 <tr>
                   <td class="pe-4">Specialization:</td>
@@ -195,7 +116,6 @@
                 </p>
               </td>
               <td class="px-0 py-6 w-px-100">
-
                 <p class="mb-2 border-bottom pb-2">Total Drugs:</p>
               </td>
               <td class="text-end px-0 py-6 w-px-100 fw-medium text-heading">
@@ -211,8 +131,7 @@
         <div class="row">
           <div class="col-12">
             <span class="fw-medium text-heading">Note:</span>
-            <span>It was a pleasure working with you and the LifeLine team. We hope that you will keep us in mind for future freelance projects related to LifeLine and patient management. Thank you for the opportunity to contribute to such an impactful project!
-            </span>
+            <span>It was a pleasure working with you and the LifeLine team. We hope that you will keep us in mind for future freelance projects related to LifeLine and patient management. Thank you for the opportunity to contribute to such an impactful project!</span>
           </div>
         </div>
       </div>
@@ -223,25 +142,22 @@
   <!-- Invoice Actions -->
   <div class="col-xl-3 col-md-4 col-12 invoice-actions">
     <div class="card">
-      <div class="card-body">
-        <button class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendInvoiceOffcanvas">
-          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Invoice</span>
-        </button>
-        <button class="btn btn-label-secondary d-grid w-100 mb-4">
-          Download
-        </button>
-        <div class="d-flex mb-4">
-          <button class="btn btn-label-secondary d-grid w-100 me-4" onclick="printInvoice()">
-            Print
-          </button>
-          <a href="{{url('app/invoice/edit')}}" class="btn btn-label-secondary d-grid w-100">
-            Edit
-          </a>
+        <div class="card-body">
+            <button class="btn btn-primary d-grid w-100 mb-4" data-bs-toggle="offcanvas" data-bs-target="#sendInvoiceOffcanvas">
+                <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-send ti-xs me-2"></i>Send Invoice</span>
+            </button>
+            <div class="d-flex mb-4">
+                <button class="btn btn-label-secondary d-grid w-100 me-4" onclick="printInvoice()">
+                    Print
+                </button>
+                <a href="{{ route('doctor.prescription.edit', ['appointmentId' => $appointment->id]) }}" class="btn btn-label-secondary d-grid w-100">
+                    Edit
+                </a>
+            </div>
+            <a href="{{ route('doctor.dashboard') }}" class="btn btn-success d-grid w-100">
+                <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-arrow-left ti-xs me-2"></i>Back to Dashboard</span>
+            </a>
         </div>
-        <button class="btn btn-success d-grid w-100" data-bs-toggle="offcanvas" data-bs-target="#addPaymentOffcanvas">
-          <span class="d-flex align-items-center justify-content-center text-nowrap"><i class="ti ti-currency-dollar ti-xs me-2"></i>Add Payment</span>
-        </button>
-      </div>
     </div>
   </div>
   <!-- /Invoice Actions -->
@@ -256,8 +172,44 @@
     window.print();
     document.body.innerHTML = originalContents;
 
-    // Reload the page to restore the original content
     window.location.reload();
   }
 </script>
+<style>
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact;
+      color-adjust: exact;
+    }
+
+    .invoice-preview {
+      margin: 0 auto;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .invoice-preview-card {
+      border: none;
+      box-shadow: none;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th, .table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    .btn, .invoice-actions {
+      display: none;
+    }
+
+    hr {
+      border: 1px solid #ddd;
+    }
+  }
+</style>
 @endsection

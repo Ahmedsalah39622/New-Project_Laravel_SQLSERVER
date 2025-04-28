@@ -6,8 +6,8 @@ use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\pages\Page2;
 use App\Http\Controllers\pages\MiscError;
-use App\Http\Controllers\authentications\LoginBasic;
-use App\Http\Controllers\authentications\RegisterBasic;
+use App\Http\Controllers\authentications\LoginBasic;// Use the correct namespace for LoginBasic
+use App\Http\Controllers\authentications\RegisterBasic;// Use the correct namespace for RegisterBasic
 use App\Http\Controllers\pages\Main;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AppointmentController;
@@ -25,9 +25,8 @@ use App\Http\Controllers\Admin\UserController;
 use app\Http\Controllers\pages\PatientController;
 use App\Http\Controllers\CompletedPrescriptionController;
 use App\Http\Controllers\PrescriptionController;
-
-use App\Http\Controllers\pages\ReceptionistController ;
 use App\Http\Controllers\Doctor\DashboardController;
+use App\Http\Controllers\pages\ReceptionistController ;
 use App\Http\Controllers\Doctor\AddPrescriptionController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\Doctor\PreviewPrescriptionsController;
@@ -61,8 +60,6 @@ Route::post('/confirm-appointment/{id}', [AppointmentController::class, 'confirm
 Route::get('/payment/{appointment_id}', [payment::class, 'showPaymentPage']);
 
 Route::post('/process-payment', [payment::class, 'processPayment'])->name('process.payment');
-use App\Http\Controllers\pages\PaymentController;
-use App\Models\DoctorSchedule;
 
 Route::post('/process-payment', [Payment::class, 'processPayment'])->middleware('web')->name('process.payment');
 Route::get('/payment/{appointmentId}', [Payment::class, 'showPaymentPage'])->name('payment.page');
@@ -147,7 +144,7 @@ Route::middleware(['role:admin'])->group(function () {
 
 Route::middleware(['role:patient'])->group(function () {
   Route::get('/patient', [PatientController::class, 'index'])->name('patient.dashboard');
-  // Add other patient routes here
+
 });
 
 Route::middleware(['role:admin'])->group(function () {
@@ -252,3 +249,23 @@ Route::get('/admin/disease-statistics/export', [DiseaseStatisticController::clas
 Route::post('/admin/disease-statistics/predict', [DiseaseStatisticController::class, 'predict'])->name('disease-statistics.predict');
 Route::get('/doctor/patient-statistics', [DashboardController::class, 'getPatientStatistics'])
     ->name('doctor.patientStatistics');
+
+Route::middleware(['auth', 'role:doctor'])->group(function () {
+    // ...existing routes...
+
+    // Route for handling prescriptions (both digital and manual)
+    Route::post('/doctor/prescription/store', [AddPrescriptionController::class, 'store'])
+        ->name('doctor.prescription.store');
+
+    Route::post('/doctor/prescription/store-manual', [AddPrescriptionController::class, 'storeManual'])
+        ->name('doctor.prescription.store-manual');
+});
+
+Route::get('/doctor/prescription/{appointmentId}/edit', [AddPrescriptionController::class, 'edit'])
+    ->name('doctor.prescription.edit');
+
+Route::delete('/doctor/prescription/{prescriptionId}/delete', [AddPrescriptionController::class, 'destroy'])
+    ->name('doctor.prescription.destroy');
+//user status
+Route::get('/admin/users/{userId}/activate', [UserController::class, 'activateUser'])->name('users.activate');
+Route::delete('/admin/users/{userId}/delete', [UserController::class, 'deleteUser'])->name('users.delete');

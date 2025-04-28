@@ -6,6 +6,7 @@
 @vite('resources/assets/vendor/libs/masonry/masonry.js')
 @endsection
 
+@section('title', 'Patient Dashboard')
 @section('content')
 <!-- Greeting Message -->
 <div class="mb-4">

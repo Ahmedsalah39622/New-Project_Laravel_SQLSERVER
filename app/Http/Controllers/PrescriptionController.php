@@ -66,7 +66,8 @@ class PrescriptionController extends Controller
         $doctor = $appointment->doctor;
         $prescriptions = Prescription::where('appointment_id', $appointmentId)->get();
 
-        // Assuming the receptionist is related to the appointment or fetched separately
+        // Fetch the receptionist (assuming it's related to the appointment or fetched separately)
+        $receptionist = $appointment->receptionist ?? null; // Adjust this based on your database relationships
 
         return view('doctor.app-invoice-preview', compact('appointment', 'doctor', 'prescriptions', 'receptionist'));
     }

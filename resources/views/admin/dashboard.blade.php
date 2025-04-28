@@ -30,7 +30,7 @@
 @section('content')
 
 <div class="row g-4">
-    <!-- Total Patients -->
+    <!-- Total Patients Section -->
     <div class="col-xl-6 col-md-12">
         <div class="card h-100">
             <div class="card-header pb-0">
@@ -40,13 +40,13 @@
                 <h4 class="mb-0" id="totalPatients">Loading...</h4>
             </div>
             <div class="card-body px-0">
-                <!-- Graph Container -->
+                <!-- Graph Container for Total Patients -->
                 <div id="totalPatientsChart" style="height: 300px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Total Doctors -->
+    <!-- Total Doctors Section -->
     <div class="col-xl-3 col-sm-6">
         <div class="card h-100">
             <div class="card-header pb-0">
@@ -54,38 +54,42 @@
                 <p class="mb-0 text-body">Active vs Total Staff</p>
             </div>
             <div class="card-body d-flex justify-content-center align-items-center">
-                <!-- Chart Container -->
+                <!-- Chart Container for Total Doctors -->
                 <div id="totalDoctorsChart" style="height: 200px; width: 100%;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Appointments This Month -->
+    <!-- Appointments This Month Section -->
     <div class="col-xl-3 col-md-6">
         <div class="card h-100">
             <div class="card-header pb-0">
                 <h5 class="mb-3 card-title">Appointments This Month</h5>
                 <p class="mb-0 text-body">Total Appointments</p>
+                <!-- Static Total Appointments Count -->
                 <h4 class="mb-0" id="totalAppointments">120</h4>
             </div>
             <div class="card-body px-0">
-                <div id="averageDailySales" style="height: 150px;"></div>
+                <!-- Chart Container for Appointments -->
+                <div id="Appointmentspermonth" style="height: 150px;"></div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row g-4 mt-4">
-    <!-- Disease Statistics -->
+    <!-- Disease Statistics Section -->
     <div class="col-xl-6 col-md-12">
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="mb-0">Disease Statistics</h5>
             </div>
             <div class="card-body">
+                <!-- Download Disease Statistics Button -->
                 <a href="{{ route('disease-statistics.export') }}" class="btn btn-primary">
                     <i class="ti ti-download"></i> Download Disease Statistics
                 </a>
+                <!-- Form for Predicting Disease Statistics -->
                 <form action="{{ route('disease-statistics.predict') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
@@ -96,13 +100,14 @@
                         <label for="months_to_predict">Months to Predict</label>
                         <input type="number" name="months_to_predict" id="months_to_predict" class="form-control" min="1" max="12" value="3" required>
                     </div>
+                    <!-- Submit Button for Prediction -->
                     <button type="submit" class="btn btn-primary mt-3">Predict</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Earnings Report -->
+    <!-- Earnings Report Section -->
     <div class="col-xl-6 col-md-12">
         <div class="card h-100">
             <div class="card-header pb-0 d-flex justify-content-between">
@@ -112,6 +117,7 @@
                 </div>
             </div>
             <div class="card-body">
+                <!-- Weekly Earnings Overview -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h2 class="mb-0">$468</h2>
@@ -119,6 +125,7 @@
                     </div>
                     <small>You informed of this week compared to last week</small>
                 </div>
+                <!-- Chart Container for Weekly Earnings -->
                 <div id="weeklyEarningReports" style="height: 200px;"></div>
             </div>
         </div>
@@ -126,7 +133,7 @@
 </div>
 
 <div class="row g-4 mt-4">
-    <!-- Top 3 Diseases by Cases -->
+    <!-- Top 3 Diseases by Cases Section -->
     <div class="col-xl-4 col-md-6">
         <div class="card h-100">
             <div class="card-header pb-0 d-flex justify-content-between">
@@ -136,24 +143,26 @@
                 </div>
             </div>
             <div class="card-body">
+                <!-- Chart Container for Top Diseases -->
                 <div id="topDiseasesChart" style="height: 150px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- New Patients -->
+    <!-- New Patients Section -->
     <div class="col-xl-4 col-md-6">
         <div class="card h-100">
             <div class="card-header pb-0">
                 <h5 class="mb-3 card-title">New Patients</h5>
                 <p class="mb-0 text-body">This Month</p>
+                <!-- Static New Patients Count -->
                 <h4 class="mb-0">50</h4>
                 <small class="text-success">+10% from last month</small>
             </div>
         </div>
     </div>
 
-    <!-- Access Roles -->
+    <!-- Access Roles Section -->
     <div class="col-xl-4 col-md-12">
         <div class="card h-100">
             <div class="card-header pb-0">
@@ -161,6 +170,7 @@
                 <p class="mb-0 text-body">Manage User Permissions</p>
             </div>
             <div class="card-body">
+                <!-- Manage Roles Button -->
                 <a href="{{ route('admin.access-roles') }}" class="btn btn-primary">
                     <i class="ti ti-lock"></i> Manage Roles
                 </a>
@@ -170,30 +180,6 @@
     </div>
 </div>
 
-<div class="row g-4 mt-4">
-    <!-- Support Tracker -->
-    <div class="col-xl-6 col-md-12">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0">Support Tracker</h5>
-            </div>
-            <div class="card-body">
-                <div id="supportTracker" style="height: 300px;"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Total Earning Chart -->
-    <div class="col-xl-6 col-md-12">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0">Total Earning Chart</h5>
-            </div>
-            <div class="card-body">
-                <div id="totalEarningChart" style="height: 200px;"></div>
-            </div>
-        </div>
-    </div>
-</div>
 
 @endsection

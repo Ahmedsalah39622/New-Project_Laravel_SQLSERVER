@@ -33,17 +33,20 @@ $totalAppointments = Appointment::count();
 
         ->orderBy('date', 'desc') // Sort by latest first
         ->get();
+    // Check if the user has a specific role
         if ( $user->hasRole('admin'))
         {
           return view('admin.dashboard');
 
         }
+    // Check if the user has a specific role
 
          if ( $user->hasRole('doctor'))
         {
           return view('doctor.dashboard');
 
         }
+    // Check if the user has a specific role
 
         if ( $user->hasRole('receptionist'))
         {
@@ -55,6 +58,6 @@ $totalAppointments = Appointment::count();
 
 
         // Pass the data to the view
-    return view('content.pages.pages-home', compact('appointments','upcomingAppointments','nextAppointment', 'totalAppointments'));
+    return view('content.pages.pages-home', compact('appointments', 'nextAppointment', 'totalAppointments'));
   }
 }

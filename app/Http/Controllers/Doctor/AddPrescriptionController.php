@@ -66,4 +66,47 @@ class AddPrescriptionController extends Controller
         Log::info('Prescription saved: ', $prescription->toArray());
         return redirect()->route('doctor.app-invoice-preview', ['appointmentId' => $request->appointment_id])->with('success', 'Prescription saved successfully.');
     }
+
+    public function storeManual(Request $request)
+    {
+        Log::info('Manual Store method called');
+        Log::info('Request data: ', $request->all());
+
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id'
+        ]);
+
+        $appointment = Appointment::find($request->appointment_id);
+
+        $prescription = new Prescription();
+        $prescription->patient_id = $appointment->patient_id;
+        $prescription->doctor_id = Auth::id();
+        $prescription->date_issued = now();
+        $prescription->due_date = now()->addDays(7);
+        $prescription->drugs = 'Written Manually';
+        $prescription->dosage = 'Written Manually';
+        $prescription->notes = 'Written Manually';
+        $prescription->save();
+
+        Log::info('Manual Prescription saved: ', $prescription->toArray());
+        return redirect()
+            ->route('doctor.app-invoice-preview', ['appointmentId' => $request->appointment_id])
+            ->with('success', 'Manual Prescription saved successfully.');
+    }
+
+    public function edit($appointmentId)
+    {
+        $appointment = Appointment::findOrFail($appointmentId);
+        $prescriptions = Prescription::where('appointment_id', $appointmentId)->get();
+
+        return view('doctor.manage-prescriptions', compact('appointment', 'prescriptions'));
+    }
+
+    public function destroy($prescriptionId)
+    {
+        $prescription = Prescription::findOrFail($prescriptionId);
+        $prescription->delete();
+
+        return redirect()->back()->with('success', 'Prescription deleted successfully.');
+    }
 }

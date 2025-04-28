@@ -1,4 +1,5 @@
 @php
+// Fetch application configuration data
 $configData = Helper::appClasses();
 @endphp
 
@@ -7,208 +8,76 @@ $configData = Helper::appClasses();
 @section('title', 'Roles - Apps')
 
 @section('vendor-style')
+<!-- Include vendor styles for DataTables and form validation -->
 @vite([
   'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
   'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
   'resources/assets/vendor/libs/@form-validation/form-validation.scss',
   'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss',
-  ])
+])
 @endsection
 
 @section('vendor-script')
+<!-- Include vendor scripts for DataTables and form validation -->
 @vite([
   'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
   'resources/assets/vendor/libs/@form-validation/popular.js',
   'resources/assets/vendor/libs/@form-validation/bootstrap5.js',
   'resources/assets/vendor/libs/@form-validation/auto-focus.js',
-  ])
+])
 @endsection
 
 @section('page-script')
+<!-- Include custom scripts for roles and modal handling -->
 @vite([
   'resources/assets/js/app-access-roles.js',
   'resources/assets/js/modal-add-role.js',
-  ])
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Handle role change
-    document.querySelectorAll('.change-role').forEach(function (selectElement) {
-        selectElement.addEventListener('change', function () {
-            const userId = this.getAttribute('data-user-id');
-            const roleId = this.value;
-
-            // Send AJAX request to update the user's role
-            fetch(`/admin/users/${userId}/change-role`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({ role_id: roleId }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        alert('Role updated successfully!');
-                    } else {
-                        alert('Failed to update role. Please try again.');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
-        });
-    });
-
-    // Handle role assignment
-    document.querySelectorAll('.assign-role').forEach(function (selectElement) {
-        selectElement.addEventListener('click', function () {
-            const userId = this.getAttribute('data-user-id');
-            const role = this.getAttribute('data-role');
-
-            if (role) {
-                fetch(`/admin/users/${userId}/assign-role`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    },
-                    body: JSON.stringify({ role }),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            alert(data.message);
-                            location.reload(); // Reload the page to reflect changes
-                        } else {
-                            alert('Failed to assign role. Please try again.');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-            }
-        });
-    });
-
-    // Handle role removal
-    document.querySelectorAll('.remove-role').forEach(function (element) {
-        element.addEventListener('click', function () {
-            const userId = this.getAttribute('data-user-id');
-            const role = this.getAttribute('data-role');
-
-            if (confirm(`Are you sure you want to remove the role "${role}" from this user?`)) {
-                fetch(`/admin/users/${userId}/remove-role`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    },
-                    body: JSON.stringify({ role }),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            alert(data.message);
-                            location.reload(); // Reload the page to reflect changes
-                        } else {
-                            alert('Failed to remove role. Please try again.');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-            }
-        });
-    });
-
-    // Handle user deletion
-    document.querySelectorAll('.delete-user').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-id');
-
-            if (confirm('Are you sure you want to delete this user?')) {
-                fetch(`/admin/users/${userId}/delete`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    },
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data.success) {
-                            alert(data.message);
-                            location.reload(); // Reload the page to reflect changes
-                        } else {
-                            alert('Failed to delete user. Please try again.');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-            }
-        });
-    });
-});
-</script>
+])
 @endsection
-
+@section('title', 'Roles - Apps')
 @section('content')
-<style>
-    .avatar-initials {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        background-color: #7367F0; /* Default background color */
-        color: #fff; /* Text color */
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-</style>
 
 <div class="container mt-4">
+    <!-- Page Header -->
     <h3 class="mb-3">Roles List</h3>
     <p class="text-muted mb-4">
         A role provides access to predefined menus and features so that depending on the assigned role, an administrator can have access to what the user needs.
     </p>
 
+    <!-- Roles Cards -->
     <div class="row g-4">
-        <!-- Loop through roles -->
-    @foreach ($roles as $role)
+        @foreach ($roles as $role)
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="card h-100 shadow-sm">
-                <div class="card-body">
+                    <div class="card-body">
+                        <!-- Role Header -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="text-muted mb-0">Total {{ $role->users_count }} users</h6>
-                        <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-                            @foreach ($role->users->take(3) as $user)
-                                <li class="avatar" data-bs-toggle="tooltip" title="{{ $user->name }}">
-                                    @if ($user->profile_photo_url)
-                                        <!-- Display the user's profile photo -->
-                                        <img class="rounded-circle" src="{{ $user->profile_photo_url }}" alt="Avatar" width="32" height="32">
-                                    @else
-                                        <!-- Display initials if no profile photo is available -->
-                                        <div class="avatar-initials rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-size: 14px;">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                        </div>
-                                    @endif
-                                </li>
-                            @endforeach
-                            @if ($role->users_count > 3)
-                                <li class="avatar">
-                                    <span class="avatar-initial rounded-circle bg-secondary text-white" style="width: 32px; height: 32px; font-size: 14px;">
-                                        +{{ $role->users_count - 3 }}
-                                    </span>
-                                </li>
-                            @endif
-                        </ul>
-                    </div>
+                            <!-- Display avatars of users assigned to the role -->
+                            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
+                                @foreach ($role->users->take(3) as $user)
+                                    <li class="avatar" data-bs-toggle="tooltip" title="{{ $user->name }}">
+                                        @if ($user->profile_photo_url)
+                                            <img class="rounded-circle" src="{{ $user->profile_photo_url }}" alt="Avatar" width="32" height="32">
+                                        @else
+                                            <div class="avatar-initials rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-size: 14px;">
+                                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </li>
+                                @endforeach
+                                @if ($role->users_count > 3)
+                                    <li class="avatar">
+                                        <span class="avatar-initial rounded-circle bg-secondary text-white" style="width: 32px; height: 32px; font-size: 14px;">
+                                            +{{ $role->users_count - 3 }}
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
+                        <!-- Role Title -->
                         <h5 class="card-title text-primary">{{ ucfirst($role->name) }}</h5>
+                        <!-- Role Actions -->
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="javascript:;" class="text-decoration-underline text-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal" data-id="{{ $role->id }}" data-name="{{ $role->name }}">
                                 Edit Role
@@ -216,11 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             <a href="javascript:;" class="text-danger delete-role" data-id="{{ $role->id }}">
                                 <i class="ti ti-trash"></i>
                             </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    @endforeach
+        @endforeach
 
         <!-- Add New Role Card -->
         <div class="col-xl-3 col-lg-4 col-md-6">
@@ -232,20 +101,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p class="text-muted text-center mb-0">
                         Add a new role if it doesn't exist.
                     </p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
+
+<!-- Users Table -->
 <div class="col-12">
     <h4 class="mt-6 mb-1">Total Users with Their Roles</h4>
     <p class="mb-0">Find all of your company’s administrator accounts and their associated roles.</p>
 </div>
 
 <div class="col-12">
-    <!-- Role Table -->
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
+            <!-- Table Filters -->
             <div>
                 <select class="form-select form-select-sm" style="width: auto;">
                     <option value="10">Show 10</option>
@@ -260,33 +131,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     <button type="submit" class="btn btn-outline-secondary btn-sm">
                         <i class="ti ti-search"></i> Search
                     </button>
-
-                <!-- Reset Button -->
-                <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm me-3">
-                    <i class="ti ti-reload"></i> Reset
-                </a>
-
+                    <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm me-3">
+                        <i class="ti ti-reload"></i> Reset
+                    </a>
+                </form>
                 <!-- Export Dropdown -->
                 <div class="dropdown me-3">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="ti ti-upload"></i> Export
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'print']) }}"><i class="ti ti-printer me-2"></i> Print</a></li>
-                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'csv']) }}"><i class="ti ti-file-csv me-2"></i> Csv</a></li>
-                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'excel']) }}"><i class="ti ti-file-spreadsheet me-2"></i> Excel</a></li>
-                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'pdf']) }}"><i class="ti ti-file-pdf me-2"></i> Pdf</a></li>
-                        <li><a class="dropdown-item" href="{{ route('users.export', ['format' => 'copy']) }}"><i class="ti ti-copy me-2"></i> Copy</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('users.export', ['format' => 'csv']) }}">
+                                <img src="{{ asset('assets/icons/csv-icon.svg') }}" alt="CSV Icon" width="16" height="16" class="me-2">
+                                CSV
+                            </a>
+                        </li>
                     </ul>
                 </div>
-
                 <!-- Add New Role Button -->
                 <a href="javascript:;" class="btn btn-primary btn-sm">
                     <i class="ti ti-plus"></i> Add New Role
                 </a>
             </div>
-          </form>
         </div>
+        <!-- Table Content -->
         <div class="card-datatable table-responsive">
             <table class="table table-hover border-top">
                 <thead>
@@ -302,13 +171,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 <tbody>
                     @foreach ($users as $user)
                         <tr>
+                            <!-- User Information -->
                             <td>
                                 <div class="d-flex align-items-center">
                                     @if ($user->profile_photo_url)
-                                        <!-- Display the user's profile photo -->
                                         <img src="{{ $user->profile_photo_url }}" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
                                     @else
-                                        <!-- Display initials if no profile photo is available -->
                                         <div class="avatar-initials rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px; font-size: 14px;">
                                             {{ strtoupper(substr($user->name, 0, 1)) }}
                                         </div>
@@ -320,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
                                 </div>
                             </td>
+                            <!-- User Roles -->
                             <td>
                                 @if ($user->roles->isNotEmpty())
                                     @foreach ($user->roles as $role)
@@ -329,17 +198,20 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <span class="text-muted">N/A</span>
                                 @endif
                             </td>
-                            <td>Enterprise</td> <!-- Replace with dynamic data if available -->
-                            <td>Auto Debit</td> <!-- Replace with dynamic data if available -->
+                            <!-- Plan and Billing -->
+                            <td>Enterprise</td>
+                            <td>Auto Debit</td>
+                            <!-- User Status -->
                             <td>
                                 <span class="badge bg-{{ $user->status ? 'success' : ($user->status === 0 ? 'danger' : 'warning') }}">
                                     {{ $user->status ? 'Active' : ($user->status === 0 ? 'Inactive' : 'Pending') }}
                                 </span>
                             </td>
+                            <!-- Actions -->
                             <td>
                                 <div class="d-flex align-items-center">
                                     <!-- Assign Role Dropdown -->
-                                    <div class="dropdown me-2"> <!-- Added 'me-2' for spacing -->
+                                    <div class="dropdown me-2">
                                         <button class="btn btn-primary dropdown-toggle" type="button" id="assignRoleDropdown{{ $user->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                             Assign Role
                                         </button>
@@ -353,9 +225,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                             @endforeach
                                         </ul>
                                     </div>
-
                                     <!-- Remove Role Dropdown -->
-                                    <div class="dropdown me-2"> <!-- Added 'me-2' for spacing -->
+                                    <div class="dropdown me-2">
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="removeRoleDropdown{{ $user->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                             Remove Role
                                         </button>
@@ -369,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                             @endforeach
                                         </ul>
                                     </div>
-
                                     <!-- Delete User Button -->
                                     <a href="javascript:;" class="btn btn-sm btn-outline-danger delete-user">
                                         <i class="ti ti-trash"></i>
@@ -382,10 +252,145 @@ document.addEventListener('DOMContentLoaded', function () {
             </table>
         </div>
     </div>
-    <!--/ Role Table -->
 </div>
-<!--/ Role cards -->
 
-<!-- Add Role Modal -->
-<!-- / Add Role Modal -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle role change
+        document.querySelectorAll('.change-role').forEach(function (selectElement) {
+            selectElement.addEventListener('change', function () {
+                const userId = this.getAttribute('data-user-id');
+                const roleId = this.value;
+
+                fetch(`/admin/users/${userId}/change-role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({ role_id: roleId }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            alert('Role updated successfully!');
+                        } else {
+                            alert('Failed to update role. Please try again.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+            });
+        });
+
+        // Handle role assignment
+        document.querySelectorAll('.assign-role').forEach(function (selectElement) {
+            selectElement.addEventListener('click', function () {
+                const userId = this.getAttribute('data-user-id');
+                const role = this.getAttribute('data-role');
+
+                if (role) {
+                    fetch(`/admin/users/${userId}/assign-role`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: JSON.stringify({ role }),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert('Failed to assign role. Please try again.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                }
+            });
+        });
+
+        // Handle role removal
+        document.querySelectorAll('.remove-role').forEach(function (element) {
+            element.addEventListener('click', function () {
+                const userId = this.getAttribute('data-user-id');
+                const role = this.getAttribute('data-role');
+
+                if (confirm(`Are you sure you want to remove the role "${role}" from this user?`)) {
+                    fetch(`/admin/users/${userId}/remove-role`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: JSON.stringify({ role }),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert('Failed to remove role. Please try again.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                }
+            });
+        });
+
+        // Handle user deletion
+        document.querySelectorAll('.delete-user').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+
+                if (confirm('Are you sure you want to delete this user?')) {
+                    fetch(`/admin/users/${userId}/delete`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert('Failed to delete user. Please try again.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Style for user avatars */
+    .avatar-initials {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        background-color: #7367F0;
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+</style>
 @endsection

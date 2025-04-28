@@ -26,43 +26,8 @@
 ])
 @endsection
 
+@section('title', 'Add Prescription')
 @section('content')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Doctor:', @json($doctor));
-        console.log('Appointment:', @json($appointment));
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get today's date
-        const today = new Date();
-
-        // Format the date as YYYY-MM-DD
-        const formattedDate = today.toISOString().split('T')[0];
-
-        // Set the value of the date input field
-        document.getElementById('ds').value = formattedDate;
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('search-diseases');
-        const diseasesSelect = document.getElementById('diseases');
-
-        searchInput.addEventListener('input', function () {
-            const searchTerm = searchInput.value.toLowerCase();
-
-            // Loop through all options in the dropdown
-            Array.from(diseasesSelect.options).forEach(option => {
-                const diseaseName = option.text.toLowerCase();
-                if (diseaseName.includes(searchTerm)) {
-                    option.style.display = ''; // Show matching options
-                } else {
-                    option.style.display = 'none'; // Hide non-matching options
-                }
-            });
-        });
-    });
-</script>
 
 <div class="row prescription-add">
   <!-- Prescription Add-->
@@ -148,6 +113,18 @@
           @csrf
           <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
           <input type="hidden" name="prescription_id" id="prescription_id" value="">
+
+          <div class="mb-4">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="prescriptionType" id="digital" value="digital" checked>
+              <label class="form-check-label" for="digital">Digital Prescription</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="prescriptionType" id="manual" value="manual">
+              <label class="form-check-label" for="manual">Written Manually</label>
+            </div>
+          </div>
+
           <div class="mb-4" data-repeater-list="group-a">
             <div class="repeater-wrapper pt-0 pt-md-9" data-repeater-item>
               <div class="d-flex border rounded position-relative pe-0">
@@ -266,6 +243,182 @@
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      console.log('Doctor:', @json($doctor));
+      console.log('Appointment:', @json($appointment));
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+      // Get today's date
+      const today = new Date();
+
+      // Format the date as YYYY-MM-DD
+      const formattedDate = today.toISOString().split('T')[0];
+
+      // Set the value of the date input field
+      document.getElementById('ds').value = formattedDate;
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+      const searchInput = document.getElementById('search-diseases');
+      const diseasesSelect = document.getElementById('diseases');
+
+      searchInput.addEventListener('input', function () {
+          const searchTerm = searchInput.value.toLowerCase();
+
+          // Loop through all options in the dropdown
+          Array.from(diseasesSelect.options).forEach(option => {
+              const diseaseName = option.text.toLowerCase();
+              if (diseaseName.includes(searchTerm)) {
+                  option.style.display = ''; // Show matching options
+              } else {
+                  option.style.display = 'none'; // Hide non-matching options
+              }
+          });
+      });
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+      const prescriptionTypeRadios = document.getElementsByName('prescriptionType');
+      const drugsSection = document.querySelector('[data-repeater-list="group-a"]');
+      const addItemButton = document.querySelector('[data-repeater-create]');
+      const notesField = document.getElementById('notes');
+
+      function toggleDrugsSection() {
+          const isManual = document.getElementById('manual').checked;
+
+          if (isManual) {
+              notesField.value = 'Written Manually';
+
+              const drugFields = document.querySelectorAll('[name="group-a[][drugs]"]');
+              const dosageFields = document.querySelectorAll('[name="group-a[][dosage]"]');
+
+              drugFields.forEach(field => {
+                  field.value = 'Written Manually';
+              });
+
+              dosageFields.forEach(field => {
+                  field.value = 'Written Manually';
+              });
+
+              addItemButton.disabled = true;
+          } else {
+              notesField.value = '';
+
+              const drugFields = document.querySelectorAll('[name="group-a[][drugs]"]');
+              const dosageFields = document.querySelectorAll('[name="group-a[][dosage]"]');
+
+              drugFields.forEach(field => {
+                  field.value = '';
+              });
+
+              dosageFields.forEach(field => {
+                  field.value = '';
+              });
+
+              addItemButton.disabled = false;
+          }
+      }
+
+      prescriptionTypeRadios.forEach(radio => {
+          radio.addEventListener('change', toggleDrugsSection);
+      });
+
+      toggleDrugsSection();
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+      const prescriptionTypeRadios = document.getElementsByName('prescriptionType');
+
+      prescriptionTypeRadios.forEach(radio => {
+          radio.addEventListener('change', function () {
+              location.reload();
+          });
+      });
+  });
+
+  document.getElementById('prescription-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const isManual = document.getElementById('manual').checked;
+      const form = this;
+      const formData = new FormData(form);
+
+      if (isManual) {
+          formData.delete('group-a[][drugs]');
+          formData.delete('group-a[][dosage]');
+          formData.delete('notes');
+
+          formData.append('group-a[0][drugs]', 'Written Manually');
+          formData.append('group-a[0][dosage]', 'Written Manually');
+          formData.append('notes', 'Written Manually');
+      }
+
+      fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              window.location.href = data.redirect || form.getAttribute('data-redirect') || window.location.href;
+          } else {
+              throw new Error(data.error || 'Error saving prescription');
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('Error saving prescription: ' + error.message);
+      });
+  });
+
+  document.getElementById('add-disease-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = this;
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              const diseasesSelect = document.getElementById('diseases');
+              const newOption = new Option(data.disease_name, data.disease_name, true, true);
+              diseasesSelect.add(newOption);
+
+              form.reset();
+              alert('New disease added successfully!');
+          } else {
+              alert('Error: ' + data.error);
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const prescriptionTypeRadios = document.getElementsByName('prescriptionType');
+    const drugsSection = document.querySelector('[data-repeater-list="group-a"]').parentElement;
+    const addItemButton = document.querySelector('[data-repeater-create]').parentElement.parentElement;
+
+    function toggleDrugsSection() {
+        const isManual = document.getElementById('manual').checked;
+        drugsSection.style.display = isManual ? 'none' : 'block';
+        addItemButton.style.display = isManual ? 'none' : 'block';
+    }
+
+    prescriptionTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleDrugsSection);
+    });
+});
+</script>
 
 <style>
   #diseases {
@@ -275,86 +428,16 @@
     border: 1px solid #ddd;
     font-size: 14px;
   }
+
+  .form-check-inline {
+    margin-right: 1rem;
+  }
+
+  .form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+  }
 </style>
 
-<script>
-document.getElementById('prescription-form').addEventListener('submit', function(e) {
-    e.preventDefault(); // Prevent actual form submission for testing
-    const formData = new FormData(this);
-
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
-
-    // Allow submission only for debugging purposes
-    this.submit();
-});
-
-// Add success message handler
-@if(session('success'))
-    console.log('Prescription saved successfully:', @json(session('success')));
-    alert('Prescription saved successfully!');
-@endif
-
-function printPrescription() {
-    const printContents = document.querySelector('.prescription-add').innerHTML;
-    const originalContents = document.body.innerHTML;
-
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-}
-document.querySelector('button.btn-success').addEventListener('click', function() {
-    document.getElementById('prescription-form').addEventListener('submit', function() {
-        window.location.href = "{{ url('doctor/app-invoice-preview.blade') }}";
-    });
-});
-
-// Initialize Select2 for searchable dropdown
-$(document).ready(function () {
-    $('#diseases').select2({
-        placeholder: "Search or select diseases",
-        allowClear: true,
-        width: '100%' // Ensure the dropdown fits the container
-    });
-});
-
-// Handle "Add New Disease" button click
-document.getElementById('add-new-disease').addEventListener('click', function () {
-    const addDiseaseModal = new bootstrap.Modal(document.getElementById('addDiseaseModal'));
-    addDiseaseModal.show();
-});
-
-// Handle "Add Disease" form submission
-document.getElementById('add-disease-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = this;
-    const formData = new FormData(form);
-
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Add the new disease to the dropdown
-            const diseasesSelect = document.getElementById('diseases');
-            const newOption = new Option(data.disease_name, data.disease_name, true, true);
-            diseasesSelect.add(newOption);
-
-            // Reset the form
-            form.reset();
-            alert('New disease added successfully!');
-        } else {
-            alert('Error: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-</script>
 @endsection
 

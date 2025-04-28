@@ -10,6 +10,7 @@
 @vite('resources/assets/vendor/libs/flatpickr/flatpickr.css')
 @endsection
 
+@section('title', 'Book Your Appointment')
 @section('content')
 <!-- Welcome Banner -->
 <div class="card bg-primary mb-4 text-white position-relative overflow-hidden">

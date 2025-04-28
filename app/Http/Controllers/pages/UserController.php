@@ -29,4 +29,16 @@ class UserController extends Controller
 
     return response()->json(['success' => false, 'message' => 'Failed to remove role.']);
 }
+public function deleteUser($userId)
+{
+    $user = User::findOrFail($userId);
+
+    try {
+        $user->delete();
+        return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Failed to delete user. Please try again.']);
+    }
+}
+
 }

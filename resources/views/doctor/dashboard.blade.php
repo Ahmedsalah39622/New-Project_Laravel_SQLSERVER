@@ -4,50 +4,10 @@
 
 @section('vendor-style')
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/animate/animate.css') }}" />
-<style>
-    /* Professional Medical Theme */
-    :root {
-        --medical-blue: #4F46E5;
-        --medical-green: #059669;
-        --medical-red: #DC2626;
-    }
 
-    .medical-gradient {
-        background: linear-gradient(135deg, var(--medical-blue), #818CF8);
-    }
-
-    .stats-card {
-        transition: transform 0.2s;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .stats-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .appointment-table th {
-        background-color: #F3F4F6;
-        color: #374151;
-    }
-
-    .appointment-table tbody tr:hover {
-        background-color: #F9FAFB;
-    }
-
-    .quick-action-btn {
-        transition: all 0.3s;
-        border-radius: 8px;
-        padding: 1rem;
-    }
-
-    .quick-action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-</style>
 @endsection
 
+@section('title', 'Doctor Dashboard')
 @section('content')
 <div class="container-fluid p-4">
     <!-- Welcome Banner -->
@@ -70,54 +30,41 @@
 
     <!-- Quick Actions Row -->
     <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card stats-card bg-primary text-white h-100">
+        <!-- Today's Patients Card -->
+        <div class="col-md-6">
+            <div class="card stats-card text-white h-100" style="background: #eca408; border-radius: 12px;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-title mb-0">Today's Patients</h6>
-                            <h2 class="mt-2 mb-0">{{ $appointments->where('appointment_date', now()->toDateString())->count() }}</h2>
+                            <div class="d-flex align-items-baseline mt-2">
+                                <h2 class="mb-0">{{ $appointments->where('appointment_date', now()->toDateString())->count() }}</h2>
+                                <small class="ms-2">patients</small>
+                            </div>
                         </div>
-                        <i class="ti ti-users fs-1"></i>
+                        <div class="avatar avatar-md" style="background: transparent;">
+                            <i class="ti ti-users fs-1 text-white opacity-75"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card stats-card bg-success text-white h-100">
+
+        <!-- Done Cases Card -->
+        <div class="col-md-6">
+            <div class="card stats-card text-white h-100" style="background: #2ECC71; border-radius: 12px;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-0">Confirmed</h6>
-                            <h2 class="mt-2 mb-0">{{ $appointments->where('status', 'confirmed')->count() }}</h2>
+                            <h6 class="card-title mb-0">Done Cases</h6>
+                            <div class="d-flex align-items-baseline mt-2">
+                                <h2 class="mb-0">{{ $appointments->where('status', 'confirmed')->count() }}</h2>
+                                <small class="ms-2">cases</small>
+                            </div>
                         </div>
-                        <i class="ti ti-check fs-1"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card bg-warning text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0">Pending</h6>
-                            <h2 class="mt-2 mb-0">{{ $appointments->where('status', 'pending')->count() }}</h2>
+                        <div class="avatar avatar-md" style="background: transparent;">
+                            <i class="ti ti-check fs-1 text-white opacity-75"></i>
                         </div>
-                        <i class="ti ti-clock fs-1"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card bg-info text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0">Today's Appointments</h6>
-                            <h2 class="mt-2 mb-0">{{ $appointments->where('appointment_date', now()->toDateString())->count() }}</h2>
-                        </div>
-                        <i class="ti ti-calendar fs-1"></i>
                     </div>
                 </div>
             </div>
@@ -152,18 +99,21 @@
                                     <td>{{ $appointment->appointment_date }}</td>
                                     <td>{{ $appointment->start_time }}</td>
                                     <td>
-                                        <span class="badge bg-success">
+                                        <span class="badge" style="background: var(--medical-success)">
                                             {{ $appointment->status }}
                                         </span>
                                     </td>
                                     <td>{{ $appointment->notes ?? 'N/A' }}</td>
                                     <td>
-                                        <button class="btn btn-info btn-sm" onclick="viewAppointment({{ $appointment->id }})">
+                                        <button class="btn btn-sm" style="background: var(--medical-accent); color: white" onclick="viewAppointment({{ $appointment->id }})">
                                             <i class="fas fa-eye me-1"></i> View
                                         </button>
-                                        <button class="btn btn-danger btn-sm" onclick="deleteAppointment({{ $appointment->id }})">
+                                        <button class="btn btn-sm" style="background: var(--medical-warning); color: white" onclick="deleteAppointment({{ $appointment->id }})">
                                             <i class="fas fa-trash me-1"></i> Delete
                                         </button>
+                                        <a href="{{ route('doctor.app-invoice-preview', ['appointmentId' => $appointment->id]) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit me-1"></i> Update Treatment
+                                        </a>
                                     </td>
                                 </tr>
                             @empty
@@ -221,4 +171,51 @@
         fetchAllAppointments();
     });
 </script>
+<style>
+  /* Updated Medical Theme Colors */
+  :root {
+      --medical-primary: #2D5BFF;    /* Bright Blue */
+      --medical-success: #00b82e;    /* Teal */
+      --medical-warning: #d10404;    /* Soft Red */
+      --medical-info: #6C5CE7;       /* Purple */
+      --medical-accent: #3eddda;     /* Cyan */
+      --medical-text: #2D3436;       /* Dark Gray */
+  }
+
+  .medical-gradient {
+      background: linear-gradient(135deg, var(--medical-primary), var(--medical-accent));
+  }
+
+  .stats-card {
+      transition: transform 0.2s;
+      border: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .stats-card:hover {
+      transform: translateY(-5px);
+  }
+
+  /* Update Table Styles */
+  .appointment-table th {
+      background-color: #F5F6FF;
+      color: var(--medical-text);
+  }
+
+  .appointment-table tbody tr:hover {
+      background-color: #F8FAFF;
+  }
+
+  /* Update Button Styles */
+  .quick-action-btn {
+      transition: all 0.3s;
+      border-radius: 8px;
+      padding: 1rem;
+  }
+
+  .quick-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+</style>
 @endsection

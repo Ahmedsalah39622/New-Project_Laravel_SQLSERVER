@@ -6,13 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Appointment;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ExportController extends Controller
 {
     /**
      * Export users as CSV.
      */
-    public function exportUsers(): Response
+    public function exportUsersCsv(): Response
     {
         $users = User::all(['id', 'name', 'email', 'created_at']);
 
@@ -27,19 +29,41 @@ class ExportController extends Controller
     }
 
     /**
-     * Export appointments as CSV.
+     * Export users as Excel.
      */
-    public function exportAppointments(): Response
+    public function exportUsersExcel()
     {
-        $appointments = Appointment::all(['id', 'user_id', 'date', 'status']);
+        // Logic for exporting users as Excel
+        // You can use a package like Maatwebsite Excel for this
+        return response()->json(['message' => 'Excel export not implemented yet.']);
+    }
 
-        $csvData = "ID,User ID,Date,Status\n";
-        foreach ($appointments as $appointment) {
-            $csvData .= "$appointment->id,$appointment->user_id,$appointment->date,$appointment->status\n";
-        }
+    /**
+     * Export users as PDF.
+     */
+    public function exportUsersPdf()
+    {
+        $users = User::all(['id', 'name', 'email', 'created_at']);
+        $pdf = Pdf::loadView('admin.exports.users-pdf', compact('users'));
 
-        return response($csvData)
-            ->header('Content-Type', 'text/csv')
-            ->header('Content-Disposition', 'attachment; filename="appointments.csv"');
+        return $pdf->download('users.pdf');
+    }
+
+    /**
+     * Export users for Print.
+     */
+    public function exportUsersPrint()
+    {
+        $users = User::all(['id', 'name', 'email', 'created_at']);
+        return view('admin.exports.users-print', compact('users'));
+    }
+
+    /**
+     * Export users as Copy (JSON format).
+     */
+    public function exportUsersCopy(): Response
+    {
+        $users = User::all(['id', 'name', 'email', 'created_at']);
+        return response()->json($users);
     }
 }

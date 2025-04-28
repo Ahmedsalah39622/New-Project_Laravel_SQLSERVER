@@ -5,7 +5,7 @@
 @section('vendor-style')
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/animate/animate.css') }}" />
 
-
+@section('title', 'Receptionist Dashboard')
 @section('content')
 <!-- Welcome Section with Quick Stats -->
 <div class="card bg-primary text-white mb-4">

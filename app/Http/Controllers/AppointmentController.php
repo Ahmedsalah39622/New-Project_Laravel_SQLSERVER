@@ -19,14 +19,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-
-        $specialties = [
-            'Cardiology',
-            'Dermatology',
-            'Neurology',
-        ];
-
-        return view('content.pages.Appointment', compact('specialties'));
+        return view('content.pages.Appointment');
     }
 
     /**
@@ -77,7 +70,6 @@ class AppointmentController extends Controller
 
     /**
      * Get doctors based on the specialty.
-     *
      * @param  string  $specialty
      * @return \Illuminate\Http\JsonResponse
      */
