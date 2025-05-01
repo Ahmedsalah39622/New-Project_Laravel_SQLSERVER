@@ -5,7 +5,7 @@
 @php
 use Illuminate\Support\Str;
 @endphp
-
+@section('title', 'Predictions')
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -26,7 +26,7 @@ use Illuminate\Support\Str;
                                         {{ number_format(100 - $forecast['metrics']['mape'], 2) }}%
                                     </span>
                                 </div>
-                                
+
                             </div>
                         </div>
                     @endif
