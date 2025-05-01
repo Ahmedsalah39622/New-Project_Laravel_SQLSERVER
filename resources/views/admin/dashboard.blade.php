@@ -86,9 +86,26 @@
             </div>
             <div class="card-body">
                 <!-- Download Disease Statistics Button -->
-                <a href="{{ route('disease-statistics.export') }}" class="btn btn-primary">
-                    <i class="ti ti-download"></i> Download Disease Statistics
-                </a>
+                <div class="btn-group">
+                    <!-- Main Button for Viewing -->
+                    <a href="http://127.0.0.1:8000/disease-statistics" class="btn btn-primary">
+                        <i class="ti ti-eye"></i> View Disease Statistics
+                    </a>
+
+                    <!-- Dropdown Toggle -->
+                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('disease-statistics.export') }}">
+                                <i class="ti ti-download"></i> Download as CSV
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                 <!-- Form for Predicting Disease Statistics -->
                 <form action="{{ route('disease-statistics.predict') }}" method="POST" enctype="multipart/form-data">
                     @csrf

@@ -12,7 +12,6 @@
       "name": "Appointment",
       "slug": "Appointment"
     },
-
     {
       "url": "pages/misc-error",
       "name": "Error",
@@ -33,6 +32,20 @@
       "icon": "menu-icon tf-icons ti ti-user",
       "slug": "auth-register-basic",
       "target": "_blank"
+    },
+    {
+      "url": "/admin/dashboard",
+      "name": "Admin Dashboard",
+      "icon": "menu-icon tf-icons ti ti-settings",
+      "slug": "admin-dashboard",
+      "role": "admin"
+    },
+    {
+      "url": "/admin/reports",
+      "name": "Admin Reports",
+      "icon": "menu-icon tf-icons ti ti-report",
+      "slug": "admin-reports",
+      "role": "admin"
     }
   ]
 }
