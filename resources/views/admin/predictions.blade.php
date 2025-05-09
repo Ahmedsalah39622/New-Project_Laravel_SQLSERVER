@@ -165,4 +165,55 @@ use Illuminate\Support\Str;
         @endif
     </div>
 </div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title">LifeLine AI Advice</h5>
+    </div>
+    <div class="card-body">
+        <div id="ai-advice" class="alert alert-info">
+            <p>Fetching advice from AI...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+#ai-advice {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/ai-advice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                predictions: @json($predictions['predictions'] ?? [])
+            })
+        })
+        .then(response => response.text()) // Use .text() to log the raw response
+        .then(data => {
+            console.log('Raw Response:', data); // Log the raw response
+            try {
+                const jsonData = JSON.parse(data); // Attempt to parse the response as JSON
+                const adviceElement = document.getElementById('ai-advice');
+                if (jsonData.success) {
+                    adviceElement.innerHTML = `<p>${jsonData.advice}</p>`;
+                } else {
+                    adviceElement.innerHTML = `<p class="text-danger">Failed to fetch advice: ${jsonData.message}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('ai-advice').innerHTML = `<p class="text-danger">Error parsing response: ${error.message}</p>`;
+            }
+        })
+        .catch(error => {
+            document.getElementById('ai-advice').innerHTML = `<p class="text-danger">Error fetching advice: ${error.message}</p>`;
+        });
+    });
+</script>
 @endsection

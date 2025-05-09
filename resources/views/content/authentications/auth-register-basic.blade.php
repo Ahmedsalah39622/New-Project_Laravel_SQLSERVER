@@ -85,7 +85,7 @@ $configData = Helper::appClasses();
           <!-- Birthdate input field -->
           <div class="mb-6">
             <label for="birthdate" class="form-label">Birthdate</label>
-            <input type="text" class="form-control @error('birthdate') is-invalid @enderror" id="birthdate" name="birthdate" value="{{ old('birthdate') }}" />
+            <input type="date" class="form-control @error('birthdate') is-invalid @enderror" id="birthdate" name="birthdate" value="{{ old('birthdate') }}" />
             @error('birthdate')
               <span class="invalid-feedback" role="alert">
                 <span class="fw-medium">{{ $message }}</span>

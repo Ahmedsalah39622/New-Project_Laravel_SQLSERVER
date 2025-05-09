@@ -33,6 +33,8 @@ use App\Http\Controllers\Doctor\PreviewPrescriptionsController;
 use App\Http\Controllers\AppInvoicePreviewController;
 use App\Http\Controllers\DiseaseStatisticController;
 use App\Http\Controllers\DiseaseStatisticsController;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 // Main Page Route
 Route::get('/', [Main::class, 'index'])->name('pages-home');
@@ -269,3 +271,66 @@ Route::delete('/doctor/prescription/{prescriptionId}/delete', [AddPrescriptionCo
 //user status
 Route::get('/admin/users/{userId}/activate', [UserController::class, 'activateUser'])->name('users.activate');
 Route::delete('/admin/users/{userId}/delete', [UserController::class, 'deleteUser'])->name('users.delete');
+
+// AI Advice Route
+Route::post('/api/ai-advice', function (Request $request) {
+    $predictions = $request->input('predictions');
+
+    $payload = [
+        "contents" => [
+            [
+                "parts" => [
+                    [
+                        "text" => "Given the following disease predictions, respond ONLY with a JSON object in this format: {\"logistics\": \"...\", \"doctors\": \"...\", \"clinics\": \"...\"}. For each field, provide clear, concise, and DYNAMIC recommendations with specific numbers (e.g., number of ambulances, ICU beds, doctors, clinics) that the hospital should increase or prepare, based on the data. Do NOT include any explanation, markdown, or code block, just the JSON object. Here are the predictions: " . json_encode($predictions, JSON_PRETTY_PRINT)
+                    ]
+                ]
+            ]
+        ]
+    ];
+
+    $aiApiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyB5mzFXtFQM_gm48cahNYXgOvBn7P7dZ8A';
+
+    try {
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->post($aiApiUrl, $payload);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $text = $data['candidates'][0]['content']['parts'][0]['text'] ??
+                    $data['contents'][0]['parts'][0]['text'] ??
+                    null;
+
+            $advice = null;
+            if ($text) {
+                // Remove any code block markers if present
+                $text = preg_replace('/^```json|^```|\s*```$/m', '', $text);
+                $adviceArr = json_decode($text, true);
+                if (is_array($adviceArr)) {
+                    $advice =
+                        "Logistics: " . ($adviceArr['logistics'] ?? '') . "\n" .
+                        "Doctors: " . ($adviceArr['doctors'] ?? '') . "\n" .
+                        "Clinics: " . ($adviceArr['clinics'] ?? '');
+                } else {
+                    $advice = $text;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'advice' => $advice ?: 'No advice generated.',
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch advice from Gemini API.',
+                'error' => $response->body(),
+            ]);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ]);
+    }
+});

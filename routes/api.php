@@ -9,6 +9,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorDashboardController;
 use App\Http\Controllers\DiseaseStatisticsController;
+use Illuminate\Support\Facades\Http;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -53,5 +54,42 @@ Route::get('/patient-statistics', [DashboardController::class, 'getPatientStatis
 Route::get('/patient-statistics', [PatientController::class, 'getPatientStatistics']);
 Route::get('/new-patients', [PatientController::class, 'getNewPatients']);
 
-
 Route::get('/total-patients', [DashboardController::class, 'getTotalPatients']);
+
+Route::post('/api/ai-advice', function (Request $request) {
+    $predictions = $request->input('predictions');
+
+    // Example payload for the AI API
+    $payload = [
+        'model' => 'text-davinci-003', // Specify the model
+        'prompt' => 'Based on the following disease predictions, provide advice for logistics, number of doctors, and clinics: ' . json_encode($predictions),
+        'max_tokens' => 500,
+        'temperature' => 0.7,
+    ];
+
+    // Replace with the actual AI API URL
+    $aiApiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyB5mzFXtFQM_gm48cahNYXgOvBn7P7dZ8A';
+
+    try {
+        $response = Http::withHeaders([
+            'Authorization' => 'AIzaSyB5mzFXtFQM_gm48cahNYXgOvBn7P7dZ8A',
+        ])->post($aiApiUrl, $payload);
+
+        if ($response->successful()) {
+            return response()->json([
+                'success' => true,
+                'advice' => $response->json(),
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch advice from AI API.',
+            ]);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ]);
+    }
+});
