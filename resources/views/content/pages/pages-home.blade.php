@@ -268,7 +268,7 @@
                 try {
                     const response = await fetch(`/appointment/${appointmentId}/treatment-plan`);
                     if (!response.ok) {
-                        throw new Error('Failed to fetch treatment plan.');
+                        throw new Error('There is no treatment plan yet. Please follow up with your doctor.');
                     }
 
                     const data = await response.json();

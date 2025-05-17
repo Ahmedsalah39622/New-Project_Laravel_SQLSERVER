@@ -80,7 +80,9 @@
           <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-6">
             <h6>Patient Information:</h6>
             <p class="mb-1">Name: {{ $appointment->patient_name }}</p>
-            <p class="mb-0">ID: {{ $appointment->patient_id}}</p>
+            <p class="mb-0">Email: {{ $appointment->patient_email}}</p>
+            <p class="mb-0">Appointment Time: {{ $appointment->start_time}}</p>
+
           </div>
           <div class="col-md-6 col-sm-7">
             <h6>Doctor Information:</h6>
@@ -440,4 +442,3 @@
 </style>
 
 @endsection
-

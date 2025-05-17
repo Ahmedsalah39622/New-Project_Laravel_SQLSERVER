@@ -66,6 +66,9 @@
     <div id="doctors-list" class="row g-3"></div>
     <button class="btn btn-secondary mt-3" id="back-to-clinics">Back to Clinics</button>
   </div>
+  <div class="card-body">
+    <a href="/home" class="btn btn-secondary mt-3">Back to Main Dashboard</a>
+       </div>
 </div>
 
 <!-- Popup Modal for Appointment Scheduling -->
@@ -358,7 +361,7 @@
                     selectedButton.classList.remove('btn-success');
                     selectedButton.classList.add('btn-danger');
                 }
-                alert('Failed to book appointment. Please try again.');
+                alert('That time is already booked, please choose another time.');
             }
         } catch (error) {
             console.error('Error booking appointment:', error);

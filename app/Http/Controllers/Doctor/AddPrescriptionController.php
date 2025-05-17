@@ -20,13 +20,18 @@ class AddPrescriptionController extends Controller
         if ($appointmentId) {
             $appointment = Appointment::find($appointmentId);
         }
+        $user = $appointment?->patient ?? $appointment?->user ?? null;
+        $patient = $appointment?->patient;
 
         // Get the logged-in doctor's details
         $doctor = Auth::user();
         $appointment = Appointment::find($appointmentId);
+               $user = $appointment ? $appointment->patientUser : null; // Adjust this line to match your relationship
+
+        $patient = $appointment?->patient; // Use null-safe operator
+
         $doctor = $appointment->doctor;
         $prescriptions = CompletedPrescription::where('patient_id', $appointment->patient_id ?? null)->get();
-
         // Fetch all column names from the disease_statistics table
         $columns = Schema::getColumnListing('disease_statistics');
 
@@ -36,7 +41,7 @@ class AddPrescriptionController extends Controller
         });
 
         // Pass the diseases to the view
-        return view('doctor.addprescription', compact('appointment', 'doctor', 'prescriptions', 'diseases'));
+        return view('doctor.addprescription', compact('appointment', 'doctor', 'prescriptions', 'diseases', 'patient'));
     }
 
     public function store(Request $request)

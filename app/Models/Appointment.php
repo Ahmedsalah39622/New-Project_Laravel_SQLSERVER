@@ -26,15 +26,20 @@ class Appointment extends Model
        'paid_status',
         'selected_symptoms',
         'patient_id',
+        'blood_type',
+        'email',
     ];
 
     // Define the relationship with the Doctor model
-    public function doctor()
-    {
-        return $this->belongsTo(Doctor::class);
-    }
-    public function patient()
-    {
-        return $this->belongsTo(Patient::class);
-    }
+public function doctor()
+{
+    return $this->belongsTo(Doctor::class);
+}
+
+public function patient()
+{
+    return $this->belongsTo(\App\Models\Patient::class, 'email', 'email');
+}
+
+
 }
