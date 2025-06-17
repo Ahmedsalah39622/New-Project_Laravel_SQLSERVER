@@ -1,0 +1,71 @@
+THESE TABLE MUST BE IN THE ALL NEEDED DATABASES:
+==========================================================================
+CREATE TABLE `DB_ECG`.`roles` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX (`name`),
+  INDEX (`guard_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+==========================================================================
+CREATE TABLE `DB_ECG`.`role_has_permissions` (
+  `permission_id` BIGINT UNSIGNED NOT NULL,
+  `role_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`permission_id`, `role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+==========================================================================
+CREATE TABLE `DB_ECG`.`model_has_roles` (
+  `role_id` BIGINT UNSIGNED NOT NULL,
+  `model_type` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`role_id`, `model_id`, `model_type`),
+  INDEX (`model_id`),
+  INDEX (`model_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+==========================================================================
+CREATE TABLE `DB_ECG`.`model_has_permissions` (
+  `permission_id` BIGINT UNSIGNED NOT NULL,
+  `model_type` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`permission_id`, `model_id`, `model_type`),
+  INDEX (`model_id`),
+  INDEX (`model_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+==========================================================================
+CREATE TABLE `DB_ECG`.`sessions` (
+  `id` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `ip_address` VARCHAR(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` TEXT COLLATE utf8mb4_unicode_ci,
+  `payload` LONGTEXT COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `last_activity` (`last_activity`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+==========================================================================
+CREATE TABLE `DB_ECG`.`users` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_verified_at` TIMESTAMP NULL DEFAULT NULL,
+  `password` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` VARCHAR(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `current_team_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `profile_photo_path` VARCHAR(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  `role_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `two_factor_secret` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `two_factor_recovery_codes` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+NOTE and the same users and roles and mode_has_role
