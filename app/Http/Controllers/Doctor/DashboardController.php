@@ -81,7 +81,7 @@ class DashboardController extends Controller
         $serverName = 'AHMED_MAHMOUD';
         $username = 'ahmed';
         $password = 'omar2007';
-        $database = 'DB_Platinum';
+        $database = 'DB_ECG';
 
         try {
             $dsn = "sqlsrv:Server={$serverName};Database={$database};Encrypt=yes;TrustServerCertificate=true";
@@ -130,7 +130,7 @@ FROM            dbo.St_SuppliserData";
                 return (array) $item;
             }, $databases);
 
-            return view('dashboard.dataView', ['databases' => $databases, 'data' => [], 'databaseName' => '']);
+            return view('dashboard.dataView', ['databases' => $databases]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -150,6 +150,36 @@ FROM            dbo.St_SuppliserData";
             $results = DB::select($query);
 
             return view('dashboard.dataView', ['data' => $results, 'databaseName' => $selectedDatabase]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchQueryFromSelectedDatabase(Request $request)
+    {
+        try {
+            $selectedDatabase = $request->input('database');
+
+            if (empty($selectedDatabase)) {
+                return redirect()->back()->withErrors(['error' => 'Please select a database.']);
+            }
+
+            // Fetch databases
+            $query = "SELECT name FROM sys.databases";
+            $databases = DB::select($query);
+
+            // Convert stdClass objects to arrays
+            $databases = array_map(function ($item) {
+                return (array) $item;
+            }, $databases);
+
+            // Switch to the selected database
+            DB::statement("USE [$selectedDatabase]");
+
+            $query = "SELECT Supliser_Code AS Code, Supliser_Name AS Name, Compny_Code FROM dbo.St_SuppliserData";
+            $results = DB::select($query);
+
+            return view('dashboard.dataView', ['data' => $results, 'databases' => $databases, 'databaseName' => $selectedDatabase]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

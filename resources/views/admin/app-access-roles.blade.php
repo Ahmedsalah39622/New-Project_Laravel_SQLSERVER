@@ -254,6 +254,42 @@ $configData = Helper::appClasses();
     </div>
 </div>
 
+<!-- Unconfirmed Users Section -->
+<div class="unconfirmed-users-section mt-4">
+    <h3>Unconfirmed Users</h3>
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($unconfirmedUsers as $user)
+                        <tr>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>
+                                <form method="POST" action="{{ route('admin.confirm-user', $user->id) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success">Confirm</button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.reject-user', $user->id) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Handle role change

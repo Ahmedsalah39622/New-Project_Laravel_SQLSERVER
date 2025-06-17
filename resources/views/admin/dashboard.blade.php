@@ -197,6 +197,44 @@
     </div>
 </div>
 
+<div class="row g-4 mt-4">
+    <!-- Query Results Section -->
+    <div class="col-xl-12 col-md-12">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Query Results</h5>
+            </div>
+            <div class="card-body">
+                @if(isset($data) && count($data) > 0)
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Company Code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($data as $row)
+                                <tr>
+                                    <td>{{ $row['Code'] }}</td>
+                                    <td>{{ $row['Name'] }}</td>
+                                    <td>{{ $row['Compny_Code'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>No data available.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Button to navigate to /databases -->
+<div class="mt-4">
+    <a href="/databases" class="btn btn-primary">Go to Databases</a>
+</div>
 
 @endsection

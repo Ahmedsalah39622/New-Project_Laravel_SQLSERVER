@@ -99,7 +99,8 @@ return [
     'url' => env('DATABASE_URL'),
     'host' => env('DB_HOST', 'localhost'),
     'port' => env('DB_PORT', '1433'),
-    'database' => env('DB_DATABASE', 'DB_Platinum'),
+    'database' => env('DB_DATABASE', 'DB_ECG'),
+
     'username' => env('DB_USERNAME', 'ahmed'),
     'password' => env('DB_PASSWORD', ''),
     'charset' => 'utf8',
@@ -122,7 +123,7 @@ return [
       'driver' => 'sqlsrv',
       'host' => env('DB_HOST', 'localhost'),
       'port' => env('DB_PORT', '1433'),
-      'database' => env('DB_DATABASE', 'forge'),
+      'database' => env('DB_DATABASE', null),
       'username' => env('DB_USERNAME', 'forge'),
       'password' => env('DB_PASSWORD', ''),
       'charset' => 'utf8',

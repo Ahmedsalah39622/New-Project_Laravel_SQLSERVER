@@ -14,7 +14,8 @@ class RegisterBasic extends Controller
     public function index()
     {
         $pageConfigs = ['myLayout' => 'blank'];
-        return view('content.authentications.auth-register-basic', ['pageConfigs' => $pageConfigs]);
+        $roles = DB::table('roles')->get(); // Fetch roles from the database
+        return view('content.authentications.auth-register-basic', ['pageConfigs' => $pageConfigs, 'roles' => $roles]);
     }
 
     // Handle registration form submission

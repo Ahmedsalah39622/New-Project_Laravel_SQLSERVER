@@ -36,6 +36,9 @@ use App\Http\Controllers\DiseaseStatisticsController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Controllers\DatabaseDashboardController;
+use App\Http\Controllers\DatabaseController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 // Main Page Route
 Route::get('/', [DashboardController::class, 'fetchDatabaseList'])->name('main.page');
@@ -350,7 +353,8 @@ Route::get('/dashboard/connect', function () {
 });
 Route::get('/dashboard/fetch-data', [DashboardController::class, 'fetchData']);
 Route::get('/dashboard/fetch-tables', [DashboardController::class, 'fetchTables']);
-Route::get('/dashboard/data-view', [DashboardController::class, 'fetchDataView'])->name('dashboard.dataView');
+Route::get('/dashboard/data-view', [DatabaseController::class, 'fetchRoles'])->name('dashboard.dataView');
+Route::get('/dashboard/database-data', [DatabaseController::class, 'fetchDatabaseData'])->name('dashboard.databaseData');
 Route::get('/databases', [DashboardController::class, 'fetchDatabaseList'])->name('main.page');
 Route::post('/select-database', function (Request $request) {
     $selectedDatabase = $request->input('database');
@@ -361,3 +365,71 @@ Route::post('/select-database', function (Request $request) {
     return redirect()->route('main.page');
 });
 Route::get('/databases', [DashboardController::class, 'fetchDatabaseList']);
+Route::get('/dashboard/databases', [DashboardController::class, 'fetchDatabaseList'])->name('dashboard.databases');
+
+// Confirm and Reject User Routes
+Route::post('/admin/confirm-user/{id}', [RoleController::class, 'confirmUser'])->name('admin.confirm-user');
+Route::post('/admin/reject-user/{id}', [RoleController::class, 'rejectUser'])->name('admin.reject-user');
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect()->route('auth-login-basic');
+})->name('logout');
+Route::get('/admin/user-requests', [RoleController::class, 'viewUserRequests'])->name('admin.user-requests');
+
+Route::get('/dashboard/database-tables', function (Request $request) {
+    $database = $request->query('database');
+
+    try {
+        DB::statement("USE [$database]");
+
+        $query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+        $tables = DB::select($query);
+
+        return response()->json($tables);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+
+Route::get('/dashboard/table-data', function (Request $request) {
+    $database = $request->query('database');
+
+    try {
+        DB::statement("USE [$database]");
+
+        $query = "SELECT dbo.St_SuppliserData.Supliser_AccountNo AS Code, 
+                         dbo.St_SuppliserData.Supliser_Name AS Name, 
+                         dbo.St_SuppliserData.Compny_Code, 
+                         RTRIM(dbo.ST_CHARTOFACCOUNT.AccountName) AS AccountName
+                  FROM dbo.St_SuppliserData 
+                  INNER JOIN dbo.ST_CHARTOFACCOUNT 
+                  ON dbo.St_SuppliserData.Supliser_AccountNoGroup = dbo.ST_CHARTOFACCOUNT.Account_No_Update";
+
+        $data = DB::select($query);
+
+        return response()->json($data);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+Route::get('/databases/query', function () {
+    try {
+        $database = 'DB_ECG';
+        DB::statement("USE [$database]");
+
+        $query = "SELECT dbo.St_SuppliserData.Supliser_AccountNo AS Code, 
+                         dbo.St_SuppliserData.Supliser_Name AS Name, 
+                         dbo.St_SuppliserData.Compny_Code, 
+                         RTRIM(dbo.ST_CHARTOFACCOUNT.AccountName) AS AccountName
+                  FROM dbo.St_SuppliserData 
+                  INNER JOIN dbo.ST_CHARTOFACCOUNT 
+                  ON dbo.St_SuppliserData.Supliser_AccountNoGroup = dbo.ST_CHARTOFACCOUNT.Account_No_Update";
+
+        $data = DB::select($query);
+
+        return view('databases', ['data' => $data, 'databaseName' => $database]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+Route::post('/dashboard/query', [DashboardController::class, 'fetchQueryFromSelectedDatabase'])->name('fetchQueryFromSelectedDatabase');

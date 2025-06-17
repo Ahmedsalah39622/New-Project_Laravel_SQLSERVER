@@ -5,6 +5,8 @@ namespace App\Http\Controllers\authentications;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class LoginBasic extends Controller
 {
@@ -23,10 +25,28 @@ class LoginBasic extends Controller
             'password' => 'required',
         ]);
 
+        $credentials = $request->only('email', 'password');
+
         // Attempt to log the user in
-        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
-            // Redirect to intended page or to /home after successful login
-            return redirect()->intended('content.pages-home');
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Check if the user's email is verified
+            if (!$user->confirmed) {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Your registration request has been sent to the admin. Please wait for confirmation.']);
+            }
+
+            // Check user role and redirect accordingly
+            if ($user->hasRole('admin')) {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->hasRole('doctor')) {
+                return redirect()->route('doctor.dashboard');
+            } elseif ($user->hasRole('patient')) {
+                return redirect()->route('patient.dashboard');
+            } else {
+                return redirect()->route('main.page');
+            }
         }
 
         // Return back with error if login fails

@@ -52,9 +52,12 @@ class RoleController extends Controller
                 $query->where('name', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%");
             })
-            ->paginate(10); // Paginate resultste(10); // Paginate results
+            ->paginate(10); // Paginate results
 
-        return view('admin.app-access-roles', compact('roles', 'users', 'search'));
+        // Fetch unconfirmed users
+        $unconfirmedUsers = User::where('confirmed', false)->get();
+
+        return view('admin.app-access-roles', compact('roles', 'users', 'search', 'unconfirmedUsers'));
     }
 
     // Add a new role
@@ -175,5 +178,38 @@ class RoleController extends Controller
         $response->headers->set('Content-Disposition', 'attachment; filename="users.csv"');
 
         return $response;
+    }
+
+    public function confirmUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->confirmed = true;
+        $user->save();
+
+        return redirect()->back()->with('success', 'User confirmed successfully.');
+    }
+
+    public function rejectUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User rejected and deleted successfully.');
+    }
+
+    public function viewUserRequests()
+    {
+        $users = User::all(); // Fetch all users
+        return view('admin.user-requests', compact('users'));
+    }
+
+    public function dashboardDataView()
+    {
+        $roles = Role::all();
+        $data = [
+            ['Code' => '001', 'Name' => 'Sample Data 1', 'Compny_Code' => 'ABC123'],
+            ['Code' => '002', 'Name' => 'Sample Data 2', 'Compny_Code' => 'XYZ456']
+        ];
+        return view('dashboard.dataView', compact('roles', 'data'));
     }
 }
