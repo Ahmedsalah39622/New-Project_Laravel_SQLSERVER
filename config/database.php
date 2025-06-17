@@ -3,7 +3,6 @@
 use Illuminate\Support\Str;
 
 return [
-
   /*
   |--------------------------------------------------------------------------
   | Default Database Connection Name
@@ -30,7 +29,6 @@ return [
   */
 
   'connections' => [
-
     'sqlite' => [
       'driver' => 'sqlite',
       'url' => env('DB_URL'),
@@ -94,21 +92,42 @@ return [
       'sslmode' => 'prefer',
     ],
 
-    'sqlsrv' => [
+
+
+'sqlsrv' => [
+    'driver' => 'sqlsrv',
+    'url' => env('DATABASE_URL'),
+    'host' => env('DB_HOST', 'localhost'),
+    'port' => env('DB_PORT', '1433'),
+    'database' => env('DB_DATABASE', 'DB_Platinum'),
+    'username' => env('DB_USERNAME', 'ahmed'),
+    'password' => env('DB_PASSWORD', ''),
+    'charset' => 'utf8',
+    'prefix' => '',
+    'prefix_indexes' => true,
+    'encrypt' => env('DB_ENCRYPT', 'yes'),
+    'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'yes'),
+],
+
+
+
+
+
+
+
+
+
+
+    'dynamic_sqlsrv' => [
       'driver' => 'sqlsrv',
-      'url' => env('DB_URL'),
       'host' => env('DB_HOST', 'localhost'),
       'port' => env('DB_PORT', '1433'),
-      'database' => env('DB_DATABASE', 'laravel'),
-      'username' => env('DB_USERNAME', 'root'),
+      'database' => env('DB_DATABASE', 'forge'),
+      'username' => env('DB_USERNAME', 'forge'),
       'password' => env('DB_PASSWORD', ''),
-      'charset' => env('DB_CHARSET', 'utf8'),
+      'charset' => 'utf8',
       'prefix' => '',
-      'prefix_indexes' => true,
-      // 'encrypt' => env('DB_ENCRYPT', 'yes'),
-      // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
     ],
-
   ],
 
   /*
@@ -139,7 +158,6 @@ return [
   */
 
   'redis' => [
-
     'client' => env('REDIS_CLIENT', 'phpredis'),
 
     'options' => [
@@ -164,7 +182,5 @@ return [
       'port' => env('REDIS_PORT', '6379'),
       'database' => env('REDIS_CACHE_DB', '1'),
     ],
-
   ],
-
 ];

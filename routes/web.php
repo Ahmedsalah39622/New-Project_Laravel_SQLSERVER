@@ -35,10 +35,11 @@ use App\Http\Controllers\DiseaseStatisticController;
 use App\Http\Controllers\DiseaseStatisticsController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use App\Http\Controllers\DatabaseDashboardController;
 
 // Main Page Route
-Route::get('/', [Main::class, 'index'])->name('pages-home');
-
+Route::get('/', [DashboardController::class, 'fetchDatabaseList'])->name('main.page');
+Route::get('/', [DashboardController::class, 'fetchComplexQueryResults'])->name('main.page');
 Route::get('/home', [HomePage::class, 'index'])->name('pages-home');
 Route::get('/page-2', [Page2::class, 'index'])->name('pages-page-2');
 Route::get('/payment', [payment::class, 'index'])->name('payment-page');
@@ -334,3 +335,29 @@ Route::post('/api/ai-advice', function (Request $request) {
         ]);
     }
 });
+
+// Dashboard Routes
+Route::get('/dashboard/login', [DatabaseDashboardController::class, 'login'])->name('dashboard.login');
+Route::post('/dashboard/authenticate', [DatabaseDashboardController::class, 'authenticate'])->name('dashboard.authenticate');
+Route::get('/dashboard/select-database', [DatabaseDashboardController::class, 'selectDatabase'])->name('dashboard.selectDatabase');
+Route::get('/dashboard/view-table', [DatabaseDashboardController::class, 'viewTable'])->name('dashboard.viewTable');
+Route::get('/dashboard/show-table-data', [DatabaseDashboardController::class, 'showTableData'])->name('dashboard.showTableData');
+Route::post('/dashboard/test-connection', [DatabaseDashboardController::class, 'testConnection'])->name('dashboard.testConnection');
+Route::post('/dashboard/check-connection', [DatabaseDashboardController::class, 'checkConnection'])->name('dashboard.checkConnection');
+Route::post('/dashboard/connect', [DashboardController::class, 'connect']);
+Route::get('/dashboard/connect', function () {
+    return response()->json(['error' => 'Use POST method for this route'], 405);
+});
+Route::get('/dashboard/fetch-data', [DashboardController::class, 'fetchData']);
+Route::get('/dashboard/fetch-tables', [DashboardController::class, 'fetchTables']);
+Route::get('/dashboard/data-view', [DashboardController::class, 'fetchDataView'])->name('dashboard.dataView');
+Route::get('/databases', [DashboardController::class, 'fetchDatabaseList'])->name('main.page');
+Route::post('/select-database', function (Request $request) {
+    $selectedDatabase = $request->input('database');
+
+    // Store the selected database in the session
+    session(['selected_database' => $selectedDatabase]);
+
+    return redirect()->route('main.page');
+});
+Route::get('/databases', [DashboardController::class, 'fetchDatabaseList']);

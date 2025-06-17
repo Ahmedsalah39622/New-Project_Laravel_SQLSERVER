@@ -11,6 +11,7 @@ use App\Models\Patient;
 use App\Models\Appointment;
 use App\Models\Prescription;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -75,57 +76,82 @@ class DashboardController extends Controller
         }
     }
 
-    public function storeCompletedPrescription(Request $request)
+    public function fetchDataView()
     {
-        $request->validate([
-            'appointment_id' => 'required|exists:appointments,id',
-            'group-a.*.drugs' => 'required|string',
-            'group-a.*.dosage' => 'required|string',
-            'notes' => 'required|string',
-        ]);
+        $serverName = 'AHMED_MAHMOUD';
+        $username = 'ahmed';
+        $password = 'omar2007';
+        $database = 'DB_Platinum';
 
-        foreach ($request->input('group-a') as $item) {
-            Prescription::create([
-                'appointment_id' => $request->appointment_id,
-                'drugs' => $item['drugs'],
-                'dosage' => $item['dosage'],
-                'notes' => $request->notes,
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Prescription saved successfully.');
-    }
-
-    public function filterAppointmentsByDoctor(Request $request)
-    {
         try {
-            $userId = Auth::id(); // Get the authenticated user's ID
+            $dsn = "sqlsrv:Server={$serverName};Database={$database};Encrypt=yes;TrustServerCertificate=true";
+            $pdo = new \PDO($dsn, $username, $password);
 
-            // Fetch the doctor's appointments where user_id matches the user's ID
-            $appointments = Appointment::whereHas('doctor', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->get();
+            $query = "SELECT        Supliser_Code AS Code, Supliser_Name AS Name, Compny_Code
+FROM            dbo.St_SuppliserData";
 
-            // Count the filtered appointmentsw
-            $filteredAppointmentsCount = $appointments->count();
+            $stmt = $pdo->query($query);
+            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            return view('doctor.dashboard', compact('appointments', 'filteredAppointmentsCount'));
+            return view('dashboard.dataView', ['data' => $data]);
         } catch (\Exception $e) {
-            Log::error('Error in filterAppointmentsByDoctor method: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function getTotalPatients(): JsonResponse
+    public function fetchComplexQueryResults()
     {
         try {
-            // Fetch the total number of patients
-            $totalPatients = Patient::count();
+            $selectedDatabase = session('selected_database');
 
-            return response()->json(['totalPatients' => $totalPatients], 200);
+            if ($selectedDatabase) {
+                DB::statement("USE [$selectedDatabase]");
+            }
+
+            $query = "SELECT        Supliser_Code AS Code, Supliser_Name AS Name, Compny_Code
+FROM            dbo.St_SuppliserData";
+
+            $results = DB::select($query);
+
+            return view('dashboard.dataView', ['data' => $results, 'databaseName' => $selectedDatabase]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch total patients'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchDatabaseList()
+    {
+        try {
+            $query = "SELECT name FROM sys.databases";
+            $databases = DB::select($query);
+
+            // Convert stdClass objects to arrays
+            $databases = array_map(function ($item) {
+                return (array) $item;
+            }, $databases);
+
+            return view('dashboard.dataView', ['databases' => $databases, 'data' => [], 'databaseName' => '']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchDatabaseAndTables(Request $request)
+    {
+        try {
+            $selectedDatabase = $request->input('database');
+
+            // Switch to the selected database
+            DB::statement("USE [$selectedDatabase]");
+
+            $query = "SELECT        Supliser_Code AS Code, Supliser_Name AS Name, Compny_Code
+FROM            dbo.St_SuppliserData";
+
+            $results = DB::select($query);
+
+            return view('dashboard.dataView', ['data' => $results, 'databaseName' => $selectedDatabase]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
-
